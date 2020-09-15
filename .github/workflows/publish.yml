@@ -1,7 +1,7 @@
 name: Publish package to the Maven Central Repository
 on:
   release:
-    types: [published]
+    types: [created]
 
 jobs:
   build:
@@ -19,4 +19,4 @@ jobs:
           ORG_GRADLE_PROJECT_signingKey: ${{ secrets.SIGNING_KEY }}
           ORG_GRADLE_PROJECT_signingKeyId: ${{ secrets.SIGNING_KEY_ID }}
           ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.SIGNING_PASSWORD }}
-        run: ./gradlew :devops-boot-project:publish
+        run: ./gradlew publish

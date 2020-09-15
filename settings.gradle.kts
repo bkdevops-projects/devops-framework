@@ -16,7 +16,7 @@ include("devops-boot-project:devops-boot")
 include("devops-boot-project:devops-boot-dependencies")
 include("devops-boot-project:devops-boot-starters")
 include("devops-boot-project:devops-boot-tools:devops-boot-gradle-plugin")
-include("devops-boot-example")
+//include("devops-boot-example")
 
 file("$rootDir/devops-boot-project/devops-boot").directories().forEach {
     include("devops-boot-project:devops-boot:${it.name}")

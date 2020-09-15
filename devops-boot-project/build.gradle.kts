@@ -20,7 +20,8 @@ subprojects {
             mavenBom(MavenBom.SpringCloud)
         }
         dependencies {
-
+            dependency("com.tencent.devops:demo:${Release.Version}")
+            dependency("com.tencent.devops:devops-boot-starter-demo:${Release.Version}")
         }
     }
 
@@ -38,6 +39,11 @@ subprojects {
         }
         test {
             useJUnitPlatform()
+        }
+        jar {
+            manifest {
+                attributes("Implementation-Version" to Release.Version)
+            }
         }
     }
 

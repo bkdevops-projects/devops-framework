@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController
  */
 @SpringBootApplication
 @RestController
-open class DemoApplication {
+class DemoApplication {
 
     @Autowired
     private lateinit var greetingService: GreetingService

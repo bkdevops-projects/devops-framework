@@ -9,5 +9,4 @@ object Versions {
     const val SpringBoot = "2.3.3.RELEASE"
     const val SpringCloud = "Hoxton.SR8"
     const val DependencyManagement = "1.0.10.RELEASE"
-    const val PluginPublish = "0.12.0"
 }

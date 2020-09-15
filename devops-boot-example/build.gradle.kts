@@ -1,6 +1,6 @@
 plugins {
-    kotlin("jvm")
-    id("io.spring.dependency-management") version "1.0.10.RELEASE"
+    kotlin("jvm") version Versions.Kotlin
+    id("io.spring.dependency-management") version Versions.DependencyManagement
 //    id("devops-boot-gradle-plugin") version "0.0.1-SNAPSHOT"
 }
 

@@ -6,11 +6,6 @@ pluginManagement {
             url = uri("https://repo.spring.io/plugins-release")
         }
     }
-    plugins {
-        val kotlinVersion: String by settings
-        id("org.jetbrains.kotlin.jvm") version kotlinVersion
-        id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
-    }
 }
 
 rootProject.name = "devops-framework"

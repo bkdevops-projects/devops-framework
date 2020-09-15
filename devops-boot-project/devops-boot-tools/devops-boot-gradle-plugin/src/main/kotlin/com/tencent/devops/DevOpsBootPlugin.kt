@@ -32,9 +32,9 @@ class DevOpsBootPlugin : Plugin<Project> {
                 it.kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString()
                 it.kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict")
             }
-        }
-        project.tasks.withType(JavaCompile::class.java) { compile ->
-            compile.options.encoding = "UTF-8"
+            tasks.withType(JavaCompile::class.java) { compile ->
+                compile.options.encoding = "UTF-8"
+            }
         }
     }
 

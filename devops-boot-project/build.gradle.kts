@@ -1,22 +1,10 @@
 plugins {
-    kotlin("jvm")
-    kotlin("kapt")
-    kotlin("plugin.spring") apply false
-    id("maven-publish")
-    id("io.spring.dependency-management") version "1.0.10.RELEASE"
+    kotlin("jvm") version Versions.Kotlin
+    kotlin("plugin.spring") version Versions.Kotlin apply false
+    id("io.spring.dependency-management") version Versions.DependencyManagement
 }
 
 description = "Tencent BlueKing DevOps Framework Build"
-
-allprojects {
-    group = "com.tencent.devops"
-    version = "$version"
-
-    repositories {
-        mavenCentral()
-        jcenter()
-    }
-}
 
 subprojects {
     apply(plugin = "java")
@@ -24,12 +12,12 @@ subprojects {
     apply(plugin = "org.jetbrains.kotlin.kapt")
     apply(plugin = "org.jetbrains.kotlin.plugin.spring")
     apply(plugin = "io.spring.dependency-management")
-    apply(plugin = "maven-publish")
+    apply(from = rootProject.file("gradle/publish.gradle.kts"))
 
     dependencyManagement {
         imports {
-            mavenBom("org.springframework.boot:spring-boot-dependencies:2.3.3.RELEASE")
-            mavenBom("org.springframework.cloud:spring-cloud-dependencies:Hoxton.SR8")
+            mavenBom(MavenBom.SpringBoot)
+            mavenBom(MavenBom.SpringCloud)
         }
         dependencies {
 
@@ -37,35 +25,20 @@ subprojects {
     }
 
     dependencies {
-        implementation(kotlin("stdlib-jdk8"))
+        implementation(Libs.KotlinStdLib)
     }
 
     tasks {
         compileKotlin {
             kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict")
-            kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString()
+            kotlinOptions.jvmTarget = Versions.Java
         }
         compileTestKotlin {
-            kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString()
+            kotlinOptions.jvmTarget = Versions.Java
         }
         test {
             useJUnitPlatform()
         }
     }
 
-    publishing {
-        publications {
-            create<MavenPublication>("DevOpsBoot") {
-                from(components["java"])
-                pom {
-                    licenses {  }
-                    developers {  }
-                    scm {  }
-                }
-            }
-        }
-        repositories {
-
-        }
-    }
 }

@@ -1,8 +1,8 @@
 description = "Tencent BlueKing DevOps Framework Build"
 
 allprojects {
-    group = "com.tencent.devops"
-    version = "$version"
+    group = Release.Group
+    version = Release.Version
 
     repositories {
         mavenCentral()

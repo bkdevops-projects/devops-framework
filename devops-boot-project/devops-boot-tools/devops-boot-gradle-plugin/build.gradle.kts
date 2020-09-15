@@ -1,5 +1,5 @@
 plugins {
-    id("com.gradle.plugin-publish") version "0.12.0"
+    id("com.gradle.plugin-publish") version Versions.PluginPublish
     id("java-gradle-plugin")
 }
 
@@ -7,7 +7,7 @@ description = "DevOps Boot Gradle Plugin"
 
 dependencies {
     // 插件中引用kotlin gradle相关api
-    api("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.72")
+    api("org.jetbrains.kotlin:kotlin-gradle-plugin")
 }
 
 gradlePlugin {
@@ -22,7 +22,7 @@ gradlePlugin {
 pluginBundle {
     website = "http://www.gradle.org/"
     vcsUrl = "https://github.com/gradle/gradle"
-    description = "DevOps greeting plugin!"
+    description = "DevOps boot plugin"
 
     (plugins) {
         "DevOpsBootPlugin" {

@@ -1,8 +1,8 @@
 plugins {
-    kotlin("jvm") version Versions.Kotlin
-    kotlin("kapt") version Versions.Kotlin
-    kotlin("plugin.spring") version Versions.Kotlin apply false
-    id("io.spring.dependency-management") version Versions.DependencyManagement
+    kotlin("jvm")
+    kotlin("kapt")
+    kotlin("plugin.spring")
+    id("io.spring.dependency-management")
 }
 
 description = "DevOps Boot"

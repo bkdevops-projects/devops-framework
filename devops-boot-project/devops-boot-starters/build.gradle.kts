@@ -1,6 +1,6 @@
 plugins {
-    kotlin("jvm") version Versions.Kotlin
-    id("io.spring.dependency-management") version Versions.DependencyManagement
+    kotlin("jvm")
+    id("io.spring.dependency-management")
 }
 
 description = "Starter for DevOps Boot"

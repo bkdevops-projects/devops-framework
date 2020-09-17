@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version Versions.Kotlin
+    kotlin("jvm")
     id("java-gradle-plugin")
     id("publish.base")
 }

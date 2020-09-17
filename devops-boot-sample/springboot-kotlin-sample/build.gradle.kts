@@ -1,5 +1,5 @@
 plugins {
-    id("devops-boot-gradle-plugin") version "0.0.1-SNAPSHOT"
+    id("devops-boot-gradle-plugin")
 }
 
 dependencies {

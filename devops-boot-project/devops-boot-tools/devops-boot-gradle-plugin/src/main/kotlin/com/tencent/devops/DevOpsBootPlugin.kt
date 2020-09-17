@@ -18,7 +18,6 @@ import java.net.URI
 import java.util.jar.Attributes
 import java.util.jar.JarFile
 
-
 /**
  * DevOps Boot Gradle插件，提供公共配置
  */
@@ -37,7 +36,7 @@ class DevOpsBootPlugin : Plugin<Project> {
      * 配置Kotlin默认编译选项
      */
     private fun configureKotlinCompileConventions(project: Project) {
-        with(project) {
+        project.run {
             plugins.apply(KotlinPlatformJvmPlugin::class.java)
             tasks.withType(KotlinCompile::class.java) {
                 it.kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString()
@@ -63,7 +62,7 @@ class DevOpsBootPlugin : Plugin<Project> {
      * 配置maven仓库列表
      */
     private fun configureRepository(project: Project) {
-        with(project.repositories) {
+        project.repositories.run {
             maven { it.url = URI("https://mirrors.tencent.com/nexus/repository/maven-public/") }
             mavenCentral()
             jcenter()
@@ -75,7 +74,9 @@ class DevOpsBootPlugin : Plugin<Project> {
      * 配置Spring Gradle相关插件
      */
     private fun configureSpringGradlePlugin(project: Project) {
+        // https://docs.spring.io/spring-boot/docs/current/gradle-plugin/reference/html/
         project.plugins.apply(SpringBootPlugin::class.java)
+        // all-open kotlin class
         project.plugins.apply(SpringGradleSubplugin::class.java)
     }
 

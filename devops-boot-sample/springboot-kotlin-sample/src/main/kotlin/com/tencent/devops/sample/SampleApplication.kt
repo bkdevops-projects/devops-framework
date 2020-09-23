@@ -1,6 +1,8 @@
 package com.tencent.devops.sample
 
 import com.tencent.devops.demo.GreetingService
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
@@ -19,9 +21,8 @@ class SampleApplication {
 
     @RequestMapping
     fun greeting() = greetingService.greeting()
-
 }
 
-fun main() {
-    runApplication<SampleApplication>()
+fun main(args: Array<String>) {
+    runApplication<SampleApplication>(*args)
 }

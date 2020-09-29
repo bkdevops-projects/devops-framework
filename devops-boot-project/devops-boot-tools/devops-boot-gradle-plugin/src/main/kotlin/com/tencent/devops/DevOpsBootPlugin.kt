@@ -5,6 +5,8 @@ import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.ModuleDependency
+import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.api.tasks.testing.Test
 import org.jetbrains.kotlin.allopen.gradle.SpringGradleSubplugin
@@ -24,38 +26,11 @@ import java.util.jar.JarFile
 class DevOpsBootPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
-        this.configureKotlinCompileConventions(project)
-        this.configureTestConventions(project)
         this.configureRepository(project)
-        this.configureSpringGradlePlugin(project)
-        this.configureDependencyManagement(project)
-        this.configureDependency(project)
-    }
-
-    /**
-     * 配置Kotlin默认编译选项
-     */
-    private fun configureKotlinCompileConventions(project: Project) {
-        project.run {
-            plugins.apply(KotlinPlatformJvmPlugin::class.java)
-            tasks.withType(KotlinCompile::class.java) {
-                it.kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString()
-                it.kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict")
-            }
-            tasks.withType(JavaCompile::class.java) {
-                it.sourceCompatibility = JavaVersion.VERSION_1_8.toString()
-                it.options.encoding = "UTF-8"
-            }
-        }
-    }
-
-    /**
-     * 配置test任务选项
-     */
-    private fun configureTestConventions(project: Project) {
-        project.tasks.withType(Test::class.java) {
-            it.useJUnitPlatform()
-        }
+        this.configureJavaSupport(project)
+        this.configureSpringSupport(project)
+        this.configureKotlinSupport(project)
+        this.configureJUnitTest(project)
     }
 
     /**
@@ -71,19 +46,56 @@ class DevOpsBootPlugin : Plugin<Project> {
     }
 
     /**
-     * 配置Spring Gradle相关插件
+     * 配置默认编译选项
      */
-    private fun configureSpringGradlePlugin(project: Project) {
-        // https://docs.spring.io/spring-boot/docs/current/gradle-plugin/reference/html/
-        project.plugins.apply(SpringBootPlugin::class.java)
-        // all-open kotlin class
-        project.plugins.apply(SpringGradleSubplugin::class.java)
+    private fun configureJavaSupport(project: Project) {
+        project.run {
+            plugins.apply(JavaPlugin::class.java)
+            tasks.withType(JavaCompile::class.java) {
+                it.sourceCompatibility = findJavaVersion(this)
+                it.options.encoding = "UTF-8"
+            }
+        }
     }
 
     /**
-     * 配置依赖管理插件
+     * 配置Kotlin默认编译选项
      */
-    private fun configureDependencyManagement(project: Project) {
+    private fun configureKotlinSupport(project: Project) {
+        project.run {
+            if (!isKotlinSupport(this)) {
+                return
+            }
+            plugins.apply(KotlinPlatformJvmPlugin::class.java)
+            // all-open kotlin class
+            plugins.apply(SpringGradleSubplugin::class.java)
+            tasks.withType(KotlinCompile::class.java) {
+                it.kotlinOptions.jvmTarget = findJavaVersion(this)
+                it.kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict")
+            }
+            dependencies.add("implementation", "org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+            dependencies.add("implementation", "org.jetbrains.kotlin:kotlin-reflect")
+        }
+    }
+
+    /**
+     * 配置test任务选项
+     */
+    private fun configureJUnitTest(project: Project) {
+        project.tasks.withType(Test::class.java) {
+            it.useJUnitPlatform()
+        }
+        project.dependencies.add("testImplementation", "org.springframework.boot:spring-boot-starter-test").apply {
+            (this as ModuleDependency).exclude(mapOf("group" to "org.junit.vintage", "module" to "junit-vintage-engine"))
+        }
+    }
+
+    /**
+     * 配置Spring Gradle相关插件
+     */
+    private fun configureSpringSupport(project: Project) {
+        // https://docs.spring.io/spring-boot/docs/current/gradle-plugin/reference/html/
+        project.plugins.apply(SpringBootPlugin::class.java)
         project.plugins.apply(DependencyManagementPlugin::class.java)
         project.extensions.findByType(DependencyManagementExtension::class.java)?.imports {
             it.mavenBom(BOM_COORDINATES)
@@ -91,16 +103,36 @@ class DevOpsBootPlugin : Plugin<Project> {
     }
 
     /**
-     * 配置默认依赖
+     * 查找java version
      */
-    private fun configureDependency(project: Project) {
-        with(project.dependencies) {
-            add("implementation", "org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-            add("implementation", "org.jetbrains.kotlin:kotlin-reflect")
+    private fun findJavaVersion(project: Project): String {
+        return if (project.hasProperty(DEVOPS_JAVA_VERSION)) {
+            project.property(DEVOPS_JAVA_VERSION).toString()
+        } else {
+            JavaVersion.VERSION_1_8.toString()
         }
     }
 
+    /**
+     * 查找是否配置kotlin支持
+     */
+    private fun isKotlinSupport(project: Project): Boolean {
+        return if (project.hasProperty(DEVOPS_KOTLIN)) {
+            project.property(DEVOPS_KOTLIN).toString().toBoolean()
+        } else true
+    }
+
     companion object {
+        /**
+         * DevOps Java 版本号
+         */
+        private const val DEVOPS_JAVA_VERSION = "devops.javaVersion"
+
+        /**
+         * DevOps Java 版本号
+         */
+        private const val DEVOPS_KOTLIN = "devops.kotlin"
+
         /**
          * DevOps Boot 版本号
          */

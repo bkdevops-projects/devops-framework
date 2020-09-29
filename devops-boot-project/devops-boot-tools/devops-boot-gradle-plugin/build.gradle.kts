@@ -16,7 +16,8 @@ dependencies {
 gradlePlugin {
     plugins {
         create("DevOpsBootPlugin") {
-            id = "devops-boot-gradle-plugin"
+//            id = "devops-boot-gradle-plugin"
+            id = "com.tencent.devops.boot"
             implementationClass = "com.tencent.devops.DevOpsBootPlugin"
         }
     }

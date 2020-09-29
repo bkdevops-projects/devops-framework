@@ -4,4 +4,4 @@ devops:
 
 spring:
   application:
-    name: kotlin-sample
+    name: java-sample

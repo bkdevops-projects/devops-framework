@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false" scan="false">
+    <include resource="logback/base.xml"/>
+    <include resource="logback/appender.xml"/>
+
+    <springProfile name="default, local">
+        <root level="INFO">
+            <appender-ref ref="console"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="dev, test, prod">
+        <root level="INFO">
+            <appender-ref ref="app-log"/>
+            <appender-ref ref="error-log"/>
+        </root>
+    </springProfile>
+</configuration>

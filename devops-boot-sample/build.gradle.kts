@@ -1,6 +1,5 @@
 plugins {
-    val bootVersion = "0.0.1-SNAPSHOT"
-    id("devops-boot-gradle-plugin") version bootVersion apply false
+    id("com.tencent.devops.boot") apply false
 }
 
 group="com.tencent.devops.sample"

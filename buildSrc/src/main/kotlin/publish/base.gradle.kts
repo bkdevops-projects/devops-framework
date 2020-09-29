@@ -22,7 +22,7 @@ configure<PublishingExtension> {
     publications.withType<MavenPublication> {
         pom {
             name.set(project.name)
-            description.set(project.description)
+            description.set(project.description ?: project.name)
             url.set("https://github.com/bkdevops-projects/devops-framework")
             licenses {
                 license {

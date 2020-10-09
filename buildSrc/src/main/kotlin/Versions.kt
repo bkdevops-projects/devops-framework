@@ -1,6 +1,6 @@
 object Release {
     const val Group = "com.tencent.devops"
-    const val Version = "0.0.1"
+    const val Version = "0.0.2-SNAPSHOT"
 }
 
 object Versions {

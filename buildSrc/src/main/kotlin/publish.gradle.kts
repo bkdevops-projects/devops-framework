@@ -1,24 +1,20 @@
-package publish
-
 apply(plugin = "signing")
-apply(plugin = "maven-publish")
 
 val isReleaseVersion = !version.toString().endsWith("SNAPSHOT")
 
 configure<PublishingExtension> {
-    repositories {
-        maven {
-            val releasesRepoUrl = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
-            val snapshotsRepoUrl = uri("https://oss.sonatype.org/content/repositories/snapshots/")
-            name = "center"
-            url = if (isReleaseVersion) releasesRepoUrl else snapshotsRepoUrl
-            credentials {
-                username = System.getenv("SONATYPE_USERNAME")
-                password = System.getenv("SONATYPE_PASSWORD")
+    publications {
+        plugins.findPlugin(JavaPlugin::class.java)?.let {
+            create<MavenPublication>("jar") {
+                from(components["java"])
+            }
+        }
+        plugins.findPlugin(JavaPlatformPlugin::class.java)?.let {
+            create<MavenPublication>("pom") {
+                from(components["javaPlatform"])
             }
         }
     }
-
     publications.withType<MavenPublication> {
         pom {
             name.set(project.name)

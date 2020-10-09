@@ -13,7 +13,7 @@ subprojects {
     apply(plugin = "org.jetbrains.kotlin.kapt")
     apply(plugin = "org.jetbrains.kotlin.plugin.spring")
     apply(plugin = "io.spring.dependency-management")
-    apply(plugin = "publish.jar")
+    apply(plugin = "publish")
 
     dependencyManagement {
         imports {

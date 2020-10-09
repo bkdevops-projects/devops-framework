@@ -1,6 +1,6 @@
 plugins {
     `java-platform`
-    id("publish.pom")
+    id("publish")
 }
 
 description = "DevOps Boot Dependencies"

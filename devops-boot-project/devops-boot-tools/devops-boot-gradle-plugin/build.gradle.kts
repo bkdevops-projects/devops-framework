@@ -1,7 +1,7 @@
 plugins {
     kotlin("jvm")
     id("java-gradle-plugin")
-    id("publish.base")
+    id("publish")
 }
 
 description = "DevOps Boot Gradle Plugin"

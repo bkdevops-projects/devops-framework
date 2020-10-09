@@ -2,15 +2,17 @@
 
 ## 功能介绍
 
-`devops-boot-gradle-plugin`是一个用于快速构件springboot应用程序的gradle插件，引入该插件后，会为我们自动配置：
+`devops-boot-gradle-plugin`是一个用于快速构件`Spring Boot`应用程序的gradle插件，引入该插件后，会为我们自动完成：
 
 - 配置jdk插件及编译选项，默认版本为1.8
 - 配置maven仓库列表，除中央仓库之外还添加了腾讯源
 - 添加`spring boot`相关插件
-- 添加依赖管理插件，并引入`devops-boot-dependencies`基础依赖bom
+- 添加依赖管理插件，并引入`devops-boot-dependencies`基础依赖`bom`
 - 配置`JUnit`相关支持及依赖
+- 支持配置是否引入`kotlin`
+- 支持配置`jdk`版本
 
-如果设置了`devops.kotlin=true`，本插件还会进行如下额外的`kotlin`配置：
+如果设置了`kotlin`支持，本插件还会进行如下的额外配置：
 
 - 添加`kotlin jvm`插件, 并配置`kotlin`相关编译选项
 - 添加`spring kotlin`插件，支持`all open`
@@ -37,7 +39,7 @@ plugins {
 
 ## 配置属性
 
-在`gradle.properties`中支持如下配置:
+支持在`gradle.properties`中进行如下配置:
 
 | 属性               | 类型    | 默认值 | 说明               |
 | ------------------ | ------- | ------ | ------------------ |

@@ -9,4 +9,6 @@ object Versions {
     const val SpringBoot = "2.3.3.RELEASE"
     const val SpringCloud = "Hoxton.SR8"
     const val DependencyManagement = "1.0.10.RELEASE"
+    const val NexusPublish = "0.4.0"
+    const val NexusStaging = "0.22.0"
 }

@@ -7,6 +7,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ModuleDependency
 import org.gradle.api.plugins.JavaPlugin
+import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.api.tasks.testing.Test
 import org.jetbrains.kotlin.allopen.gradle.SpringGradleSubplugin
@@ -75,6 +76,7 @@ class DevOpsBootPlugin : Plugin<Project> {
             }
             dependencies.add("implementation", "org.jetbrains.kotlin:kotlin-stdlib-jdk8")
             dependencies.add("implementation", "org.jetbrains.kotlin:kotlin-reflect")
+            configureKtLint(this)
         }
     }
 
@@ -99,6 +101,33 @@ class DevOpsBootPlugin : Plugin<Project> {
         project.plugins.apply(DependencyManagementPlugin::class.java)
         project.extensions.findByType(DependencyManagementExtension::class.java)?.imports {
             it.mavenBom(BOM_COORDINATES)
+        }
+    }
+
+    /**
+     * 配置ktlint
+     */
+    private fun configureKtLint(project: Project) {
+        val ktlint = project.configurations.create("ktlint")
+        project.dependencies.add("ktlint", "com.pinterest:ktlint:0.37.2")
+        val outputDir = "${project.buildDir}/reports/ktlint/"
+        val inputFiles = project.fileTree(mapOf("dir" to "src", "include" to "**/*.kt"))
+        project.tasks.create("ktlintCheck", JavaExec::class.java) {
+            it.inputs.files(inputFiles)
+            it.outputs.dir(outputDir)
+            it.description = "Check Kotlin code style."
+            it.classpath = ktlint
+            it.main = "com.pinterest.ktlint.Main"
+            it.args = listOf("src/**/*.kt")
+        }
+
+        project.tasks.create("ktlintFormat", JavaExec::class.java) {
+            it.inputs.files(inputFiles)
+            it.outputs.dir(outputDir)
+            it.description = "Fix Kotlin code style deviations."
+            it.classpath = ktlint
+            it.main = "com.pinterest.ktlint.Main"
+            it.args = listOf("src/**/*.kt")
         }
     }
 
@@ -174,4 +203,3 @@ class DevOpsBootPlugin : Plugin<Project> {
         }
     }
 }
-

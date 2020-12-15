@@ -1,8 +1,5 @@
 name: Publish snapshot package to the Maven Central Repository
 on:
-  push:
-    branches:
-      - develop
   pull_request:
     branches:
       - develop

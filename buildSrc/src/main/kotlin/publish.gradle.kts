@@ -64,5 +64,8 @@ tasks {
             attributes("Implementation-Version" to Release.Version)
         }
     }
+    withType<Sign> {
+        onlyIf { isReleaseVersion && gradle.taskGraph.hasTask("upload") }
+    }
 }
 

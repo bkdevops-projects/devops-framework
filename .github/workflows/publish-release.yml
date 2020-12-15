@@ -1,7 +1,8 @@
-name: Publish package to the Maven Central Repository
+name: Publish release package to the Maven Central Repository
 on:
   release:
-    types: [created]
+    types:
+      - created
 
 jobs:
   build:

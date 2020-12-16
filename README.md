@@ -51,8 +51,8 @@ devops-framework/
 | JDK          | 1.8+          |
 | Kotlin       | 1.3.72        |
 | Gradle       | 6.6.1         |
-| Spring Boot  | 2.3.4.RELEASE |
-| Spring Cloud | Hoxton.SR8    |
+| Spring Boot  | 2.3.7.RELEASE |
+| Spring Cloud | Hoxton.SR9    |
 
 
 ## 发行版本

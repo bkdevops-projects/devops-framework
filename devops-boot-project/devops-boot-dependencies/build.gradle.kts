@@ -13,13 +13,6 @@ dependencies {
     constraints {
         rootProject.subprojects.filter { it.name != project.name }.forEach { api(project(it.path)) }
 
-        // undertow
-        // issue https://github.com/spring-projects/spring-boot/issues/16407
-        // issue https://issues.redhat.com/browse/UNDERTOW-1743
-        api("io.undertow:undertow-core:2.1.1.Final")
-        api("io.undertow:undertow-servlet:2.1.1.Final")
-        api("io.undertow:undertow-websockets-jsr:2.1.1.Final")
-
         // jwt
         api("io.jsonwebtoken:jjwt-api:0.11.2")
         api("io.jsonwebtoken:jjwt-impl:0.11.2")

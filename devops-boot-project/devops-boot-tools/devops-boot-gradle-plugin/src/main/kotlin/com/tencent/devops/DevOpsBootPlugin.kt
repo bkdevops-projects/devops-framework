@@ -19,6 +19,7 @@ import java.io.File
 import java.io.IOException
 import java.net.JarURLConnection
 import java.net.URI
+import java.nio.file.Files
 import java.util.jar.Attributes
 import java.util.jar.JarFile
 
@@ -29,11 +30,14 @@ class DevOpsBootPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
         this.configureRepository(project)
-        this.configureJavaSupport(project)
-        this.configureKotlinSupport(project)
         this.configureDependencyManagement(project)
-        this.configureSpringBootSupport(project)
-        this.configureJUnitTest(project)
+        // ignore the next configuration if this is an empty project
+        if (isNotEmptyProject(project)) {
+            this.configureJavaSupport(project)
+            this.configureKotlinSupport(project)
+            this.configureSpringBootSupport(project)
+            this.configureJUnitTest(project)
+        }
     }
 
     /**
@@ -54,7 +58,7 @@ class DevOpsBootPlugin : Plugin<Project> {
      */
     private fun configureJavaSupport(project: Project) {
         project.run {
-            plugins.apply(JavaPlugin::class.java)
+            pluginManager.apply(JavaPlugin::class.java)
             tasks.withType(JavaCompile::class.java) {
                 it.sourceCompatibility = findJavaVersion(this)
                 it.options.encoding = "UTF-8"
@@ -70,9 +74,9 @@ class DevOpsBootPlugin : Plugin<Project> {
             if (!isKotlinSupport(this)) {
                 return
             }
-            plugins.apply(KotlinPlatformJvmPlugin::class.java)
+            pluginManager.apply(KotlinPlatformJvmPlugin::class.java)
             // all-open kotlin class
-            plugins.apply(SpringGradleSubplugin::class.java)
+            pluginManager.apply(SpringGradleSubplugin::class.java)
             tasks.withType(KotlinCompile::class.java) {
                 it.kotlinOptions.jvmTarget = findJavaVersion(this)
                 it.kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict")
@@ -102,7 +106,7 @@ class DevOpsBootPlugin : Plugin<Project> {
      */
     private fun configureDependencyManagement(project: Project) {
         project.run {
-            plugins.apply(DependencyManagementPlugin::class.java)
+            pluginManager.apply(DependencyManagementPlugin::class.java)
             extensions.findByType(DependencyManagementExtension::class.java)?.imports {
                 it.mavenBom(BOM_COORDINATES)
             }
@@ -114,11 +118,9 @@ class DevOpsBootPlugin : Plugin<Project> {
      * reference: https://docs.spring.io/spring-boot/docs/current/gradle-plugin/reference/html/
      */
     private fun configureSpringBootSupport(project: Project) {
-        project.run {
-            if (name.startsWith("boot-")) {
-                plugins.apply(SpringBootPlugin::class.java)
-            }
-            configureCopyToRelease(this)
+        if (isBootProject(project)) {
+            project.pluginManager.apply(SpringBootPlugin::class.java)
+            configureCopyToRelease(project)
         }
     }
 
@@ -191,6 +193,20 @@ class DevOpsBootPlugin : Plugin<Project> {
         } else true
     }
 
+    /**
+     * 是否为Boot项目，即包含了被@SpringBootApplication注解的MainClass项目
+     */
+    private fun isBootProject(project: Project): Boolean {
+        return project.name.startsWith("boot-")
+    }
+
+    /**
+     * 是否为非空项目
+     */
+    private fun isNotEmptyProject(project: Project): Boolean {
+        return Files.exists(project.projectDir.toPath().resolve("src"))
+    }
+
     companion object {
         /**
          * DevOps Java 版本号
@@ -205,7 +221,7 @@ class DevOpsBootPlugin : Plugin<Project> {
         /**
          * DevOps Boot 版本号
          */
-        private val DEVOPS_BOOT_VERSION: String? = determineDevOpsBootVersion()
+        private val DEVOPS_BOOT_VERSION: String = determineDevOpsBootVersion().orEmpty()
 
         /**
          * DevOps BOM 文件坐标

@@ -81,4 +81,55 @@ key=value
 
 
 ## 说明
-**插件会读取`project.version`变量得到版本号，如果版本号以`SNAPSHOT`结尾，则使用`snapshotRepoUrl`进行发布，且不会执行签名，`SNOATYPE`只会对release包进行签名校验。**
+
+- 插件会读取`project.version`变量得到版本号，如果版本号以`SNAPSHOT`结尾，则使用`snapshotRepoUrl`进行发布，且不会执行签名，`SNOATYPE`只会对release包进行签名校验。
+
+- 获取gpg 信息
+```shell
+# secret key, signingKeyId取该值
+gpg --armor --export-secret-key username@email --output private.key
+
+# public key
+gpg --armor --export username@email --output public.key
+
+# keyId，取pub最后8位
+gpg --list-keys
+```
+
+- 自定义pom信息
+> `pom`
+```kotlin
+publishing {
+  publications {
+      withType<MavenPublication> {
+          pom {
+              name.set(project.name)
+              description.set(project.description ?: project.name)
+              url.set("https://github.com/Tencent/bk-ci")
+              licenses {
+                  license {
+                      name.set("The MIT License (MIT)")
+                      url.set("https://opensource.org/licenses/MIT")
+                  }
+              }
+              developers {
+                  developer {
+                      name.set("bk-ci")
+                      email.set("devops@tencent.com")
+                      url.set("https://bk.tencent.com")
+                      roles.set(listOf("Manager"))
+                  }
+              }
+              scm {
+                  connection.set("scm:git:git://github.com/Tencent/bk-ci.get")
+                  developerConnection.set("scm:git:ssh://github.com/Tencent/bk-ci.git")
+                  url.set("https://github.com/Tencent/bk-ci")
+              }
+          }
+      }
+  }
+}
+```
+
+- [`maven-publish`插件官方教程](https://docs.gradle.org/current/userguide/publishing_maven.html)
+- [`signing`插件官方教程](https://docs.gradle.org/current/userguide/signing_plugin.html)

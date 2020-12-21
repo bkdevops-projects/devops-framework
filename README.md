@@ -9,7 +9,7 @@
 ## 项目特点
 - 提供gradle快速开发插件[devops-boot-gradle-plugin](./devops-boot-project/devops-boot-tools/devops-boot-gradle-plugin/README.md)
 - 提供gradle快速发布插件[devops-publish-gradle-plugin](./devops-boot-project/devops-boot-tools/devops-publish-gradle-plugin/README.md)
-- 提供统一版本依赖管理[devops-boot-dependecies](./devops-boot-project/devops-boot-dependencies/README.md)
+- 提供统一版本依赖管理[devops-boot-dependencies](./devops-boot-project/devops-boot-dependencies/README.md)
 - 提供多个开箱即用的starter组件
   - [logging日志组件](./devops-boot-project/devops-boot-starters/devops-boot-starter-logging/README.md)
   - TODO

@@ -11,14 +11,15 @@ import org.springframework.web.bind.annotation.RestController
  */
 @SpringBootApplication
 @RestController
-class SampleApplication(
+class KotlinApplication(
     private val greetingService: GreetingService
 ) {
 
     @RequestMapping
     fun greeting() = greetingService.greeting()
+
 }
 
 fun main(args: Array<String>) {
-    runApplication<SampleApplication>(*args)
+    runApplication<KotlinApplication>(*args)
 }

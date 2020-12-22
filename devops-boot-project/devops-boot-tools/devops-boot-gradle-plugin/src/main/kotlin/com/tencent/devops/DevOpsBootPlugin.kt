@@ -45,6 +45,7 @@ class DevOpsBootPlugin : Plugin<Project> {
      */
     private fun configureRepository(project: Project) {
         project.repositories.run {
+            mavenLocal()
             maven { it.url = URI("https://mirrors.tencent.com/nexus/repository/maven-public/") }
             mavenCentral()
             jcenter()

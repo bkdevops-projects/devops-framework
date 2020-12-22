@@ -84,12 +84,12 @@ class DevOpsPublishPlugin : Plugin<Project> {
                     val signingKeyId = findPropertyOrEmpty(project, SIGNING_KEY_ID)
                     val signingPassword = findPropertyOrEmpty(project, SIGNING_PASSWORD)
                     useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
-                    this.setRequired({ isReleaseVersion && gradle.taskGraph.hasTask(UPLOAD_TASK_PATH) })
+                    this.setRequired({ isReleaseVersion && gradle.taskGraph.hasTask(PUBLISH_TASK_PATH) })
                     sign(extensions.getByType(PublishingExtension::class.java).publications)
                 }
 
                 tasks.withType(Sign::class.java) {
-                    it.onlyIf { isReleaseVersion && gradle.taskGraph.hasTask(UPLOAD_TASK_PATH) }
+                    it.onlyIf { isReleaseVersion && gradle.taskGraph.hasTask(PUBLISH_TASK_PATH) }
                 }
             }
         }
@@ -148,7 +148,7 @@ class DevOpsPublishPlugin : Plugin<Project> {
 
     companion object {
         private const val EMPTY = ""
-        private const val UPLOAD_TASK_PATH = "path"
+        private const val PUBLISH_TASK_PATH = "publish"
         private const val SIGNING_KEY = "signingKey"
         private const val SIGNING_KEY_ID = "signingKeyId"
         private const val SIGNING_PASSWORD = "signingPassword"

@@ -66,7 +66,5 @@ tasks {
             attributes("Implementation-Version" to Release.Version)
         }
     }
-    withType<Sign> {
-        onlyIf { isReleaseVersion && gradle.taskGraph.hasTask("publish") }
-    }
+    withType<Sign> { onlyIf { isReleaseVersion } }
 }

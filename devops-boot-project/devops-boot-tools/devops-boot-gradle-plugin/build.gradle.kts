@@ -11,6 +11,7 @@ dependencies {
     implementation(Libs.SpringBootGradlePlugin)
     implementation(Libs.DependencyManagement)
     implementation(Libs.KotlinSpringGradlePlugin)
+    implementation(Libs.KtLint)
 }
 
 gradlePlugin {

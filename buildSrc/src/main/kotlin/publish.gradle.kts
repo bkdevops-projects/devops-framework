@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 apply(plugin = "signing")
 
 val isReleaseVersion = !version.toString().endsWith("SNAPSHOT")
@@ -46,8 +48,8 @@ configure<PublishingExtension> {
         val signingKeyId: String? by project
         val signingKey: String? by project
         val signingPassword: String? by project
-        useInMemoryPgpKeys( signingKeyId, signingKey, signingPassword)
-        setRequired({ isReleaseVersion && gradle.taskGraph.hasTask("upload")})
+        useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+        setRequired({ isReleaseVersion && gradle.taskGraph.hasTask("upload") })
         sign(publications)
     }
 }
@@ -64,5 +66,7 @@ tasks {
             attributes("Implementation-Version" to Release.Version)
         }
     }
+    withType<Sign> {
+        onlyIf { isReleaseVersion && gradle.taskGraph.hasTask("upload") }
+    }
 }
-

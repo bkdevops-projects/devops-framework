@@ -1,7 +1,9 @@
-name: Publish package to the Maven Central Repository
+# Trigger building on push event, and publishing snapshot package if in base repository
+name: Build and Publish snapshot package
 on:
-  release:
-    types: [created]
+  push:
+    branches:
+      - develop
 
 jobs:
   build:
@@ -13,6 +15,9 @@ jobs:
         with:
           java-version: 8
       - name: Build with Gradle
+        run: ./gradlew build
+      - name: Publish snapshot package
+        if: github.repository == 'bkdevops-projects/devops-framework'
         env:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}

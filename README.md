@@ -8,14 +8,15 @@
 
 ## 项目特点
 - 提供gradle快速开发插件[devops-boot-gradle-plugin](./devops-boot-project/devops-boot-tools/devops-boot-gradle-plugin/README.md)
-- 提供统一的版本依赖管理能力[devops-boot-dependecies](./devops-boot-project/devops-boot-dependencies/README.md)
+- 提供gradle快速发布插件[devops-publish-gradle-plugin](./devops-boot-project/devops-boot-tools/devops-publish-gradle-plugin/README.md)
+- 提供统一版本依赖管理[devops-boot-dependencies](./devops-boot-project/devops-boot-dependencies/README.md)
 - 提供多个开箱即用的starter组件
   - [logging日志组件](./devops-boot-project/devops-boot-starters/devops-boot-starter-logging/README.md)
   - TODO
 
 ## 快速开始
 - **gradle.build.kts**
-```kotlin
+```groovy
 // 添加devops-boot gradle插件
 plugins {
     id("com.tencent.devops.boot") version ${version}
@@ -51,8 +52,8 @@ devops-framework/
 | JDK          | 1.8+          |
 | Kotlin       | 1.3.72        |
 | Gradle       | 6.6.1         |
-| Spring Boot  | 2.3.4.RELEASE |
-| Spring Cloud | Hoxton.SR8    |
+| Spring Boot  | 2.3.7.RELEASE |
+| Spring Cloud | Hoxton.SR9    |
 
 
 ## 发行版本

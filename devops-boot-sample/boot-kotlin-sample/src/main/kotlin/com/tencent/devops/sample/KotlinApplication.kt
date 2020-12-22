@@ -1,7 +1,6 @@
 package com.tencent.devops.sample
 
 import com.tencent.devops.demo.GreetingService
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.web.bind.annotation.RequestMapping
@@ -12,15 +11,15 @@ import org.springframework.web.bind.annotation.RestController
  */
 @SpringBootApplication
 @RestController
-class SampleApplication {
-
-    @Autowired
-    private lateinit var greetingService: GreetingService
+class KotlinApplication(
+    private val greetingService: GreetingService
+) {
 
     @RequestMapping
     fun greeting() = greetingService.greeting()
+
 }
 
 fun main(args: Array<String>) {
-    runApplication<SampleApplication>(*args)
+    runApplication<KotlinApplication>(*args)
 }

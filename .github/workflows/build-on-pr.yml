@@ -1,9 +1,6 @@
-name: build
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+# Trigger building on pull request event
+name: Build
+on: pull_request
 
 jobs:
   build:

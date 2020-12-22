@@ -1,6 +1,6 @@
 name: Publish snapshot package to the Maven Central Repository
 on:
-  pull_request:
+  pull_request_target:
     branches:
       - develop
     types: [closed]

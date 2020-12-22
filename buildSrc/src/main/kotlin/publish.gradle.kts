@@ -45,16 +45,9 @@ configure<PublishingExtension> {
     }
 
     configure<SigningExtension> {
-        println("configure SigningExtension")
-        println("user: " + System.getenv("SONATYPE_USERNAME").replace("", " "))
-        println("keyId: " + System.getenv("ORG_GRADLE_PROJECT_signingKeyId").replace("", " "))
-        println("signingKeyId: " + property("signingKeyId").toString().replace("", " "))
-        println("signingKey: " + property("signingKey").toString().replace("", " "))
         val signingKeyId: String? by project
         val signingKey: String? by project
         val signingPassword: String? by project
-        println("signingKey by project: " + signingKey?.replace("", " "))
-        println("signingKeyId by project : " + signingKeyId?.replace("", " "))
         useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
         setRequired({ isReleaseVersion && gradle.taskGraph.hasTask("upload") })
         sign(publications)

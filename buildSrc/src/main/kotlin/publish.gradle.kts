@@ -67,6 +67,6 @@ tasks {
         }
     }
     withType<Sign> {
-        onlyIf { isReleaseVersion && gradle.taskGraph.hasTask("publish") }
+        onlyIf { isReleaseVersion }
     }
 }

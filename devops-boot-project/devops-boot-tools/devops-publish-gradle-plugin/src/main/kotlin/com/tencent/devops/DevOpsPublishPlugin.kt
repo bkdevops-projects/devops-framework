@@ -89,7 +89,7 @@ class DevOpsPublishPlugin : Plugin<Project> {
                 }
 
                 tasks.withType(Sign::class.java) {
-                    it.onlyIf { isReleaseVersion && gradle.taskGraph.hasTask(PUBLISH_TASK_PATH) }
+                    it.onlyIf { isReleaseVersion }
                 }
             }
         }

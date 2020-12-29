@@ -164,6 +164,7 @@ class DevOpsBootPlugin : Plugin<Project> {
     private fun configureCopyToRelease(project: Project) {
         project.run {
             val copyToRelease = tasks.register("copyToRelease", Copy::class.java) { copy ->
+                copy.setDependsOn(listOf(tasks.getByName("bootJar")))
                 copy.from("build/libs") {
                     it.include("**/*.jar")
                 }

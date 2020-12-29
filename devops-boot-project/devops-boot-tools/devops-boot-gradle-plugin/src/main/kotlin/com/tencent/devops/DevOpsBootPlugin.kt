@@ -7,6 +7,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ModuleDependency
 import org.gradle.api.plugins.JavaPlugin
+import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.api.tasks.testing.Test
@@ -18,6 +19,7 @@ import java.io.File
 import java.io.IOException
 import java.net.JarURLConnection
 import java.net.URI
+import java.nio.file.Files
 import java.util.jar.Attributes
 import java.util.jar.JarFile
 
@@ -28,10 +30,14 @@ class DevOpsBootPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
         this.configureRepository(project)
-        this.configureJavaSupport(project)
-        this.configureSpringSupport(project)
-        this.configureKotlinSupport(project)
-        this.configureJUnitTest(project)
+        this.configureDependencyManagement(project)
+        // ignore the next configuration if this is an empty project
+        if (isNotEmptyProject(project)) {
+            this.configureJavaSupport(project)
+            this.configureKotlinSupport(project)
+            this.configureSpringBootSupport(project)
+            this.configureJUnitTest(project)
+        }
     }
 
     /**
@@ -39,10 +45,12 @@ class DevOpsBootPlugin : Plugin<Project> {
      */
     private fun configureRepository(project: Project) {
         project.repositories.run {
+            mavenLocal()
             maven { it.url = URI("https://mirrors.tencent.com/nexus/repository/maven-public/") }
             mavenCentral()
             jcenter()
             maven { it.url = URI("https://repo.spring.io/libs-milestone") }
+            maven { it.url = URI("https://oss.sonatype.org/content/repositories/snapshots/") }
         }
     }
 
@@ -51,7 +59,7 @@ class DevOpsBootPlugin : Plugin<Project> {
      */
     private fun configureJavaSupport(project: Project) {
         project.run {
-            plugins.apply(JavaPlugin::class.java)
+            pluginManager.apply(JavaPlugin::class.java)
             tasks.withType(JavaCompile::class.java) {
                 it.sourceCompatibility = findJavaVersion(this)
                 it.options.encoding = "UTF-8"
@@ -67,9 +75,9 @@ class DevOpsBootPlugin : Plugin<Project> {
             if (!isKotlinSupport(this)) {
                 return
             }
-            plugins.apply(KotlinPlatformJvmPlugin::class.java)
+            pluginManager.apply(KotlinPlatformJvmPlugin::class.java)
             // all-open kotlin class
-            plugins.apply(SpringGradleSubplugin::class.java)
+            pluginManager.apply(SpringGradleSubplugin::class.java)
             tasks.withType(KotlinCompile::class.java) {
                 it.kotlinOptions.jvmTarget = findJavaVersion(this)
                 it.kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict")
@@ -84,55 +92,90 @@ class DevOpsBootPlugin : Plugin<Project> {
      * 配置test任务选项
      */
     private fun configureJUnitTest(project: Project) {
-        project.tasks.withType(Test::class.java) {
-            it.useJUnitPlatform()
-        }
-        project.dependencies.add("testImplementation", "org.springframework.boot:spring-boot-starter-test").apply {
-            (this as ModuleDependency).exclude(mapOf("group" to "org.junit.vintage", "module" to "junit-vintage-engine"))
+        project.run {
+            tasks.withType(Test::class.java) {
+                it.useJUnitPlatform()
+            }
+            dependencies.add("testImplementation", "org.springframework.boot:spring-boot-starter-test").apply {
+                (this as ModuleDependency).exclude(mapOf("group" to "org.junit.vintage", "module" to "junit-vintage-engine"))
+            }
         }
     }
 
     /**
-     * 配置Spring Gradle相关插件
+     * 配置依赖管理
      */
-    private fun configureSpringSupport(project: Project) {
-        // https://docs.spring.io/spring-boot/docs/current/gradle-plugin/reference/html/
-        project.plugins.apply(SpringBootPlugin::class.java)
-        project.plugins.apply(DependencyManagementPlugin::class.java)
-        project.extensions.findByType(DependencyManagementExtension::class.java)?.imports {
-            it.mavenBom(BOM_COORDINATES)
+    private fun configureDependencyManagement(project: Project) {
+        project.run {
+            pluginManager.apply(DependencyManagementPlugin::class.java)
+            extensions.findByType(DependencyManagementExtension::class.java)?.imports {
+                it.mavenBom(BOM_COORDINATES)
+            }
         }
     }
 
     /**
-     * 配置ktlint
+     * 配置Spring Boot Gradle插件以及相关配置
+     * reference: https://docs.spring.io/spring-boot/docs/current/gradle-plugin/reference/html/
+     */
+    private fun configureSpringBootSupport(project: Project) {
+        if (isBootProject(project)) {
+            project.pluginManager.apply(SpringBootPlugin::class.java)
+            configureCopyToRelease(project)
+        }
+    }
+
+    /**
+     * 配置ktlint task
      */
     private fun configureKtLint(project: Project) {
-        val ktlint = project.configurations.create("ktlint")
-        project.dependencies.add("ktlint", "com.pinterest:ktlint:0.37.2")
-        val outputDir = "${project.buildDir}/reports/ktlint/"
-        val inputFiles = project.fileTree(mapOf("dir" to "src", "include" to "**/*.kt"))
-        project.tasks.create("ktlintCheck", JavaExec::class.java) {
-            it.inputs.files(inputFiles)
-            it.outputs.dir(outputDir)
-            it.description = "Check Kotlin code style."
-            it.classpath = ktlint
-            it.main = "com.pinterest.ktlint.Main"
-            it.args = listOf("src/**/*.kt")
-        }
+        project.run {
+            val ktLint = configurations.create("ktlint")
+            dependencies.add("ktlint", "com.pinterest:ktlint:0.37.2")
 
-        project.tasks.create("ktlintFormat", JavaExec::class.java) {
-            it.inputs.files(inputFiles)
-            it.outputs.dir(outputDir)
-            it.description = "Fix Kotlin code style deviations."
-            it.classpath = ktlint
-            it.main = "com.pinterest.ktlint.Main"
-            it.args = listOf("src/**/*.kt")
+            val outputDir = "$buildDir/reports/ktlint/"
+            val inputFiles = fileTree(mapOf("dir" to "src", "include" to "**/*.kt"))
+
+            tasks.create("ktlintCheck", JavaExec::class.java) {
+                it.group = "verification"
+                it.inputs.files(inputFiles)
+                it.outputs.dir(outputDir)
+                it.description = "Check Kotlin code style."
+                it.classpath = ktLint
+                it.main = "com.pinterest.ktlint.Main"
+                it.args = listOf("src/**/*.kt")
+            }
+
+            tasks.create("ktlintFormat", JavaExec::class.java) {
+                it.group = "formatting"
+                it.inputs.files(inputFiles)
+                it.outputs.dir(outputDir)
+                it.description = "Fix Kotlin code style deviations."
+                it.classpath = ktLint
+                it.main = "com.pinterest.ktlint.Main"
+                it.args = listOf("-F", "src/**/*.kt")
+            }
         }
     }
 
     /**
-     * 查找java version
+     * 配置copyToRelease task
+     */
+    private fun configureCopyToRelease(project: Project) {
+        project.run {
+            val copyToRelease = tasks.register("copyToRelease", Copy::class.java) { copy ->
+                copy.from("build/libs") {
+                    it.include("**/*.jar")
+                }
+                copy.into("${project.rootDir}/release")
+                copy.outputs.upToDateWhen { false }
+            }
+            tasks.getByName("build").dependsOn(copyToRelease)
+        }
+    }
+
+    /**
+     * 查找java version, 默认1.8
      */
     private fun findJavaVersion(project: Project): String {
         return if (project.hasProperty(DEVOPS_JAVA_VERSION)) {
@@ -143,12 +186,26 @@ class DevOpsBootPlugin : Plugin<Project> {
     }
 
     /**
-     * 查找是否配置kotlin支持
+     * 查找是否配置kotlin支持，默认开启
      */
     private fun isKotlinSupport(project: Project): Boolean {
         return if (project.hasProperty(DEVOPS_KOTLIN)) {
             project.property(DEVOPS_KOTLIN).toString().toBoolean()
         } else true
+    }
+
+    /**
+     * 是否为Boot项目，即包含了被@SpringBootApplication注解的MainClass项目
+     */
+    private fun isBootProject(project: Project): Boolean {
+        return project.name.startsWith("boot-")
+    }
+
+    /**
+     * 是否为非空项目
+     */
+    private fun isNotEmptyProject(project: Project): Boolean {
+        return Files.exists(project.projectDir.toPath().resolve("src"))
     }
 
     companion object {
@@ -165,7 +222,7 @@ class DevOpsBootPlugin : Plugin<Project> {
         /**
          * DevOps Boot 版本号
          */
-        private val DEVOPS_BOOT_VERSION: String? = determineDevOpsBootVersion()
+        private val DEVOPS_BOOT_VERSION: String = determineDevOpsBootVersion().orEmpty()
 
         /**
          * DevOps BOM 文件坐标

@@ -12,5 +12,5 @@ pluginManagement {
     }
 }
 
-include("springboot-kotlin-sample")
-include("springboot-java-sample")
+include("boot-kotlin-sample")
+include("boot-java-sample")

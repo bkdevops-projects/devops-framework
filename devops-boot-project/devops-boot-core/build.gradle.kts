@@ -20,12 +20,12 @@ subprojects {
             mavenBom(MavenBom.SpringBoot)
             mavenBom(MavenBom.SpringCloud)
         }
+        pomCustomizationSettings.isEnabled = false
     }
 
     dependencies {
+        implementation(platform(project(MavenBom.DevOpsBoot)))
         implementation(Libs.KotlinStdLib)
-        implementation("org.springframework.boot:spring-boot-starter")
-        kapt("org.springframework.boot:spring-boot-configuration-processor")
         testImplementation("org.springframework.boot:spring-boot-starter-test") {
             exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
         }
@@ -41,12 +41,6 @@ subprojects {
         }
         test {
             useJUnitPlatform()
-        }
-        jar {
-            manifest {
-                attributes("Implementation-Title" to (project.description ?: project.name))
-                attributes("Implementation-Version" to Release.Version)
-            }
         }
     }
 }

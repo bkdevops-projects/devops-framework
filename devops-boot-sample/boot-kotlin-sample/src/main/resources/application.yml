@@ -1,7 +1,6 @@
-devops:
-  demo:
-    message: DevOps
-
 spring:
   application:
     name: kotlin-sample
+logging:
+  level:
+    root: debug

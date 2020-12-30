@@ -10,4 +10,5 @@ object Libs {
 object MavenBom {
     const val SpringBoot = "org.springframework.boot:spring-boot-dependencies:${Versions.SpringBoot}"
     const val SpringCloud = "org.springframework.cloud:spring-cloud-dependencies:${Versions.SpringCloud}"
+    const val DevOpsBoot = ":devops-boot-project:devops-boot-dependencies"
 }

@@ -2,7 +2,7 @@
 <included>
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>${logging.console.pattern}</pattern>
+            <pattern>${logging.file.pattern}</pattern>
         </encoder>
     </appender>
 

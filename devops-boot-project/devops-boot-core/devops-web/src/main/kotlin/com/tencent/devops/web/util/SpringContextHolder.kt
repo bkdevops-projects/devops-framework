@@ -5,9 +5,9 @@ import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 
 /**
- * Spring上下文工具类
+ * Spring ApplicationContext Holder
  */
-class SpringContextUtils : ApplicationContextAware {
+class SpringContextHolder : ApplicationContextAware {
 
     /**
      * 实现ApplicationContextAware接口的回调方法，设置上下文环境

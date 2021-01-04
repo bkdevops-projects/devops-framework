@@ -1,6 +1,3 @@
 spring:
   application:
     name: kotlin-sample
-logging:
-  level:
-    root: debug

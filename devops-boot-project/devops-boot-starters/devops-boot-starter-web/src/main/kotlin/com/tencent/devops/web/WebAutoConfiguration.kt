@@ -3,7 +3,7 @@ package com.tencent.devops.web
 import com.tencent.devops.web.banner.DevOpsBannerInitializer
 import com.tencent.devops.web.jackson.JacksonConfiguration
 import com.tencent.devops.web.swagger.SwaggerConfiguration
-import com.tencent.devops.web.util.SpringContextUtils
+import com.tencent.devops.web.util.SpringContextHolder
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 import org.springframework.context.annotation.PropertySource
@@ -14,7 +14,7 @@ import org.springframework.context.annotation.PropertySource
 @Configuration(proxyBeanMethods = false)
 @PropertySource("classpath:common-web.properties")
 @Import(
-    SpringContextUtils::class,
+    SpringContextHolder::class,
     JacksonConfiguration::class,
     SwaggerConfiguration::class,
     DevOpsBannerInitializer::class

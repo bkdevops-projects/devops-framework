@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<included>
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${logging.file.pattern}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="sync-app-log" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logging.app.file}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${logging.app.file}.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <maxFileSize>1GB</maxFileSize>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${logging.file.pattern}</pattern>
+        </encoder>
+    </appender>
+    <appender name="app-log" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="sync-app-log" />
+        <queueSize>1024</queueSize>
+        <discardingThreshold>0</discardingThreshold>
+        <neverBlock>true</neverBlock>
+    </appender>
+
+    <appender name="sync-error-log" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logging.error.file}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${logging.error.file}.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <maxFileSize>1GB</maxFileSize>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${logging.file.pattern}</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+    <appender name="error-log" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="sync-error-log" />
+        <queueSize>512</queueSize>
+        <discardingThreshold>0</discardingThreshold>
+        <neverBlock>false</neverBlock>
+    </appender>
+</included>

@@ -1,7 +1,3 @@
-devops:
-  demo:
-    message: DevOps
-
 spring:
   application:
     name: java-sample

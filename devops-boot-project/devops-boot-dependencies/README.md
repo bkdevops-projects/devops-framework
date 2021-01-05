@@ -31,6 +31,9 @@ dependencyManagement {
 }
 ```
 
+## 依赖版本列表
+请参考[build.gradle.kts](./build.gradle.kts)的`constraints`列表
+
 ### 参考
 关于依赖管理的使用详情，请参考官方文档[dependency-management](https://docs.spring.io/dependency-management-plugin/docs/current/reference/html/)
 

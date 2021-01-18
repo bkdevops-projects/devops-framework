@@ -1,5 +1,5 @@
 plugins {
-    id("com.tencent.devops.boot") version "0.0.3-SNAPSHOT"
+    id("com.tencent.devops.boot") version "0.0.4-SNAPSHOT"
 }
 
 group="com.tencent.devops.sample"

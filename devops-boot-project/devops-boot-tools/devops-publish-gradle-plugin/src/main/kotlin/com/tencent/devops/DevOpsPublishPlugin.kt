@@ -157,7 +157,7 @@ class DevOpsPublishPlugin : Plugin<Project> {
         private const val SNAPSHOT_REPO_URL = "snapshotRepoUrl"
         private const val REPO_USERNAME = "repoUsername"
         private const val REPO_PASSWORD = "repoPassword"
-        private const val SONATYPE_RELEASE_REPO = "https://oss.sonatype.org/service/local/"
+        private const val SONATYPE_RELEASE_REPO = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
         private const val SONATYPE_SNAPSHOT_REPO = "https://oss.sonatype.org/content/repositories/snapshots/"
     }
 }

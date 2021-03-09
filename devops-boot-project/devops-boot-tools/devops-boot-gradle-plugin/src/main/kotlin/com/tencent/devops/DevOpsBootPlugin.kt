@@ -1,5 +1,8 @@
 package com.tencent.devops
 
+import com.tencent.devops.actions.CopyToReleaseAction
+import com.tencent.devops.actions.KtLintCheckAction
+import com.tencent.devops.actions.KtLintFormatAction
 import io.spring.gradle.dependencymanagement.DependencyManagementPlugin
 import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension
 import org.gradle.api.JavaVersion
@@ -132,29 +135,8 @@ class DevOpsBootPlugin : Plugin<Project> {
         project.run {
             val ktLint = configurations.create("ktlint")
             dependencies.add("ktlint", "com.pinterest:ktlint:0.37.2")
-
-            val outputDir = "$buildDir/reports/ktlint/"
-            val inputFiles = fileTree(mapOf("dir" to "src", "include" to "**/*.kt"))
-
-            tasks.create("ktlintCheck", JavaExec::class.java) {
-                it.group = "verification"
-                it.inputs.files(inputFiles)
-                it.outputs.dir(outputDir)
-                it.description = "Check Kotlin code style."
-                it.classpath = ktLint
-                it.main = "com.pinterest.ktlint.Main"
-                it.args = listOf("src/**/*.kt")
-            }
-
-            tasks.create("ktlintFormat", JavaExec::class.java) {
-                it.group = "formatting"
-                it.inputs.files(inputFiles)
-                it.outputs.dir(outputDir)
-                it.description = "Fix Kotlin code style deviations."
-                it.classpath = ktLint
-                it.main = "com.pinterest.ktlint.Main"
-                it.args = listOf("-F", "src/**/*.kt")
-            }
+            tasks.create(KtLintCheckAction.TASK_NAME, JavaExec::class.java, KtLintCheckAction(ktLint))
+            tasks.create(KtLintFormatAction.TASK_NAME, JavaExec::class.java, KtLintFormatAction(ktLint))
         }
     }
 
@@ -162,15 +144,9 @@ class DevOpsBootPlugin : Plugin<Project> {
      * 配置copyToRelease task
      */
     private fun configureCopyToRelease(project: Project) {
-        project.run {
-            val copyToRelease = tasks.register("copyToRelease", Copy::class.java) { copy ->
-                copy.from("build/libs") {
-                    it.include("**/*.jar")
-                }
-                copy.into("${project.rootDir}/release")
-                copy.outputs.upToDateWhen { false }
-            }
-            tasks.getByName("build").dependsOn(copyToRelease)
+        with(project.tasks) {
+            val copyToRelease = register(CopyToReleaseAction.TASK_NAME, Copy::class.java, CopyToReleaseAction())
+            getByName("build").dependsOn(copyToRelease)
         }
     }
 
@@ -178,20 +154,14 @@ class DevOpsBootPlugin : Plugin<Project> {
      * 查找java version, 默认1.8
      */
     private fun findJavaVersion(project: Project): String {
-        return if (project.hasProperty(DEVOPS_JAVA_VERSION)) {
-            project.property(DEVOPS_JAVA_VERSION).toString()
-        } else {
-            JavaVersion.VERSION_1_8.toString()
-        }
+        return project.findPropertyOrDefault(DEVOPS_JAVA_VERSION, JavaVersion.VERSION_1_8.toString())
     }
 
     /**
      * 查找是否配置kotlin支持，默认开启
      */
     private fun isKotlinSupport(project: Project): Boolean {
-        return if (project.hasProperty(DEVOPS_KOTLIN)) {
-            project.property(DEVOPS_KOTLIN).toString().toBoolean()
-        } else true
+        return project.findPropertyOrNull(DEVOPS_KOTLIN)?.toBoolean() ?: true
     }
 
     /**
@@ -215,7 +185,7 @@ class DevOpsBootPlugin : Plugin<Project> {
         private const val DEVOPS_JAVA_VERSION = "devops.javaVersion"
 
         /**
-         * DevOps Java 版本号
+         * 是否开启kotlin支持
          */
         private const val DEVOPS_KOTLIN = "devops.kotlin"
 

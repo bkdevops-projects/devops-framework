@@ -49,11 +49,11 @@ class DevOpsBootPlugin : Plugin<Project> {
     private fun configureRepository(project: Project) {
         project.repositories.run {
             mavenLocal()
+            maven { it.url = URI("https://oss.sonatype.org/content/repositories/snapshots/") }
             maven { it.url = URI("https://mirrors.tencent.com/nexus/repository/maven-public/") }
             mavenCentral()
             jcenter()
             maven { it.url = URI("https://repo.spring.io/libs-milestone") }
-            maven { it.url = URI("https://oss.sonatype.org/content/repositories/snapshots/") }
         }
     }
 

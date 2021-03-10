@@ -49,7 +49,7 @@ configure<PublishingExtension> {
         val signingKey: String? by project
         val signingPassword: String? by project
         useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
-        setRequired({ isReleaseVersion && gradle.taskGraph.hasTask("upload") })
+        setRequired({ isReleaseVersion && gradle.taskGraph.hasTask("publish") })
         sign(publications)
     }
 }
@@ -67,6 +67,6 @@ tasks {
         }
     }
     withType<Sign> {
-        onlyIf { isReleaseVersion && gradle.taskGraph.hasTask("upload") }
+        onlyIf { isReleaseVersion }
     }
 }

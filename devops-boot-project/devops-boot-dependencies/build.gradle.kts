@@ -12,7 +12,6 @@ javaPlatform {
 dependencies {
     constraints {
         rootProject.subprojects.filter { it.name != project.name }.forEach { api(project(it.path)) }
-
         // jwt
         api("io.jsonwebtoken:jjwt-api:0.11.2")
         api("io.jsonwebtoken:jjwt-impl:0.11.2")
@@ -28,9 +27,9 @@ dependencies {
         api("com.google.guava:guava:29.0-jre")
 
         // swagger
-        api("io.swagger:swagger-annotations:1.5.22")
-        api("io.swagger:swagger-models:1.5.22")
-        api("io.springfox:springfox-swagger2:2.9.2")
+        api("io.swagger:swagger-annotations:1.5.20")
+        api("io.swagger:swagger-models:1.5.20")
+        api("io.springfox:springfox-boot-starter:3.0.0")
 
         // s3
         api("com.amazonaws:aws-java-sdk-s3:1.11.700")

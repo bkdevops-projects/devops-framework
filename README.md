@@ -11,8 +11,11 @@
 - 提供gradle快速发布插件[devops-publish-gradle-plugin](./devops-boot-project/devops-boot-tools/devops-publish-gradle-plugin/README.md)
 - 提供统一版本依赖管理[devops-boot-dependencies](./devops-boot-project/devops-boot-dependencies/README.md)
 - 提供多个开箱即用的starter组件
-  - [logging日志组件](./devops-boot-project/devops-boot-starters/devops-boot-starter-logging/README.md)
-  - TODO
+  - [starter-logging](./devops-boot-project/devops-boot-starters/devops-boot-starter-logging/README.md)
+  - [starter-api](./devops-boot-project/devops-boot-starters/devops-boot-starter-api/README.md)
+  - [starter-web](./devops-boot-project/devops-boot-starters/devops-boot-starter-web/README.md)
+  - [starter-service](./devops-boot-project/devops-boot-starters/devops-boot-starter-service/README.md)
+  - TODO  
 
 ## 快速开始
 - **gradle.build.kts**
@@ -58,4 +61,4 @@ devops-framework/
 
 ## 发行版本
 - 0.0.1 2020年10月9日
-
+- 0.0.2 2020年12月22日

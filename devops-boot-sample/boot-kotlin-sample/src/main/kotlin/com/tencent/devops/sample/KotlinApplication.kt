@@ -1,8 +1,8 @@
 package com.tencent.devops.sample
 
+import com.tencent.devops.boot.runApplication
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.runApplication
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled
 
@@ -26,5 +26,5 @@ class KotlinApplication {
 }
 
 fun main(args: Array<String>) {
-    runApplication<KotlinApplication>(*args)
+    runApplication<KotlinApplication>(args)
 }

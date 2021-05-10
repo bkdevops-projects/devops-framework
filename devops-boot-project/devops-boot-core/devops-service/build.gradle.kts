@@ -7,5 +7,4 @@ dependencies {
     api("org.springframework.cloud:spring-cloud-starter-openfeign")
     api("org.springframework.cloud:spring-cloud-starter-consul-discovery")
     api("org.springframework.cloud:spring-cloud-starter-consul-config")
-    api("org.springframework.cloud:spring-cloud-starter-netflix-hystrix")
 }

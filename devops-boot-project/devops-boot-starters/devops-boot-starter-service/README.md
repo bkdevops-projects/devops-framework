@@ -6,9 +6,7 @@
 - 引入`spring-cloud-starter-openfeign`
 - 引入`spring-cloud-starter-consul-discovery`
 - 引入`spring-cloud-starter-consul-config`
-- 引入`spring-cloud-starter-netflix-hystrix`
 - 引入`okhttp`并配置feign底层使用`OkHttpClient`
-- 配置`hystrix`和`ribbon`
 - 引入`jackson`并完成序列化和反序列化的配置
 - 配置自定义`RequestMappingHandlerMapping`解决`SpringMVC`注解重复扫描问题
 

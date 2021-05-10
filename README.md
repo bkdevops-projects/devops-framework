@@ -30,7 +30,7 @@ dependencies {
     implementation("com.tencent.devops:devops-boot-starter-web")
 }
 ```
-只需要添加一个`devops-boot`插件，会自动为我们配置`jdk`版本、编译选项、依赖管理、`kotlin`依赖及`kotlin-spring`插件等等繁琐的配置项。
+只需要添加`devops-boot`插件，就自动为我们配置好`jdk`版本、编译选项、依赖管理、`kotlin`依赖及`kotlin-spring`插件等等繁琐的配置项。
 
 接下来即可直接开始业务逻辑代码的编写了。
 
@@ -53,8 +53,8 @@ devops-framework/
 | 依赖          | 版本          |
 | ------------ | ------------- |
 | JDK          | 1.8+          |
-| Kotlin       | 1.3.72        |
-| Gradle       | 6.6.1         |
+| Kotlin       | 1.4.32        |
+| Gradle       | 6.8.3         |
 | Spring Boot  | 2.3.7.RELEASE |
 | Spring Cloud | Hoxton.SR9    |
 
@@ -62,3 +62,4 @@ devops-framework/
 ## 发行版本
 - 0.0.1 2020年10月9日
 - 0.0.2 2020年12月22日
+- 0.0.3 2021年1月5日

@@ -25,10 +25,9 @@ subprojects {
 
     dependencies {
         implementation(platform(project(MavenBom.DevOpsBoot)))
+        implementation(Libs.KotlinReflectLib)
         implementation(Libs.KotlinStdLib)
-        testImplementation("org.springframework.boot:spring-boot-starter-test") {
-            exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
-        }
+        testImplementation("org.springframework.boot:spring-boot-starter-test")
     }
 
     tasks {

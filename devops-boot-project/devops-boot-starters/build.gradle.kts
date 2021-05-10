@@ -25,11 +25,10 @@ subprojects {
 
     dependencies {
         implementation(platform(project(MavenBom.DevOpsBoot)))
+        api(Libs.KotlinReflectLib)
         api(Libs.KotlinStdLib)
         kapt("org.springframework.boot:spring-boot-configuration-processor")
-        testImplementation("org.springframework.boot:spring-boot-starter-test") {
-            exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
-        }
+        testImplementation("org.springframework.boot:spring-boot-starter-test")
     }
 
     tasks {

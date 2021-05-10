@@ -5,7 +5,7 @@ object Release {
 
 object Versions {
     const val Java = "1.8"
-    const val Kotlin = "1.3.72"
+    const val Kotlin = "1.4.32"
     const val SpringBoot = "2.3.7.RELEASE"
     const val SpringCloud = "Hoxton.SR9"
     const val DependencyManagement = "1.0.10.RELEASE"

@@ -11,5 +11,5 @@ object Versions {
     const val DependencyManagement = "1.0.10.RELEASE"
     const val NexusPublish = "0.4.0"
     const val NexusStaging = "0.22.0"
-    const val KtLint = "0.37.2"
+    const val KtLint = "0.41.0"
 }

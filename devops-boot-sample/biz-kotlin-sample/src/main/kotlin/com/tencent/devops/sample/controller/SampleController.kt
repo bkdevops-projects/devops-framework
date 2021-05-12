@@ -6,12 +6,11 @@ import com.tencent.devops.sample.pojo.Sample
 import org.springframework.web.bind.annotation.RestController
 import java.util.*
 
-
 /**
  * Sample Controller
  */
 @RestController
-class SampleController: SampleClient {
+class SampleController : SampleClient {
 
     override fun getSample(): Response<Sample> {
         val sample = Sample(

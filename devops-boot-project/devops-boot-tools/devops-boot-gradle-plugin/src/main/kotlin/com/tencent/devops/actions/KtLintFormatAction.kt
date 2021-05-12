@@ -9,7 +9,7 @@ import org.gradle.api.tasks.JavaExec
  */
 class KtLintFormatAction(
     private val ktLint: FileCollection
-): Action<JavaExec> {
+) : Action<JavaExec> {
 
     override fun execute(javaExec: JavaExec) {
         with(javaExec) {

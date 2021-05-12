@@ -4,7 +4,7 @@ import io.swagger.annotations.ApiModel
 import io.swagger.annotations.ApiModelProperty
 
 @ApiModel("样例")
-data class Sample (
+data class Sample(
     @ApiModelProperty("id")
     val id: Long,
     @ApiModelProperty("名称")

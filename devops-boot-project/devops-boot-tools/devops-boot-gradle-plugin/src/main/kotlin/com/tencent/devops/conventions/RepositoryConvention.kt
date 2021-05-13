@@ -29,7 +29,6 @@ class RepositoryConvention {
         }
     }
 
-
     /**
      * 配置依赖管理
      */

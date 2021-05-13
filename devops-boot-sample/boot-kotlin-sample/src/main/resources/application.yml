@@ -1,9 +1,6 @@
-spring:
-  application:
-    name: kotlin-sample
-  config:
-    import: "optional:consul:"
-
 logging:
   level:
     com.tencent: debug
+service:
+  prefix: devops-
+  name: kotlin-sample

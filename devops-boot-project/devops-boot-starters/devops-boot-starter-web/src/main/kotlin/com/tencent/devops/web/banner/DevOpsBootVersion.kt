@@ -34,9 +34,7 @@ object DevOpsBootVersion {
                 return getImplementationVersion(connection.jarFile)
             }
             JarFile(File(codeSourceLocation.toURI())).use { jarFile ->
-                return getImplementationVersion(
-                    jarFile
-                )
+                return getImplementationVersion(jarFile)
             }
         } catch (ex: Exception) {
             return null

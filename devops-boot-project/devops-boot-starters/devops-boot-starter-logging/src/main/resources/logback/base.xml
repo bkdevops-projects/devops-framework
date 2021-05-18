@@ -3,7 +3,7 @@
     <include resource="org/springframework/boot/logging/logback/defaults.xml" />
 
     <springProperty scope="context" name="logging.path" source="logging.file.path" defaultValue="logs"/>
-    <springProperty scope="context" name="application.name" source="spring.application.name" defaultValue="app"/>
+    <springProperty scope="context" name="application.name" source="spring.application.name" defaultValue="application"/>
     <property name="logging.app.file" value="${logging.path}/${application.name}/${application.name}.log"/>
     <property name="logging.job.file" value="${logging.path}/${application.name}/${application.name}-job.log"/>
     <property name="logging.error.file" value="${logging.path}/${application.name}/${application.name}-error.log"/>

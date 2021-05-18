@@ -1,4 +1,4 @@
-org.springframework.boot.env.EnvironmentPostProcessor=\
-com.tencent.devops.service.ConfigImportEnvironmentPostProcessor
+org.springframework.context.ApplicationListener=\
+com.tencent.devops.service.ServiceBootstrapApplicationListener
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 com.tencent.devops.service.ServiceAutoConfiguration

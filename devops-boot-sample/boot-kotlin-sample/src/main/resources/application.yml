@@ -1,6 +1,4 @@
 logging:
   level:
     com.tencent: debug
-service:
-  prefix: devops-
-  name: kotlin-sample
+

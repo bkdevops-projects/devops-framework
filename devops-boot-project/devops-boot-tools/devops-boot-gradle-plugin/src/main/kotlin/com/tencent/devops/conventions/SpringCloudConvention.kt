@@ -13,14 +13,6 @@ class SpringCloudConvention {
         with(project) {
             val assemblyMode = resolveAssemblyMode(this)
             addServiceDependency(this, assemblyMode)
-            // 下面的方式能够实现效果，但在idea中无法看到依赖
-//            configurations.all { configuration ->
-//                configuration.resolutionStrategy.eachDependency {
-//                    if (it.requested.group == "com.tencent.devops" && it.requested.name == "devops-service") {
-//                        addServiceDependency(this, configuration.name, assemblyMode)
-//                    }
-//                }
-//            }
         }
     }
 
@@ -28,8 +20,8 @@ class SpringCloudConvention {
      * 解析打包模式
      */
     private fun resolveAssemblyMode(project: Project): AssemblyMode {
-        val property = project.findPropertyOrEmpty(ASSEMBLY_MODE)
-        return AssemblyMode.ofValueOrDefault(property.trim()).apply {
+        val property = project.findPropertyOrEmpty(ASSEMBLY_MODE).trim()
+        return AssemblyMode.ofValueOrDefault(property).apply {
             println("Project[${project.name}] assembly mode: $this")
         }
     }

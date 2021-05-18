@@ -1,4 +1,4 @@
-package com.tencent.devops.service
+package com.tencent.devops.service.listener
 
 import org.springframework.boot.context.config.ConfigDataEnvironmentPostProcessor
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent

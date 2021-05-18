@@ -1,5 +1,6 @@
 package com.tencent.devops.service
 
+import com.tencent.devops.service.config.ServiceProperties
 import com.tencent.devops.service.feign.FeignFilterRequestMappingHandlerMapping
 import org.springframework.boot.autoconfigure.AutoConfigureBefore
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication

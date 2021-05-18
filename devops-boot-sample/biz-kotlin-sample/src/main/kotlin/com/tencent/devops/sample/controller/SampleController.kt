@@ -2,16 +2,19 @@ package com.tencent.devops.sample.controller
 
 import com.tencent.devops.api.pojo.Response
 import com.tencent.devops.sample.client.SampleClient
+import com.tencent.devops.sample.config.GreetingProperties
 import com.tencent.devops.sample.pojo.Sample
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 import java.util.*
-
 
 /**
  * Sample Controller
  */
 @RestController
-class SampleController: SampleClient {
+class SampleController(
+    private val greetingProperties: GreetingProperties
+) : SampleClient {
 
     override fun getSample(): Response<Sample> {
         val sample = Sample(
@@ -20,4 +23,7 @@ class SampleController: SampleClient {
         )
         return Response.success(sample)
     }
+
+    @GetMapping("/greeting")
+    fun greeting() = "Hello, ${greetingProperties.message}"
 }

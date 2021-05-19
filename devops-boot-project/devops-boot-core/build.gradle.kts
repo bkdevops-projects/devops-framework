@@ -27,6 +27,7 @@ subprojects {
         implementation(platform(project(MavenBom.DevOpsBoot)))
         implementation(Libs.KotlinReflectLib)
         implementation(Libs.KotlinStdLib)
+        kapt("org.springframework.boot:spring-boot-configuration-processor")
         testImplementation("org.springframework.boot:spring-boot-starter-test")
     }
 

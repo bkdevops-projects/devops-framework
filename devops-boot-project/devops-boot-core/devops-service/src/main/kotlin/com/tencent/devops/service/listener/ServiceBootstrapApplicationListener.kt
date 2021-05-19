@@ -6,7 +6,7 @@ import org.springframework.context.ApplicationListener
 import org.springframework.core.Ordered
 import org.springframework.core.env.PropertiesPropertySource
 import org.springframework.util.ClassUtils
-import java.util.*
+import java.util.Properties
 
 /**
  * 用于向ConfigDataEnvironment注入公共配置，用于引导springboot统一加载外部配置
@@ -36,6 +36,7 @@ class ServiceBootstrapApplicationListener : ApplicationListener<ApplicationEnvir
                 setProperty("spring.cloud.consul.config.prefix", CONSUL_CONFIG_PREFIX)
                 setProperty("spring.cloud.consul.config.format", CONSUL_CONFIG_FORMAT)
                 setProperty("spring.cloud.consul.config.profile-separator", CONSUL_CONFIG_SEPARATOR)
+                setProperty("spring.cloud.consul.discovery.service-name", SERVICE_NAME)
             }
             if (isK8sPresent()) {
                 setProperty("spring.cloud.kubernetes.config.sources[0].name", K8S_COMMON_CONFIG)
@@ -76,7 +77,6 @@ class ServiceBootstrapApplicationListener : ApplicationListener<ApplicationEnvir
         return classLoader?.loadClass(className) ?: Class.forName(className)
     }
 
-
     companion object {
         private const val BOOTSTRAP_SOURCE_NAME = "bootstrap"
         private const val DEVOPS_SOURCE_NAME = "devopsProperties"
@@ -87,6 +87,6 @@ class ServiceBootstrapApplicationListener : ApplicationListener<ApplicationEnvir
         private const val K8S_COMMON_CONFIG = "\${service.prefix:}common\${service.suffix:}"
         private const val CONSUL_CLASS_NAME = "org.springframework.cloud.consul.config.ConsulConfigAutoConfiguration"
         private const val K8S_CLASS_NAME = "org.springframework.cloud.kubernetes.commons." +
-                "KubernetesCommonsAutoConfiguration"
+            "KubernetesCommonsAutoConfiguration"
     }
 }

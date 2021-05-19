@@ -5,6 +5,7 @@ import com.tencent.devops.sample.pojo.Sample
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.cloud.openfeign.FeignClient
+import org.springframework.context.annotation.Primary
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 
@@ -12,7 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping
  * Sample FeignClient
  */
 @Api("Sample 服务接口")
-@FeignClient("sample", contextId = "SampleClient")
+@Primary
+@FeignClient("devops-kotlin-sample", contextId = "SampleClient")
 @RequestMapping("/service/sample")
 interface SampleClient {
 

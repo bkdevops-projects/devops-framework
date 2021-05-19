@@ -5,6 +5,6 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 @ConfigurationProperties("greeting")
-data class GreetingProperties (
+data class GreetingProperties(
     var message: String = "default"
 )

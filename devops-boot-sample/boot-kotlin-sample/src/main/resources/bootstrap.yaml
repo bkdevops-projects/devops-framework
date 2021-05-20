@@ -10,10 +10,4 @@ spring:
           env: aaa
 server:
   port: 8080
-devops:
-  loadbalancer:
-    gray:
-      enabled: true
-      meta-key: env
-    local-prior:
-      enabled: true
+

@@ -1,20 +1,20 @@
 # devops-boot-starter-logging
 
-logging组件帮助开发者完成日志的快速配置，并统一日志格式。
+`starter-logging`组件帮助开发者完成日志的快速配置，并统一日志格式
 
 ## 功能介绍
- - 基于`slf4j`+`logback`
- - 提供`logback`基础配置文件，支持`include`方式引入
-   - `base.xml` 基础属性配置
-   - `appender.xml` `appender`配置
- - 配置统一的日志打印格式
- - 配置统一的日志输出位置
- - 配置统一的日志切割策略
- - 配置统一的异步日志输出
- - 约定统一的日志分类方式
-   - 访问日志: {application}-access.log
-   - 应用日志: {application}-app.log
-   - 错误日志: {application}-error.log
+- 基于`slf4j`+`logback`
+- 提供`logback`基础配置文件，支持`include`方式引入
+    - `base.xml` 基础属性配置
+    - `appender.xml` `appender`配置
+- 配置统一的日志打印格式
+- 配置统一的日志输出位置
+- 配置统一的日志切割策略
+- 配置统一的异步日志输出
+- 约定统一的日志分类方式
+    - 访问日志: {application}-access.log
+    - 应用日志: {application}-app.log
+    - 错误日志: {application}-error.log
 
 ## 使用方式
 - **build.gradle.kts**

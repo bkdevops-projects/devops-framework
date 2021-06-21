@@ -14,7 +14,7 @@
 
 如果设置了`kotlin`支持，本插件还会进行如下的额外配置：
 
-- 添加`kotlin jvm`插件, 并配置`kotlin`相关编译选项
+- 添加`kotlin jvm`插件，并配置`kotlin`相关编译选项
 - 添加`spring kotlin`插件，支持`all open`
 - 添加`kotlin-stdlib-jdk8`和`kotlin-std-lib-reflect`依赖
 

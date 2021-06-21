@@ -16,10 +16,11 @@ class DevOpsBootPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
         RepositoryConvention().apply(project)
+        // solve issue 73
+        JavaConvention().apply(project)
+        KotlinConvention().apply(project)
         // ignore the next configuration if this is an empty project
         if (isNotEmptyProject(project)) {
-            JavaConvention().apply(project)
-            KotlinConvention().apply(project)
             SpringBootConvention().apply(project)
             JUnitConvention().apply(project)
         }

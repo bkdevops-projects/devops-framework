@@ -1,3 +1,18 @@
+## 工程结构
+?> 待完善
+
+```shell script
+devops-framework/
+├── buildSrc                      # gradle项目构建目录
+├── devops-boot-project           # devops-boot源码目录
+│   ├── devops-boot-core          # 核心模块
+│   ├── devops-boot-dependencies  # maven bom模块
+│   ├── devops-boot-starters      # starter组件目录
+│   └── devops-boot-tools         # gradle脚本等工具目录
+├── devops-boot-sample            # sample项目
+└── docs                          # 项目文档
+```
+
 ## How to publish to maven repository?
 
 ### 发布命令
@@ -29,7 +44,7 @@
 会自动读取以下`github secrets`并设置为对应的环境变量：
 
 - `secrets.SONATYPE_USERNAME`
-- `secrets.SONATYPE_PASSWORD` 
+- `secrets.SONATYPE_PASSWORD`
 - `secrets.SIGNING_KEY`
 - `secrets.SIGNING_KEY_ID`
 - `secrets.SIGNING_PASSWORD`

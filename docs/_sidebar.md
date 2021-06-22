@@ -9,6 +9,12 @@
     - [starter-logging](/starter/devops-boot-starter-logging.md)
     - [starter-web](/starter/devops-boot-starter-web.md)
     - [starter-service](/starter/devops-boot-starter-service.md)
+    - [starter-circuitbreaker](/starter/devops-boot-starter-circuitbreaker.md)
+    - [starter-loadbalancer](/starter/devops-boot-starter-loadbalancer.md)
+    - [starter-plugin](/starter/devops-boot-starter-plugin.md)
+- **依赖管理**
+  - [devops-boot-dependencies](/dependency/devops-boot-dependencies.md)
+  - [版本列表](/dependency/versions.md)
 - [常见问题](/faq.md)
 - [参与开发](/contribute.md)
 - [更新日志](/changelog.md)

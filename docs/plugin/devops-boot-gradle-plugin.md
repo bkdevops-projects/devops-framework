@@ -9,6 +9,7 @@
 - 添加`spring boot`相关插件
 - 添加依赖管理插件，并引入`devops-boot-dependencies`基础依赖`bom`
 - 配置`JUnit`相关支持及依赖
+- 支持云原生编译打包
 - 支持配置是否引入`kotlin`
 - 支持配置`jdk`版本
 
@@ -45,4 +46,5 @@ plugins {
 | ------------------ | ------- | ------ | ------------------ |
 | devops.kotlin      | boolean | true   | 是否添加kotlin支持 |
 | devops.javaVersion | string  | 1.8    | jdk版本            |
+| assembly.mode      | string  | null   | 支持consul/k8s/kubernetes,默认使用consul  |
 

@@ -1,3 +1,5 @@
+# 参与开发
+
 ## 工程结构
 ?> 待完善
 
@@ -5,7 +7,7 @@
 devops-framework/
 ├── buildSrc                      # gradle项目构建目录
 ├── devops-boot-project           # devops-boot源码目录
-│   ├── devops-boot-core          # 核心模块
+│   ├── devops-boot-core          # 核心实现模块
 │   ├── devops-boot-dependencies  # maven bom模块
 │   ├── devops-boot-starters      # starter组件目录
 │   └── devops-boot-tools         # gradle脚本等工具目录

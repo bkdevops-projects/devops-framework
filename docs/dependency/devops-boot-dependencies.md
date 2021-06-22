@@ -7,7 +7,7 @@
 
 ## 使用方式
 ### 1. 配合devops-boot插件使用(推荐)
-当项目引入了`devops-boot-gradle-plugin`插件，会自动帮我们配置`devops-boot-dependencies`，无需任何配置
+当项目引入了`devops-boot-gradle-plugin`插件，会自动配置`devops-boot-dependencies`，无需其它额外配置
 
 ### 2. 独立使用
 
@@ -31,10 +31,7 @@ dependencyManagement {
 }
 ```
 
-## 依赖版本列表
-请参考[build.gradle.kts](./build.gradle.kts)的`constraints`列表
-
-### 参考
+## 参考
 关于依赖管理的使用详情，请参考官方文档[dependency-management](https://docs.spring.io/dependency-management-plugin/docs/current/reference/html/)
 
 

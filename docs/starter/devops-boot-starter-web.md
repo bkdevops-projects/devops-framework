@@ -33,11 +33,11 @@ implementation 'com.tencent.devops:devops-boot-starter-web'
 
 swagger配置过程中会读取以下配置
 
-  | 属性               | 类型    | 默认值 | 说明               |
-    | ------------------ | ------- | ------ | ------------------ |
-  | spring.application.name  | string | null  | 应用名称，swagger会页面展示该值 |
-  | spring.application.desc  | string | null  | 应用描述，swagger会页面展示该值 |
-  | spring.application.version  | string | null  | 应用版本，swagger会页面展示该值 |
+| 属性               | 类型    | 默认值 | 说明               |
+| ------------------ | ------- | ------ | ------------------ |
+| spring.application.name  | string | null  | 应用名称，swagger会页面展示该值 |
+| spring.application.desc  | string | null  | 应用描述，swagger会页面展示该值 |
+| spring.application.version  | string | null  | 应用版本，swagger会页面展示该值 |
 
 ## 参考
 

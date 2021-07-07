@@ -26,7 +26,7 @@ class KotlinConvention {
             pluginManager.apply(SpringGradleSubplugin::class.java)
             tasks.withType(KotlinCompile::class.java) {
                 it.kotlinOptions.jvmTarget = findJavaVersion(this)
-                it.kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict")
+                it.kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict", "-java-parameters")
             }
             dependencies.add(IMPLEMENTATION, KOTLIN_STDLIB)
             dependencies.add(IMPLEMENTATION, KOTLIN_REFLECT)

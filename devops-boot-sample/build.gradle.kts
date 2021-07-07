@@ -16,13 +16,4 @@ allprojects {
     configurations.all {
         resolutionStrategy.cacheChangingModulesFor(0, TimeUnit.MINUTES)
     }
-
-    tasks.create("listrepos") {
-        doLast {
-            println("Repositories:")
-            repositories.map {it as MavenArtifactRepository}.forEach {
-                println("Name: ${it.name}; url: ${it.url}")
-            }
-        }
-    }
 }

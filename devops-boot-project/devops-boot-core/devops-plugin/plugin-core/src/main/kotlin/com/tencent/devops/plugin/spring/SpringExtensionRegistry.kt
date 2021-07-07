@@ -43,7 +43,7 @@ class SpringExtensionRegistry : ExtensionRegistry, ApplicationContextAware {
     override fun registerExtensionPoint(plugin: String, name: String, type: Class<*>) {
         unregisterExtensionPoint(plugin, name)
 
-        val instance = type.newInstance()
+        val instance = type.getDeclaredConstructor().newInstance()
         require(instance is ExtensionPoint) { "Extension Class must implement ExtensionPoint Interface" }
         pluginToExtensionPointMap.getOrPut(plugin) { mutableMapOf() }.getOrPut(name) { mutableListOf() }.add(instance)
         typeToExtensionPointMap.getOrPut(name) { mutableListOf() }.add(instance)

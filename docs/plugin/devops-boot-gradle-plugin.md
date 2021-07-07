@@ -46,5 +46,6 @@ plugins {
 | ------------------ | ------- | ------ | ------------------ |
 | devops.kotlin      | boolean | true   | 是否添加kotlin支持 |
 | devops.javaVersion | string  | 1.8    | jdk版本            |
+| devops.copyWithVersion | boolean  | false    | 拷贝jar到release目录时是否带版本号           |
 | assembly.mode      | string  | null   | 支持consul/k8s/kubernetes,默认使用consul  |
 

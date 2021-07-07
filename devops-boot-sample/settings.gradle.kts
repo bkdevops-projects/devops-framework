@@ -1,6 +1,6 @@
 rootProject.name = "devops-boot-sample"
 
-// for debug locallly
+// for debug devops-boot locally
 pluginManagement {
     repositories {
         mavenLocal()
@@ -16,4 +16,3 @@ include("api-kotlin-sample")
 include("biz-kotlin-sample")
 include("boot-java-sample")
 include("boot-kotlin-sample")
-

@@ -37,6 +37,12 @@ class ServiceBootstrapApplicationListener : ApplicationListener<ApplicationEnvir
                 setProperty("spring.cloud.consul.config.format", CONSUL_CONFIG_FORMAT)
                 setProperty("spring.cloud.consul.config.profile-separator", CONSUL_CONFIG_SEPARATOR)
                 setProperty("spring.cloud.consul.discovery.service-name", SERVICE_NAME)
+                setProperty("spring.cloud.consul.discovery.instance-id", SERVICE_INSTANCE_ID)
+                setProperty("spring.cloud.consul.discovery.query-passing", "true")
+                setProperty("spring.cloud.consul.discovery.prefer-ip-address", "true")
+                setProperty("spring.cloud.consul.discovery.heath-check-path", "/actuator/health")
+                setProperty("spring.cloud.consul.discovery.heath-check-interval", "10s")
+                setProperty("spring.cloud.consul.discovery.heath-check-timeout", "5s")
             }
             if (isK8sPresent()) {
                 setProperty("spring.cloud.kubernetes.config.sources[0].name", K8S_COMMON_CONFIG)
@@ -83,6 +89,7 @@ class ServiceBootstrapApplicationListener : ApplicationListener<ApplicationEnvir
         private const val CONSUL_CONFIG_FORMAT = "YAML"
         private const val CONSUL_CONFIG_SEPARATOR = "::"
         private const val SERVICE_NAME = "\${service.prefix:}\${spring.application.name}\${service.suffix:}"
+        private const val SERVICE_INSTANCE_ID = "$SERVICE_NAME-\${server.port}-\${spring.cloud.client.hostname}"
         private const val CONSUL_CONFIG_PREFIX = "\${service.prefix:}config\${service.suffix:}"
         private const val K8S_COMMON_CONFIG = "\${service.prefix:}common\${service.suffix:}"
         private const val CONSUL_CLASS_NAME = "org.springframework.cloud.consul.config.ConsulConfigAutoConfiguration"

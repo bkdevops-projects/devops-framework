@@ -46,7 +46,7 @@ class SpringCloudConvention {
         /**
          * 打包模式
          */
-        private const val ASSEMBLY_MODE = "assembly.mode"
+        private const val ASSEMBLY_MODE = "devops.assemblyMode"
 
         /**
          * consul依赖

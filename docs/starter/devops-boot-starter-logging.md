@@ -2,7 +2,7 @@
 
 `starter-logging`组件帮助开发者完成日志的快速配置，并统一日志格式
 
-## 功能介绍
+## 功能列表
 - 基于`slf4j`+`logback`
 - 提供`logback`基础配置文件，支持`include`方式引入
     - `base.xml` 基础属性配置
@@ -36,7 +36,7 @@ implementation 'com.tencent.devops:devops-boot-starter-logging'
 | logging.file.path  | string | ./  | 日志输出位置，默认当前目录 |
 | logging.level.\<loggerName\> | string | INFO | 调整`loggerName`日志级别, `root`代表所有logger |
 
-## 说明
+## 日志profile说明
 
 logging组件会自动根据不同的`profile`应用不同的appender配置
 

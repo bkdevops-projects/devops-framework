@@ -54,7 +54,7 @@ gradle build
 
 ### 指定consul方式打包(依赖SpringCloud Consul)
 ```
-gradle build -Dassembly.mode=consul
+gradle build -Ddevops.assemblyMode=consul
 ```
 
 ### k8s打包(依赖SpringCloud Kubernetes)
@@ -62,12 +62,12 @@ gradle build -Dassembly.mode=consul
 
 ```
 // 方式1
-gradle build -Dassembly.mode=k8s
-// 方式2 设置系统环境变量 assembly.mode=k8s
+gradle build -Ddevops.assemblyMode=k8s
+// 方式2 设置系统环境变量 devops.assemblyMode=k8s
 gradle build
 // 方式3
-gradle build -Passembly.mode=k8s
-// 方式4 修改配置文件gradle.properties assembly.mode=k8s
+gradle build -Pdevops.assemblyMode=k8s
+// 方式4 修改配置文件gradle.properties devops.assemblyMode=k8s
 gradle build
 ```
 

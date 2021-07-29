@@ -31,9 +31,9 @@
    
 - **扩展点**
 
-侠义：系统中预留的支持自由扩展的功能点，在代码中通常定义为一个Interface接口，具体实现交由插件开发者自定义实现，一个插件中可以针对扩展点有N个不同的实现。
+狭义：系统中预留的支持自由扩展的功能点，在代码中通常定义为一个Interface接口，具体实现交由插件开发者自定义实现，一个插件中可以针对扩展点有N个不同的实现。
 
-广义：包含了预留的扩展点以及下面的扩展接口。
+广义：包含了预留的扩展点以及扩展接口。
 
 - **扩展接口**
 
@@ -52,13 +52,13 @@
 系统第一次启动时，将从`plugin.path`加载插件，在运行时可以通过`actuator`方式管理插件.
 
 - 查看已加载插件
-  - GET /actuator/plugin
+  - `GET /actuator/plugin`
 - 重新加载所有插件
-  - POST /actuator/plugin
+  - `POST /actuator/plugin`
 - 重新加载指定插件
-  - POST /actuator/plugin/<plugin-id>
+  - `POST /actuator/plugin/<plugin-id>`
 - 卸载指定插件
-  - POST /actuator/plugin/<plugin-id>
+  - `POST /actuator/plugin/<plugin-id>`
 
 **注：生产环境请对actuator相关接口设置认证访问**
   
@@ -66,7 +66,7 @@
 
 需求：系统需要对用户输入的内容进行打印，但打印的方式无法确定，如System IO、Logger、Printer等，因此具体的打印逻辑交由插件开发者实现。
 
-参考[sample项目](https://github.com/bkdevops-projects/devops-framework/tree/master/devops-boot-sample)
+参考[Sample项目](https://github.com/bkdevops-projects/devops-framework/tree/master/devops-boot-sample)
 
 ### 1. 定义扩展点
 
@@ -77,10 +77,10 @@
  * 定义扩展点，必须实现ExtensionPoint接口
  */
 interface PrintExtension: ExtensionPoint {
-
     /**
      * print content
      * 可以通过插件自定义实现打印逻辑，如System IO、Logger、Printer等
+     * @param content 打印内容
      */
     fun print(content: String)
 }
@@ -108,7 +108,6 @@ class SystemPrintExtension: PrintExtension {
 
 ```kotlin
 class PrintService(private val pluginManager: PluginManager) {
-    
     /**
      * print content
      */
@@ -129,6 +128,6 @@ class PrintService(private val pluginManager: PluginManager) {
 | ------------------ | ------- | ------ | ------------------ |
 | pluginId  | string | null  | 插件id，要求全局唯一 |
 | pluginVersion | string | null  | 插件版本 |
-| pluginScope | string | null  | 插件生效范围，*代码应用到所有微服务 |
+| pluginScope | string | null  | 插件生效范围，*表示应用到所有微服务 |
 | pluginAuthor | string | null  | 插件作者 |
 | pluginDescription | string | null  | 插件描述 |

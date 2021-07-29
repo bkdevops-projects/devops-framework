@@ -29,14 +29,14 @@
 - **统一常用工具类** ： 避免代码重复
 
 ## 功能特性
-- 提供gradle快速开发插件[devops-boot-gradle-plugin](./devops-boot-project/devops-boot-tools/devops-boot-gradle-plugin/README.md)
-- 提供gradle快速发布插件[devops-publish-gradle-plugin](./devops-boot-project/devops-boot-tools/devops-publish-gradle-plugin/README.md)
-- 提供统一版本依赖管理[devops-boot-dependencies](./devops-boot-project/devops-boot-dependencies/README.md)
+- 提供gradle快速开发插件[devops-boot-gradle-plugin](/plugin/devops-boot-gradle-plugin.md)
+- 提供gradle快速发布插件[devops-publish-gradle-plugin](/plugin/devops-publish-gradle-plugin.md)
+- 提供统一版本依赖管理[devops-boot-dependencies](/dependency/devops-boot-dependencies.md)
 - 提供多个开箱即用的starter组件
-    - [starter-api](./devops-boot-project/devops-boot-starters/devops-boot-starter-api/README.md)
-    - [starter-logging](./devops-boot-project/devops-boot-starters/devops-boot-starter-logging/README.md)
-    - [starter-web](./devops-boot-project/devops-boot-starters/devops-boot-starter-web/README.md)
-    - [starter-service](./devops-boot-project/devops-boot-starters/devops-boot-starter-service/README.md)
+    - [starter-api](/starter/devops-boot-starter-api.md)
+    - [starter-logging](/starter/devops-boot-starter-logging.md)
+    - [starter-web](/starter/devops-boot-starter-web.md)
+    - [starter-service](/starter/devops-boot-starter-service.md)
     - ...
 
 ## 核心依赖

@@ -71,7 +71,7 @@ implementation 'com.tencent.devops:devops-boot-starter-service'
 
 ### 4. 配置consul服务注册instanceId
 为了保证consul注册实例唯一，自动配置instanceId包含主机的ip地址。完整的instanceId规则为`<prefix><app-name><suffix>-<port>-<ip-address>`。
-如`xxx-test8080-192-168-1-1
+如`xxx-test8080-192-168-1-1`
 
 ### 5. 配置consul服务注册健康检查
 健康检查地址`/actuator/health`, 检查间隔时间为10秒，超时时间为5秒

@@ -1,5 +1,31 @@
 # 更新日志
 
+## [0.0.4] (待发布)
+
+### Features
+- 支持k8s云原生编译打包方式
+- 开发插件化组件plugin-starter
+- 支持服务名称前缀后缀
+-【服务治理】客户端负载均衡&服务间灰度调用能力
+-【服务治理】客户端断路器&限流组件
+
+### Refactor
+- copyToRelease支持不带版本号
+- gradle插件代码拆分
+- 解决jooq项目model模块没有应用java插件问题
+- 服务注册instance-id使用hostname
+- repository移除mavenLocal
+- kotlin编译增加-java-parameters参数
+
+### Dependencies
+- kotlin升级1.4.32
+- ktlint升级0.41.0
+- SpringBoot升级2.4.5
+- SpringCloud升级2020.0.2
+
+### Documentation
+- 发布文档页面
+
 ## [0.0.3](https://github.com/bkdevops-projects/devops-framework/releases/tag/0.0.3) (2021-01-05)
 
 ### Features

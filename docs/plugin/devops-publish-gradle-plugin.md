@@ -26,7 +26,7 @@
 
 ```groovy
 plugins {
-    id("devops-publish-gradle-plugin") version ${version}
+    id("com.tencent.devops.publish") version ${version}
 }
 ```
 
@@ -34,7 +34,7 @@ plugins {
 
 ```groovy
 plugins {
-    id 'devops-publish-gradle-plugin' version ${version}
+    id 'com.tencent.devops.publish' version ${version}
 }
 ```
 

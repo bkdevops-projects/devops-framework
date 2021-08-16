@@ -25,7 +25,7 @@
 - **统一** ：目前已集成了微服务开发常用组件和统一配置
 - **扩展** ：组件之间低耦合，高内聚，扩展十分方便
 
-查看[快速开始](quick-start.md)了解详情。
+查看[快速开始](docs/quick-start.md)了解详情。
 
 ## DevOps Boot 能解决什么问题？
 
@@ -57,4 +57,4 @@
 
 ## 示例
 
-可以查看[sample](https://github.com/bkdevops-projects/devops-framework/tree/master/devops-boot-sample)来了解如何优雅集成`devops-boot`框架。
+可以查看 [sample](https://github.com/bkdevops-projects/devops-framework/tree/master/devops-boot-sample) 来了解如何优雅集成`devops-boot`框架。

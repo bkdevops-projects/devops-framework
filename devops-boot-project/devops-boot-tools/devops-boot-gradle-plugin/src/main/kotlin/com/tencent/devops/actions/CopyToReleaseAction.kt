@@ -1,6 +1,6 @@
 package com.tencent.devops.actions
 
-import com.tencent.devops.findPropertyOrEmpty
+import com.tencent.devops.utils.findPropertyOrEmpty
 import org.gradle.api.Action
 import org.gradle.api.tasks.Copy
 import org.springframework.boot.gradle.tasks.bundling.BootJar
@@ -8,7 +8,7 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 /**
  * copy to release action
  */
-class CopyToReleaseAction: Action<Copy> {
+class CopyToReleaseAction : Action<Copy> {
 
     override fun execute(copy: Copy) {
         with(copy) {

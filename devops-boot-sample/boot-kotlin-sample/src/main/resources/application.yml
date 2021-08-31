@@ -1,8 +1,11 @@
-spring:
-  application:
-    name: kotlin-sample
-
 logging:
   level:
     com.tencent: debug
+devops:
+  loadbalancer:
+    gray:
+      enabled: true
+      meta-key: env
+    local-prior:
+      enabled: true
 

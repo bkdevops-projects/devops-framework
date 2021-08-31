@@ -3,13 +3,15 @@
     <include resource="logback/base.xml"/>
     <include resource="logback/appender.xml"/>
 
-    <springProfile name="default, local">
+    <springProfile name="default, local, dev">
         <root level="INFO">
             <appender-ref ref="console"/>
+            <appender-ref ref="app-log"/>
+            <appender-ref ref="error-log"/>
         </root>
     </springProfile>
 
-    <springProfile name="dev, test, prod">
+    <springProfile name="test, prod">
         <root level="INFO">
             <appender-ref ref="app-log"/>
             <appender-ref ref="error-log"/>

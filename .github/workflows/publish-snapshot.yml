@@ -1,0 +1,27 @@
+# Trigger building on push event, and publishing snapshot package if in base repository
+name: Build and Publish snapshot package
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 8
+      - name: Build with Gradle
+        run: ./gradlew build
+      - name: Publish snapshot package
+        if: github.repository == 'bkdevops-projects/devops-framework'
+        env:
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingKeyId: ${{ secrets.SIGNING_KEY_ID }}
+          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.SIGNING_PASSWORD }}
+        run: ./gradlew publish

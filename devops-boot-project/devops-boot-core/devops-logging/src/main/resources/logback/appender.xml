@@ -22,6 +22,7 @@
         <queueSize>1024</queueSize>
         <discardingThreshold>0</discardingThreshold>
         <neverBlock>true</neverBlock>
+        <includeCallerData>true</includeCallerData>
     </appender>
 
     <appender name="sync-error-log" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -45,5 +46,6 @@
         <queueSize>512</queueSize>
         <discardingThreshold>0</discardingThreshold>
         <neverBlock>false</neverBlock>
+        <includeCallerData>true</includeCallerData>
     </appender>
 </included>

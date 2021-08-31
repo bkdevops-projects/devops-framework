@@ -2,15 +2,17 @@ rootProject.name = "devops-framework"
 
 fun File.directories() = listFiles()?.filter { it.isDirectory && it.name != "build" }?.toList() ?: emptyList()
 
-include("devops-boot-project:devops-boot-core")
-include("devops-boot-project:devops-boot-dependencies")
-include("devops-boot-project:devops-boot-starters")
-include("devops-boot-project:devops-boot-tools:devops-boot-gradle-plugin")
-
-file("$rootDir/devops-boot-project/devops-boot-core").directories().forEach {
-    include("devops-boot-project:devops-boot-core:${it.name}")
+fun includeAll(module: String) {
+    include(module)
+    val name = module.replace(":", "/")
+    file("$rootDir/$name/").directories().forEach {
+        include("$module:${it.name}")
+    }
 }
 
-file("$rootDir/devops-boot-project/devops-boot-starters").directories().forEach {
-    include("devops-boot-project:devops-boot-starters:${it.name}")
-}
+includeAll("devops-boot-project:devops-boot-core")
+includeAll("devops-boot-project:devops-boot-dependencies")
+includeAll("devops-boot-project:devops-boot-starters")
+includeAll("devops-boot-project:devops-boot-tools")
+
+includeAll("devops-boot-project:devops-boot-core:devops-plugin")

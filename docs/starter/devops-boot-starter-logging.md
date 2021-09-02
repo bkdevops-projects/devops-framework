@@ -30,12 +30,17 @@ implementation 'com.tencent.devops:devops-boot-starter-logging'
 ```
 
 ## 配置属性
+devops-logging模块支持springboot本身的logging配置，在此基础上，增添了个性化配置
 
 | 属性               | 类型    | 默认值 | 说明               |
 | ------------------ | ------- | ------ | ------------------ |
-| logging.file.path  | string | ./  | 日志输出位置，默认当前目录 |
-| logging.level.\<loggerName\> | string | INFO | 调整`loggerName`日志级别, `root`代表所有logger |
+| devops.logging.path | string | /logs/${应用名}  | 日志输出位置，默认当前目录 |
+| devops.logging.file-app | string | ${应用名}.log | app日志文件名 |
+| devops.logging.file-error | string | ${应用名}-error.log | error日志文件名 |
+| devops.logging.file-pattern | string | 见如下说明 | 日志文件输出格式 |
 
+
+默认file-pattern: `%d{yyyy-MM-dd HH:mm:ss.SSS}|%X{ip:--}|%F|%L|%level|%X{err_code:-0}|||||[%t] %m%ex%n`
 ## 日志profile说明
 
 logging组件会自动根据不同的`profile`应用不同的appender配置

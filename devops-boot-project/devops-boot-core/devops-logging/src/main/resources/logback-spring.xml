@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration debug="false" scan="false">
-    <include resource="logback/base.xml"/>
+    <contextListener class="com.tencent.devops.logging.config.CustomLogContextListener" />
     <include resource="logback/appender.xml"/>
-
     <springProfile name="default, local, dev">
         <root level="INFO">
             <appender-ref ref="console"/>

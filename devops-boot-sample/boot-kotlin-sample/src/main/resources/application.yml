@@ -2,6 +2,10 @@ logging:
   level:
     com.tencent: debug
 devops:
+  logging:
+    path: /data/logs
+    file-app: sample.log
+    file-error: sample-error.log
   loadbalancer:
     gray:
       enabled: true

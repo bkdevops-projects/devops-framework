@@ -30,9 +30,8 @@ class RepositoryConvention {
                 it.url = URI("https://mirrors.tencent.com/nexus/repository/maven-public/")
             }
             mavenCentral()
-            jcenter()
             maven {
-                it.name = "MavenSnapshotRepo"
+                it.name = "MavenSnapshot"
                 it.url = URI("https://oss.sonatype.org/content/repositories/snapshots/")
                 it.mavenContent { descriptor ->
                     descriptor.snapshotsOnly()

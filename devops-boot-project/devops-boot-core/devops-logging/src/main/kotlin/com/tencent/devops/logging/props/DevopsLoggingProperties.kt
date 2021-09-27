@@ -12,12 +12,17 @@ data class DevopsLoggingProperties(
     /**
      * 正常应用日志文件名
      */
-    var fileApp: String? = null,
+    var appFile: String? = null,
 
     /**
      * 错误应用日志文件名
      */
-    var fileError: String? = null,
+    var errorFile: String? = null,
+
+    /**
+     * access日志文件名
+     */
+    var accessFile: String? = null,
 
     /**
      * 日志格式

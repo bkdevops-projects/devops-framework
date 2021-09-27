@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration debug="false" scan="false">
+    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
     <contextListener class="com.tencent.devops.logging.config.CustomLogContextListener" />
     <include resource="logback/appender.xml"/>
     <springProfile name="default, local, dev">
@@ -11,6 +12,9 @@
     </springProfile>
 
     <springProfile name="test, prod">
+        <logger name="AccessLogger" level="INFO" additivity="false">
+            <appender-ref ref="access-log" />
+        </logger>
         <root level="INFO">
             <appender-ref ref="app-log"/>
             <appender-ref ref="error-log"/>

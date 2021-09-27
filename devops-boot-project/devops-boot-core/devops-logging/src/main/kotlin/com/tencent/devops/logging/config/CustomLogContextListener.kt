@@ -20,10 +20,6 @@ class CustomLogContextListener : ContextAwareBase(), EnvironmentPostProcessor, L
     companion object {
         private lateinit var environment: ConfigurableEnvironment
         const val LOGGING_PREFIX = "devops.logging."
-        const val LOGGING_APP_FILE = "logging.app.file"
-        const val LOGGING_ERROR_FILE = "logging.error.file"
-        const val LOGGING_FILE_PATTERN = "logging.file.pattern"
-        const val DEFAULT_FILE_PATTERN = "%d{yyyy-MM-dd HH:mm:ss.SSS}|%X{ip:--}|%F|%L|%level|%X{err_code:-0}|||||[%t] %m%ex%n"
     }
 
     override fun isResetResistant(): Boolean {
@@ -53,17 +49,14 @@ class CustomLogContextListener : ContextAwareBase(), EnvironmentPostProcessor, L
         if (!loggingPath.endsWith("/") && !loggingPath.endsWith("\\")) {
             loggingPath = loggingPath.plus("/")
         }
-        setAppFile(
-            resolver = propertyResolver,
-            applicationName = applicationName,
-            loggingPath = loggingPath
-        )
-        setErrorFile(
-            resolver = propertyResolver,
-            applicationName = applicationName,
-            loggingPath = loggingPath
-        )
-        setFilePattern(propertyResolver)
+        LogType.values().forEach {
+            setFileProperty(
+                resolver = propertyResolver,
+                applicationName = applicationName,
+                loggingPath = loggingPath,
+                logType = it
+            )
+        }
     }
 
     override fun stop() {
@@ -90,18 +83,79 @@ class CustomLogContextListener : ContextAwareBase(), EnvironmentPostProcessor, L
         return resolver
     }
 
-    private fun setAppFile(resolver: PropertyResolver, loggingPath: String, applicationName: String) {
-        val appLoggingFile = resolver.getProperty("${LOGGING_PREFIX}file-app", "$applicationName.log")
-        context.putProperty(LOGGING_APP_FILE, "$loggingPath$appLoggingFile")
+    private fun setFileProperty(resolver: PropertyResolver, loggingPath: String, applicationName: String, logType: LogType) {
+        if (logType.fileName != null) {
+            val logSuffix = if (logType.fileName.suffix) "-${logType.fileName.aliasName}" else ""
+            val loggingFile = resolver.getProperty("${LOGGING_PREFIX}${logType.fileName.aliasName}-file", "$applicationName$logSuffix.log")
+            context.putProperty(logType.fileName.fileNameValue, "$loggingPath$loggingFile")
+        }
+        if (logType.filePattern != null) {
+            val filePattern = resolver.getProperty("${LOGGING_PREFIX}file-pattern", logType.filePattern.defaultValue)
+            context.putProperty(logType.filePattern.filePatternValue, filePattern)
+        }
     }
 
-    private fun setErrorFile(resolver: PropertyResolver, loggingPath: String, applicationName: String) {
-        val errorLoggingFile = resolver.getProperty("${LOGGING_PREFIX}file-error", "$applicationName-error.log")
-        context.putProperty(LOGGING_ERROR_FILE, "$loggingPath$errorLoggingFile")
-    }
-
-    private fun setFilePattern(resolver: PropertyResolver) {
-        val filePattern = resolver.getProperty("${LOGGING_PREFIX}file-pattern", DEFAULT_FILE_PATTERN)
-        context.putProperty(LOGGING_FILE_PATTERN, filePattern)
-    }
 }
+
+/**
+ * 定义不同类型的枚举
+ */
+enum class LogType (
+    val fileName: FileName?,
+    val filePattern: FilePattern?
+        ) {
+    CONSOLELOG(
+        null,
+        FilePattern(
+            filePatternValue = "logging.console.pattern",
+            defaultValue = "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint}|%X{tid:--}|%clr(%-35.35logger{34}){cyan}|%clr(%-3L){magenta}|%clr(%5level)|%X{ip:--}|%X{uid:--}|-|-|%clr(%-14.14t){faint}| %m%n%ex"
+        )
+    ),
+    APPLOG(
+        FileName(
+            aliasName = "app",
+            suffix = false,
+            fileNameValue = "logging.app.file"
+        ),
+        FilePattern(
+            filePatternValue = "logging.app.file.pattern",
+            defaultValue = "%d{yyyy-MM-dd HH:mm:ss.SSS}|%X{tid:--}|%-35.35logger{34}|-|%5level|%X{ip:--}|%X{uid:--}|-|-|%-14.14t| %m%n%ex"
+        )
+    ),
+    ERRORLOG(
+        FileName(
+            aliasName = "error",
+            suffix = true,
+            fileNameValue = "logging.error.file"
+        ),
+        FilePattern(
+            filePatternValue = "logging.error.file.pattern",
+            defaultValue = "%d{yyyy-MM-dd HH:mm:ss.SSS}|%X{tid:--}|%-35.35logger{34}|%-3L|%5level|%X{ip:--}|%X{uid:--}|-|-|%-14.14t| %m%n%ex"
+        )
+    ),
+    ACCESSLOG(
+        FileName(
+            aliasName = "access",
+            suffix = true,
+            fileNameValue = "logging.access.file"
+        ),
+        null
+    )
+}
+
+/**
+ * 文件名属性
+ */
+data class FileName(
+    val aliasName: String,
+    val suffix: Boolean,
+    val fileNameValue: String
+)
+
+/**
+ * 日志格式属性
+ */
+data class FilePattern(
+    val filePatternValue: String,
+    val defaultValue: String
+)

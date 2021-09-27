@@ -11,6 +11,9 @@
     </springProfile>
 
     <springProfile name="test, prod">
+        <logger name="AccessLogger" level="INFO" additivity="false">
+            <appender-ref ref="access-log" />
+        </logger>
         <root level="INFO">
             <appender-ref ref="app-log"/>
             <appender-ref ref="error-log"/>

@@ -1,45 +1,27 @@
-package com.tencent.devops.logging.config
+package com.tencent.devops.logging.system.logback
 
-import ch.qos.logback.classic.Level
-import ch.qos.logback.classic.Logger
-import ch.qos.logback.classic.LoggerContext
-import ch.qos.logback.classic.spi.LoggerContextListener
-import ch.qos.logback.core.spi.ContextAwareBase
-import ch.qos.logback.core.spi.LifeCycle
-import org.springframework.boot.SpringApplication
-import org.springframework.boot.context.config.ConfigDataEnvironmentPostProcessor
-import org.springframework.boot.env.EnvironmentPostProcessor
-import org.springframework.core.Ordered
-import org.springframework.core.env.ConfigurableEnvironment
+import org.springframework.boot.logging.LogFile
+import org.springframework.boot.logging.logback.LogbackLoggingSystemProperties
+import org.springframework.core.env.Environment
 import org.springframework.core.env.PropertyResolver
-import org.springframework.core.env.PropertySourcesPropertyResolver
 import java.io.File
 
-class CustomLogContextListener : ContextAwareBase(), EnvironmentPostProcessor, LoggerContextListener, LifeCycle, Ordered {
+/**
+ * devops-framework的logback系统变量
+ */
+class DevopsLogbackSystemProperties(environment: Environment) :
+    LogbackLoggingSystemProperties(environment) {
 
     companion object {
-        private lateinit var environment: ConfigurableEnvironment
-        const val LOGGING_PREFIX = "devops.logging."
+        private const val LOGGING_PREFIX = "devops.logging."
     }
 
-    override fun isResetResistant(): Boolean {
-        return false
+    override fun apply(logFile: LogFile?, resolver: PropertyResolver) {
+        super.apply(logFile, resolver)
+        applyDevopsProperties(resolver)
     }
 
-    override fun onStart(context: LoggerContext?) {
-    }
-
-    override fun onReset(context: LoggerContext?) {
-    }
-
-    override fun onStop(context: LoggerContext?) {
-    }
-
-    override fun onLevelChange(logger: Logger?, level: Level?) {
-    }
-
-    override fun start() {
-        val propertyResolver = getPropertyResolver()
+    private fun applyDevopsProperties(propertyResolver: PropertyResolver) {
         val applicationName = propertyResolver.getProperty("spring.application.name", "application")
         var loggingPath = propertyResolver.getProperty("${LOGGING_PREFIX}path", "logs/$applicationName").trim()
         val pathDir = File(loggingPath)
@@ -59,51 +41,26 @@ class CustomLogContextListener : ContextAwareBase(), EnvironmentPostProcessor, L
         }
     }
 
-    override fun stop() {
-    }
-
-    override fun isStarted(): Boolean {
-        return false
-    }
-
-    override fun postProcessEnvironment(environment: ConfigurableEnvironment, application: SpringApplication) {
-        Companion.environment = environment
-    }
-
-    override fun getOrder(): Int {
-        return ConfigDataEnvironmentPostProcessor.ORDER + 1
-    }
-
-    private fun getPropertyResolver(): PropertyResolver {
-        val resolver = PropertySourcesPropertyResolver(
-            environment.propertySources
-        )
-        resolver.conversionService = environment.conversionService
-        resolver.setIgnoreUnresolvableNestedPlaceholders(true)
-        return resolver
-    }
-
     private fun setFileProperty(resolver: PropertyResolver, loggingPath: String, applicationName: String, logType: LogType) {
         if (logType.fileName != null) {
             val logSuffix = if (logType.fileName.suffix) "-${logType.fileName.aliasName}" else ""
             val loggingFile = resolver.getProperty("${LOGGING_PREFIX}${logType.fileName.aliasName}-file", "$applicationName$logSuffix.log")
-            context.putProperty(logType.fileName.fileNameValue, "$loggingPath$loggingFile")
+            setSystemProperty(logType.fileName.fileNameValue, "$loggingPath$loggingFile")
         }
         if (logType.filePattern != null) {
             val filePattern = resolver.getProperty("${LOGGING_PREFIX}file-pattern", logType.filePattern.defaultValue)
-            context.putProperty(logType.filePattern.filePatternValue, filePattern)
+            setSystemProperty(logType.filePattern.filePatternValue, filePattern)
         }
     }
-
 }
 
 /**
  * 定义不同类型的枚举
  */
-enum class LogType (
+enum class LogType(
     val fileName: FileName?,
     val filePattern: FilePattern?
-        ) {
+) {
     CONSOLELOG(
         null,
         FilePattern(

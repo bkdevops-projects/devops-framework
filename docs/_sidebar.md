@@ -12,6 +12,7 @@
   - [starter-circuitbreaker](/starter/devops-boot-starter-circuitbreaker.md)
   - [starter-loadbalancer](/starter/devops-boot-starter-loadbalancer.md)
   - [starter-plugin](/starter/devops-boot-starter-plugin.md)
+  - [starter-schedule](/starter/devops-boot-starter-schedule.md)
 - **k8s云原生编译打包**
   - [云原生编译](/k8s/compile.md)
   - [云原生部署](/k8s/deploy.md)

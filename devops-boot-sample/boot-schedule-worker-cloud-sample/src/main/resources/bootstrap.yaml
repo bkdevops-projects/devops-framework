@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: discovery-test
+server:
+  port: 8082
+logging:
+  level:
+    com.tencent: debug
+
+devops:
+  schedule:
+    worker:
+      mode: DISCOVERY
+      server:
+        address: http://schedule-server-sample
+        access-token: xxx

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration debug="false" scan="false">
     <include resource="org/springframework/boot/logging/logback/defaults.xml" />
-    <contextListener class="com.tencent.devops.logging.config.CustomLogContextListener" />
     <include resource="logback/appender.xml"/>
 
     <springProfile name="default, local, dev">

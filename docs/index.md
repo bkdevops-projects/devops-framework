@@ -37,6 +37,8 @@
     - [starter-logging](/starter/devops-boot-starter-logging.md)
     - [starter-web](/starter/devops-boot-starter-web.md)
     - [starter-service](/starter/devops-boot-starter-service.md)
+    - [starter-plugin](/starter/devops-boot-starter-plugin.md)
+    - [starter-schedule](/starter/devops-boot-starter-schedule.md)
     - ...
 
 ## 核心依赖
@@ -51,4 +53,4 @@
 
 ## 示例
 
-查看[sample](https://github.com/bkdevops-projects/devops-framework/tree/master/devops-boot-sample)来了解如何优雅集成`devops-boot`框架
+查看[Sample示例](https://github.com/bkdevops-projects/devops-framework/tree/master/devops-boot-sample)来了解如何优雅集成`devops-boot`框架

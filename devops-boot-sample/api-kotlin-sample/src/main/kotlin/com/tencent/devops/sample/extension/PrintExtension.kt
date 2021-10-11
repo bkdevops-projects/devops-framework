@@ -5,7 +5,7 @@ import com.tencent.devops.plugin.api.ExtensionPoint
 /**
  * 定义扩展点
  */
-interface PrintExtension: ExtensionPoint {
+interface PrintExtension : ExtensionPoint {
 
     /**
      * print content

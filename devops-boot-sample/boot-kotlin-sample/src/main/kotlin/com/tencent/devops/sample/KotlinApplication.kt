@@ -7,7 +7,6 @@ import org.springframework.cloud.openfeign.EnableFeignClients
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled
 
-
 /**
  * 使用DevOpsBoot框架的Sample应用
  */
@@ -16,7 +15,7 @@ import org.springframework.scheduling.annotation.Scheduled
 @SpringBootApplication
 class KotlinApplication {
 
-    @Scheduled(fixedDelay = 60 * 1000)
+    @Scheduled(fixedDelay = 60 * 1000L)
     fun schedule() {
         logger.debug("debug log")
         logger.info("info log")

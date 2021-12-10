@@ -12,6 +12,7 @@ javaPlatform {
 dependencies {
     constraints {
         rootProject.subprojects.filter { it.name != project.name }.forEach { api(project(it.path)) }
+
         // jwt
         api("io.jsonwebtoken:jjwt-api:0.11.2")
         api("io.jsonwebtoken:jjwt-impl:0.11.2")
@@ -34,6 +35,14 @@ dependencies {
         // s3
         api("com.amazonaws:aws-java-sdk-s3:1.11.700")
     }
+
+    //Spring
     api(platform(MavenBom.SpringBoot))
     api(platform(MavenBom.SpringCloud))
+
+    // TODO : it can be deleted after Spring cloud upgrade feign version (>= 11.4)
+    api(enforcedPlatform("io.github.openfeign:feign-core:11.6"))
+    api(enforcedPlatform("io.github.openfeign:feign-jackson:11.6"))
+    api(enforcedPlatform("io.github.openfeign:feign-jaxrs:11.6"))
+    api(enforcedPlatform("io.github.openfeign:feign-okhttp:11.6"))
 }

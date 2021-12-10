@@ -45,4 +45,8 @@ dependencies {
     api(enforcedPlatform("io.github.openfeign:feign-jackson:11.6"))
     api(enforcedPlatform("io.github.openfeign:feign-jaxrs:11.6"))
     api(enforcedPlatform("io.github.openfeign:feign-okhttp:11.6"))
+
+    //TODO : it can be deleted after Spring cloud upgrade log4j version (>= 2.15.0)
+    api(enforcedPlatform("org.apache.logging.log4j:log4j-api:2.15.0"))
+    api(enforcedPlatform("org.apache.logging.log4j:log4j-core:2.15.0"))
 }

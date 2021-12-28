@@ -25,11 +25,11 @@ class RepositoryConvention {
             mavenLocal()
             // release
             if (System.getenv("GITHUB_WORKFLOW") == null) {
-                mavenCentral()
-                gradlePluginPortal()
-            } else {
                 maven { it.url = URI("https://mirrors.tencent.com/nexus/repository/maven-public") }
                 maven { it.url = URI("https://mirrors.tencent.com/nexus/repository/gradle-plugins/") }
+            } else {
+                mavenCentral()
+                gradlePluginPortal()
             }
             // snapshot
             maven {

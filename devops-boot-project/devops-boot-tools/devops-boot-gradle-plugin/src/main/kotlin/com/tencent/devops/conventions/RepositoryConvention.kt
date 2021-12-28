@@ -21,15 +21,17 @@ class RepositoryConvention {
      */
     private fun configureRepository(project: Project) {
         with(project.repositories) {
-            maven {
-                it.name = "AliyunMirrors"
-                it.url = URI("https://maven.aliyun.com/repository/public/")
+            // cache
+            mavenLocal()
+            // release
+            if (System.getenv("GITHUB_WORKFLOW") == null) {
+                mavenCentral()
+                gradlePluginPortal()
+            } else {
+                maven { it.url = URI("https://mirrors.tencent.com/nexus/repository/maven-public") }
+                maven { it.url = URI("https://mirrors.tencent.com/nexus/repository/gradle-plugins/") }
             }
-            maven {
-                it.name = "TencentMirrors"
-                it.url = URI("https://mirrors.tencent.com/nexus/repository/maven-public/")
-            }
-            mavenCentral()
+            // snapshot
             maven {
                 it.name = "MavenSnapshot"
                 it.url = URI("https://oss.sonatype.org/content/repositories/snapshots/")

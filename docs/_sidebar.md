@@ -19,6 +19,7 @@
 - **依赖管理**
   - [devops-boot-dependencies](/dependency/devops-boot-dependencies.md)
   - [依赖版本列表](/dependency/versions.md)
+  - [Maven仓库](/dependency/repository.md)
 - [常见问题](/faq.md)
 - [参与开发](/contribute.md)
 - [更新日志](/changelog.md)

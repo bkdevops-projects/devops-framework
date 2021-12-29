@@ -1,6 +1,7 @@
 package com.tencent.devops.conventions
 
 import com.tencent.devops.utils.DevOpsVersionExtractor
+import com.tencent.devops.utils.findPropertyOrNull
 import io.spring.gradle.dependencymanagement.DependencyManagementPlugin
 import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension
 import org.gradle.api.Project
@@ -23,6 +24,10 @@ class RepositoryConvention {
         with(project.repositories) {
             // cache
             mavenLocal()
+            // customize
+            project.findPropertyOrNull("mavenRepoUrl")?.let { url ->
+                maven { it.url = URI(url) }
+            }
             // release
             if (System.getenv("GITHUB_WORKFLOW") == null) {
                 maven { it.url = URI("https://mirrors.tencent.com/nexus/repository/maven-public") }

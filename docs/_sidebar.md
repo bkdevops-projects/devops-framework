@@ -12,12 +12,14 @@
   - [starter-circuitbreaker](/starter/devops-boot-starter-circuitbreaker.md)
   - [starter-loadbalancer](/starter/devops-boot-starter-loadbalancer.md)
   - [starter-plugin](/starter/devops-boot-starter-plugin.md)
+  - [starter-schedule](/starter/devops-boot-starter-schedule.md)
 - **k8s云原生编译打包**
   - [云原生编译](/k8s/compile.md)
   - [云原生部署](/k8s/deploy.md)
 - **依赖管理**
   - [devops-boot-dependencies](/dependency/devops-boot-dependencies.md)
   - [依赖版本列表](/dependency/versions.md)
+  - [Maven仓库](/dependency/repository.md)
 - [常见问题](/faq.md)
 - [参与开发](/contribute.md)
 - [更新日志](/changelog.md)

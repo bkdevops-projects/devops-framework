@@ -15,10 +15,11 @@ import java.nio.file.Files
 class DevOpsBootPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
-        RepositoryConvention().apply(project)
         // solve issue 73
-        JavaConvention().apply(project)
         KotlinConvention().apply(project)
+        JavaConvention().apply(project)
+        // add dependencyManagement
+        RepositoryConvention().apply(project)
         // ignore the next configuration if this is an empty project
         if (isNotEmptyProject(project)) {
             SpringBootConvention().apply(project)

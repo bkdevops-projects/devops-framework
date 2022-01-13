@@ -16,3 +16,4 @@ includeAll("devops-boot-project:devops-boot-starters")
 includeAll("devops-boot-project:devops-boot-tools")
 
 includeAll("devops-boot-project:devops-boot-core:devops-plugin")
+includeAll("devops-boot-project:devops-boot-core:devops-schedule")

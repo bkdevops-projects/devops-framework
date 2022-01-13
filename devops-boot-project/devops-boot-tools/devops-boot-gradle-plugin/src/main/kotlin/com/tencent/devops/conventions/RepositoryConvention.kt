@@ -1,6 +1,7 @@
 package com.tencent.devops.conventions
 
 import com.tencent.devops.utils.DevOpsVersionExtractor
+import com.tencent.devops.utils.findPropertyOrNull
 import io.spring.gradle.dependencymanagement.DependencyManagementPlugin
 import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension
 import org.gradle.api.Project
@@ -21,15 +22,27 @@ class RepositoryConvention {
      */
     private fun configureRepository(project: Project) {
         with(project.repositories) {
-            maven {
-                it.name = "TencentMirrors"
-                it.url = URI("https://mirrors.tencent.com/nexus/repository/maven-public/")
+            // cache
+            mavenLocal()
+            // customize
+            project.findPropertyOrNull("mavenRepoUrl")?.let { url ->
+                maven { it.url = URI(url) }
             }
-            mavenCentral()
-            jcenter()
+            // release
+            if (System.getenv("GITHUB_WORKFLOW") == null) {
+                maven { it.url = URI("https://mirrors.tencent.com/nexus/repository/maven-public") }
+                maven { it.url = URI("https://mirrors.tencent.com/nexus/repository/gradle-plugins/") }
+            } else {
+                mavenCentral()
+                gradlePluginPortal()
+            }
+            // snapshot
             maven {
-                it.name = "MavenSnapshotRepo"
+                it.name = "MavenSnapshot"
                 it.url = URI("https://oss.sonatype.org/content/repositories/snapshots/")
+                it.mavenContent { descriptor ->
+                    descriptor.snapshotsOnly()
+                }
             }
         }
     }

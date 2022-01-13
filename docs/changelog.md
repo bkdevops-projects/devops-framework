@@ -1,7 +1,23 @@
 # 更新日志
 
-## [0.0.5] (待发布)
-- 开发调度中心组件schedule-starter
+## [0.0.5](https://github.com/bkdevops-projects/devops-framework/releases/tag/0.0.4) (2022-01-13)
+### Features
+- 日志路径支持自定义 #96
+- 开发分布式调度中心组件schedule-starter #103
+
+### Refactor
+- dependencies自定义的版本没有生效 #92
+- boot项目没有应用到devops-boot-dependencies #119
+- 整理仓库配置 #110
+- 仓库列表优化 #95
+
+### Dependencies
+- 升级log4j到2.15.0 #111
+- 升级logback版本 #114
+- feign 10.10.1自动在header的value的逗号后面加空格, 导致获取到的值不符合预期 #89
+
+### Documentation
+- documentation: 完善文档 #65
 
 ## [0.0.4](https://github.com/bkdevops-projects/devops-framework/releases/tag/0.0.4) (2021-07-29)
 

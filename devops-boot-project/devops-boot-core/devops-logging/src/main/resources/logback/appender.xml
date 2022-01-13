@@ -2,7 +2,7 @@
 <included>
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>${logging.file.pattern}</pattern>
+            <pattern>${logging.console.pattern}</pattern>
         </encoder>
     </appender>
 
@@ -14,7 +14,7 @@
             <maxFileSize>1GB</maxFileSize>
         </rollingPolicy>
         <encoder>
-            <pattern>${logging.file.pattern}</pattern>
+            <pattern>${logging.app.file.pattern}</pattern>
         </encoder>
     </appender>
     <appender name="app-log" class="ch.qos.logback.classic.AsyncAppender">
@@ -33,7 +33,7 @@
             <maxFileSize>1GB</maxFileSize>
         </rollingPolicy>
         <encoder>
-            <pattern>${logging.file.pattern}</pattern>
+            <pattern>${logging.error.file.pattern}</pattern>
         </encoder>
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>ERROR</level>
@@ -43,6 +43,25 @@
     </appender>
     <appender name="error-log" class="ch.qos.logback.classic.AsyncAppender">
         <appender-ref ref="sync-error-log" />
+        <queueSize>512</queueSize>
+        <discardingThreshold>0</discardingThreshold>
+        <neverBlock>false</neverBlock>
+        <includeCallerData>true</includeCallerData>
+    </appender>
+
+    <appender name="sync-access-log" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logging.access.file}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${logging.access.file}.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <maxFileSize>1GB</maxFileSize>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%m%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="access-log" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="sync-access-log" />
         <queueSize>512</queueSize>
         <discardingThreshold>0</discardingThreshold>
         <neverBlock>false</neverBlock>

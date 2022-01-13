@@ -14,16 +14,18 @@ import java.nio.file.Files
  */
 class DevOpsBootPlugin : Plugin<Project> {
 
+    //Convention 优先级 : 越往后面的优先级越高
     override fun apply(project: Project) {
-        RepositoryConvention().apply(project)
         // solve issue 73
-        JavaConvention().apply(project)
         KotlinConvention().apply(project)
+        JavaConvention().apply(project)
         // ignore the next configuration if this is an empty project
         if (isNotEmptyProject(project)) {
             SpringBootConvention().apply(project)
             JUnitConvention().apply(project)
         }
+        // add dependencyManagement
+        RepositoryConvention().apply(project)
     }
 
     /**

@@ -25,7 +25,7 @@
 - **统一** ：目前已集成了微服务开发常用组件和统一配置
 - **扩展** ：组件之间低耦合，高内聚，扩展十分方便
 
-查看[快速开始](quick-start.md)了解详情。
+查看[快速开始](docs/quick-start.md)了解详情。
 
 ## DevOps Boot 能解决什么问题？
 
@@ -35,14 +35,14 @@
 - **统一常用工具类** ： 避免代码重复
 
 ## 功能特性
-- 提供gradle快速开发插件[devops-boot-gradle-plugin](./devops-boot-project/devops-boot-tools/devops-boot-gradle-plugin/README.md)
-- 提供gradle快速发布插件[devops-publish-gradle-plugin](./devops-boot-project/devops-boot-tools/devops-publish-gradle-plugin/README.md)
-- 提供统一版本依赖管理[devops-boot-dependencies](./devops-boot-project/devops-boot-dependencies/README.md)
+- 提供gradle快速开发插件[devops-boot-gradle-plugin](./docs/plugin/devops-boot-gradle-plugin.md)
+- 提供gradle快速发布插件[devops-publish-gradle-plugin](./docs/plugin/devops-publish-gradle-plugin.md)
+- 提供统一版本依赖管理[devops-boot-dependencies](./docs/dependency/devops-boot-dependencies.md)
 - 提供多个开箱即用的starter组件
-  - [starter-api](./devops-boot-project/devops-boot-starters/devops-boot-starter-api/README.md)
-  - [starter-logging](./devops-boot-project/devops-boot-starters/devops-boot-starter-logging/README.md)
-  - [starter-web](./devops-boot-project/devops-boot-starters/devops-boot-starter-web/README.md)
-  - [starter-service](./devops-boot-project/devops-boot-starters/devops-boot-starter-service/README.md)
+  - [starter-api](./docs/starter/devops-boot-starter-api.md)
+  - [starter-logging](./docs/starter/devops-boot-starter-logging.md)
+  - [starter-web](./docs/starter/devops-boot-starter-web.md)
+  - [starter-service](./docs/starter/devops-boot-starter-service.md)
   - ...
 
 ## 核心依赖
@@ -57,4 +57,4 @@
 
 ## 示例
 
-可以查看[sample](https://github.com/bkdevops-projects/devops-framework/tree/master/devops-boot-sample)来了解如何优雅集成`devops-boot`框架。
+可以查看 [sample](https://github.com/bkdevops-projects/devops-framework/tree/master/devops-boot-sample) 来了解如何优雅集成`devops-boot`框架。

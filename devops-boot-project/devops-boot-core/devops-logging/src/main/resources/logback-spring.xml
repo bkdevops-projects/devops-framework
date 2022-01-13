@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration debug="false" scan="false">
-    <include resource="logback/base.xml"/>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
     <include resource="logback/appender.xml"/>
 
     <springProfile name="default, local, dev">
+        <logger name="AccessLogger" level="INFO" additivity="false">
+            <appender-ref ref="console"/>
+            <appender-ref ref="access-log"/>
+        </logger>
         <root level="INFO">
             <appender-ref ref="console"/>
             <appender-ref ref="app-log"/>
@@ -12,6 +16,9 @@
     </springProfile>
 
     <springProfile name="test, prod">
+        <logger name="AccessLogger" level="INFO" additivity="false">
+            <appender-ref ref="access-log" />
+        </logger>
         <root level="INFO">
             <appender-ref ref="app-log"/>
             <appender-ref ref="error-log"/>

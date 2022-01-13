@@ -1,6 +1,9 @@
 # 更新日志
 
-## [0.0.4] (https://github.com/bkdevops-projects/devops-framework/releases/tag/0.0.4) (2021-07-29)
+## [0.0.5] (待发布)
+- 开发调度中心组件schedule-starter
+
+## [0.0.4](https://github.com/bkdevops-projects/devops-framework/releases/tag/0.0.4) (2021-07-29)
 
 ### Features
 - 支持k8s云原生编译打包方式

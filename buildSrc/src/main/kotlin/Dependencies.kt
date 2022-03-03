@@ -6,6 +6,7 @@ object Libs {
     const val DependencyManagement = "io.spring.gradle:dependency-management-plugin:${Versions.DependencyManagement}"
     const val KotlinSpringGradlePlugin = "org.jetbrains.kotlin:kotlin-allopen:${Versions.Kotlin}"
     const val KtLint = "com.pinterest:ktlint:${Versions.KtLint}"
+    const val GoogleJibPlugin = "gradle.plugin.com.google.cloud.tools:jib-gradle-plugin:${Versions.Jib}"
 }
 
 object MavenBom {

@@ -1,6 +1,7 @@
 package com.tencent.devops.conventions
 
-import com.tencent.devops.utils.findPropertyOrEmpty
+import com.tencent.devops.enums.AssemblyMode
+import com.tencent.devops.utils.resolveAssemblyMode
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.utils.IMPLEMENTATION
 
@@ -13,16 +14,6 @@ class SpringCloudConvention {
         with(project) {
             val assemblyMode = resolveAssemblyMode(this)
             addServiceDependency(this, assemblyMode)
-        }
-    }
-
-    /**
-     * 解析打包模式
-     */
-    private fun resolveAssemblyMode(project: Project): AssemblyMode {
-        val property = project.findPropertyOrEmpty(ASSEMBLY_MODE).trim()
-        return AssemblyMode.ofValueOrDefault(property).apply {
-            println("Project[${project.name}] assembly mode: $this")
         }
     }
 
@@ -44,11 +35,6 @@ class SpringCloudConvention {
 
     companion object {
         /**
-         * 打包模式
-         */
-        private const val ASSEMBLY_MODE = "devops.assemblyMode"
-
-        /**
          * consul依赖
          */
         private const val CONSUL_CONFIG = "org.springframework.cloud:spring-cloud-starter-consul-config"
@@ -59,18 +45,5 @@ class SpringCloudConvention {
          */
         private const val K8S_CONFIG = "org.springframework.cloud:spring-cloud-starter-kubernetes-client"
         private const val K8S_DISCOVERY = "org.springframework.cloud:spring-cloud-starter-kubernetes-client-config"
-    }
-}
-
-enum class AssemblyMode {
-    CONSUL,
-    K8S,
-    KUBERNETES;
-
-    companion object {
-        fun ofValueOrDefault(value: String): AssemblyMode {
-            val upperCase = value.toUpperCase()
-            return values().find { it.name == upperCase } ?: CONSUL
-        }
     }
 }

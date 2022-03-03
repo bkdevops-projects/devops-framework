@@ -4,6 +4,7 @@ object Release {
 }
 
 object Versions {
+    const val Jib: String = "3.2.0"
     const val Java = "1.8"
     const val Kotlin = "1.4.32"
     const val SpringBoot = "2.4.5"

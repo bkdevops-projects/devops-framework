@@ -1,5 +1,7 @@
 package com.tencent.devops.utils
 
+import com.tencent.devops.conventions.SpringCloudConvention
+import com.tencent.devops.enums.AssemblyMode
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 
@@ -67,4 +69,14 @@ fun Project.findPropertyOrEmpty(name: String): String {
  */
 fun Project.findPropertyOrDefault(name: String, default: String): String {
     return findPropertyOrNull(name) ?: default
+}
+
+/**
+ * 判断构建模式
+ */
+fun resolveAssemblyMode(project: Project): AssemblyMode {
+    val property = project.findPropertyOrEmpty("devops.assemblyMode").trim()
+    return AssemblyMode.ofValueOrDefault(property).apply {
+        println("Project[${project.name}] assembly mode: $this")
+    }
 }

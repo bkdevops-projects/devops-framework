@@ -1,5 +1,6 @@
 package com.tencent.devops
 
+import com.tencent.devops.conventions.GoogleJibConvention
 import com.tencent.devops.conventions.JUnitConvention
 import com.tencent.devops.conventions.JavaConvention
 import com.tencent.devops.conventions.KotlinConvention
@@ -26,6 +27,8 @@ class DevOpsBootPlugin : Plugin<Project> {
         }
         // add dependencyManagement
         RepositoryConvention().apply(project)
+        // add jib to build container images
+        GoogleJibConvention().apply(project)
     }
 
     /**

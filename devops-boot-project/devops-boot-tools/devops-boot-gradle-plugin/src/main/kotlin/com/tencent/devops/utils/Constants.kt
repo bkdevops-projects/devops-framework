@@ -37,7 +37,7 @@ fun isKotlinSupport(project: Project): Boolean {
  * 目前使用一种约定俗成的办法，boot启动项目名称必须以boot-开头
  */
 fun isBootProject(project: Project): Boolean {
-    return project.name.startsWith("boot-")
+    return project.name.startsWith("boot-") || project.findPropertyOrEmpty("devops.boot") == "true"
 }
 
 /**

@@ -1,6 +1,7 @@
 package com.tencent.devops.loadbalancer.gray
 
 import com.tencent.devops.loadbalancer.config.DevOpsLoadBalancerProperties
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.cloud.client.ServiceInstance
 import org.springframework.cloud.client.serviceregistry.Registration
@@ -20,7 +21,8 @@ class GrayLoadBalancerConfiguration : LoadBalancerClientConfiguration() {
     @ConditionalOnMissingBean
     fun reactorServiceInstanceLoadBalancer(
         loadBalancerProperties: DevOpsLoadBalancerProperties,
-        registration: Registration,
+        @Autowired(required = false)
+        registration: Registration?,
         environment: Environment,
         loadBalancerClientFactory: LoadBalancerClientFactory
     ): ReactorLoadBalancer<ServiceInstance> {

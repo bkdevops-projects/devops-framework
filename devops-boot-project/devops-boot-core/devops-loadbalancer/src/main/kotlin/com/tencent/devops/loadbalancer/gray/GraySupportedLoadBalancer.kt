@@ -24,7 +24,7 @@ import kotlin.math.abs
  */
 class GraySupportedLoadBalancer(
     private val loadBalancerProperties: DevOpsLoadBalancerProperties,
-    private val registration: Registration,
+    private val registration: Registration?,
     private val serviceInstanceListSupplierProvider: ObjectProvider<ServiceInstanceListSupplier>,
     private val serviceId: String,
     private val position: AtomicInteger = AtomicInteger(Random().nextInt(1000))
@@ -46,7 +46,11 @@ class GraySupportedLoadBalancer(
     }
 
     private fun getInstanceResponse(instances: List<ServiceInstance>): Response<ServiceInstance> {
-        val filteredInstances = if (loadBalancerProperties.gray.enabled) {
+        // 使用k8s的service的时候，应该只有一个endpoint，所以这里只取第一个
+        if (instances.size == 1) {
+            return DefaultResponse(instances[0])
+        }
+        val filteredInstances = if (registration != null && loadBalancerProperties.gray.enabled) {
             if (loadBalancerProperties.gray.metaKey.isEmpty()) {
                 logger.warn("Load balancer gray meta-key is empty.")
             }
@@ -56,7 +60,7 @@ class GraySupportedLoadBalancer(
 
         if (loadBalancerProperties.localPrior.enabled) {
             for (instance in filteredInstances) {
-                if (instance.host == registration.host) {
+                if (registration != null && instance.host == registration.host) {
                     return DefaultResponse(instance)
                 }
             }

@@ -38,8 +38,8 @@ dependencies {
 
         // mq stream
         api("org.springframework.cloud:spring-cloud-stream:3.0.11.RELEASE")
-        api("org.springframework.cloud:spring-cloud-starter-stream-kafka:3.0.11.RELEASE")
-        api("org.springframework.cloud:spring-cloud-starter-stream-rabbit:3.0.11.RELEASE")
+        api("org.springframework.cloud:spring-cloud-stream-binder-kafka:3.0.11.RELEASE")
+        api("org.springframework.cloud:spring-cloud-stream-binder-rabbit:3.0.11.RELEASE")
         api("org.apache.pulsar:pulsar-client:2.8.1")
         api("com.google.protobuf:protobuf-java:3.19.4")
 

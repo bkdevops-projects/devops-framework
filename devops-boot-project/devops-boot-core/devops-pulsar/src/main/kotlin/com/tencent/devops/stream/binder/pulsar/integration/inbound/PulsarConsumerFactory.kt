@@ -29,6 +29,8 @@ package com.tencent.devops.stream.binder.pulsar.integration.inbound
 
 import com.tencent.devops.stream.binder.pulsar.constant.Serialization
 import com.tencent.devops.stream.binder.pulsar.properties.PulsarConsumerProperties
+import com.tencent.devops.stream.binder.pulsar.properties.PulsarProperties
+import com.tencent.devops.stream.binder.pulsar.util.PulsarClientUtils
 import com.tencent.devops.stream.binder.pulsar.util.PulsarUtils
 import com.tencent.devops.stream.binder.pulsar.util.SchemaUtils
 import org.apache.pulsar.client.api.Consumer
@@ -38,6 +40,7 @@ import org.apache.pulsar.client.api.PulsarClient
 import org.apache.pulsar.client.api.RegexSubscriptionMode
 import org.apache.pulsar.client.api.SubscriptionInitialPosition
 import org.apache.pulsar.client.api.SubscriptionType
+import org.springframework.cloud.stream.binder.ExtendedConsumerProperties
 import java.util.concurrent.TimeUnit
 
 object PulsarConsumerFactory {
@@ -53,17 +56,20 @@ object PulsarConsumerFactory {
     fun initPulsarConsumer(
         topic: String,
         group: String? = null,
-        consumerProperties: PulsarConsumerProperties,
-        pulsarClient: PulsarClient,
+        consumerProperties: ExtendedConsumerProperties<PulsarConsumerProperties>,
         messageListener: (Consumer<*>, Message<*>) -> Unit,
         retryLetterTopic: String,
-        deadLetterTopic: String
+        deadLetterTopic: String,
+        pulsarProperties: PulsarProperties,
+        concurrency: Int? = null,
+        pulsarClient: PulsarClient? = null
     ): Consumer<Any> {
-        with(consumerProperties) {
+        with(consumerProperties.extension) {
             val topics = mutableListOf<String>()
             topics.addAll(topicNames)
             topics.add(topic)
-            val consumer = pulsarClient.newConsumer(
+            val client = pulsarClient ?: PulsarClientUtils.pulsarClient(pulsarProperties, concurrency)
+            val consumer = client.newConsumer(
                 SchemaUtils.getSchema(Serialization.valueOf(serialType), serialClass)
             ).topics(topics)
             if (!topicsPattern.isNullOrEmpty()) {

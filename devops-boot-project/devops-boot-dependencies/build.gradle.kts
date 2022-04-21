@@ -10,7 +10,7 @@ javaPlatform {
 }
 
 dependencies {
-    //Spring
+    // Spring
     api(platform(MavenBom.SpringBoot))
     api(platform(MavenBom.SpringCloud))
 
@@ -40,7 +40,7 @@ dependencies {
         api("org.springframework.cloud:spring-cloud-stream:3.0.11.RELEASE")
         api("org.springframework.cloud:spring-cloud-starter-stream-kafka:3.0.11.RELEASE")
         api("org.springframework.cloud:spring-cloud-starter-stream-rabbit:3.0.11.RELEASE")
-        api("org.apache.pulsar:pulsar-client:2.8.1")
+        api("org.apache.pulsar:pulsar-client:2.9.1")
         api("com.google.protobuf:protobuf-java:3.19.4")
 
         // s3
@@ -52,12 +52,12 @@ dependencies {
         api("io.github.openfeign:feign-jaxrs:11.6")
         api("io.github.openfeign:feign-okhttp:11.6")
 
-        //TODO : it can be deleted after Spring cloud upgrade log4j version (>= 2.15.0)
+        // TODO : it can be deleted after Spring cloud upgrade log4j version (>= 2.15.0)
         api("org.apache.logging.log4j:log4j-api:2.17.0")
         api("org.apache.logging.log4j:log4j-core:2.17.0")
         api("org.apache.logging.log4j:log4j-to-slf4j:2.17.0")
 
-        //TODO : it can be deleted after Spring cloud upgrade logback version (>= 1.2.10)
+        // TODO : it can be deleted after Spring cloud upgrade logback version (>= 1.2.10)
         api("ch.qos.logback:logback-core:1.2.10")
         api("ch.qos.logback:logback-classic:1.2.10")
     }

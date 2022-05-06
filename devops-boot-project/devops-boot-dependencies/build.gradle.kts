@@ -36,13 +36,6 @@ dependencies {
         api("io.swagger:swagger-models:1.5.20")
         api("io.springfox:springfox-boot-starter:3.0.0")
 
-        // mq stream
-        api("org.springframework.cloud:spring-cloud-stream:3.0.11.RELEASE")
-        api("org.springframework.cloud:spring-cloud-starter-stream-kafka:3.0.11.RELEASE")
-        api("org.springframework.cloud:spring-cloud-starter-stream-rabbit:3.0.11.RELEASE")
-        api("org.apache.pulsar:pulsar-client:2.9.1")
-        api("com.google.protobuf:protobuf-java:3.19.4")
-
         // s3
         api("com.amazonaws:aws-java-sdk-s3:1.11.700")
 

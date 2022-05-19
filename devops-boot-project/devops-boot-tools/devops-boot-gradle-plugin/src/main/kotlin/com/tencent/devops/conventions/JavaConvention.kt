@@ -17,7 +17,9 @@ class JavaConvention {
         with(project) {
             pluginManager.apply(JavaPlugin::class.java)
             tasks.withType(JavaCompile::class.java) {
-                it.sourceCompatibility = findJavaVersion(this)
+                val javaVersion = findJavaVersion(this)
+                it.sourceCompatibility = javaVersion
+                it.targetCompatibility = javaVersion
                 it.options.encoding = UTF_8.name()
             }
         }

@@ -28,7 +28,7 @@ class SpringBootConvention {
     private fun configureCopyToRelease(project: Project) {
         with(project.tasks) {
             val copyToRelease = register(CopyToReleaseAction.TASK_NAME, Copy::class.java, CopyToReleaseAction())
-            getByName("build").dependsOn(copyToRelease)
+            named("build").configure { it.dependsOn(copyToRelease) }
         }
     }
 }

@@ -6,7 +6,7 @@ object Release {
 object Versions {
     const val Jib: String = "3.2.0"
     const val Java = "1.8"
-    const val Kotlin = "1.4.32"
+    const val Kotlin = "1.5.32"
     const val SpringBoot = "2.5.13"
     const val SpringCloud = "2020.0.3"
     const val DependencyManagement = "1.0.11.RELEASE"

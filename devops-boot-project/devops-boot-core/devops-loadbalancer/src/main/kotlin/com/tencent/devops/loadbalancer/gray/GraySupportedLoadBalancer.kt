@@ -5,18 +5,15 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.ObjectProvider
 import org.springframework.cloud.client.ServiceInstance
 import org.springframework.cloud.client.loadbalancer.DefaultResponse
-import org.springframework.cloud.client.loadbalancer.EmptyResponse
 import org.springframework.cloud.client.loadbalancer.Request
 import org.springframework.cloud.client.loadbalancer.Response
 import org.springframework.cloud.client.serviceregistry.Registration
 import org.springframework.cloud.loadbalancer.core.NoopServiceInstanceListSupplier
-import org.springframework.cloud.loadbalancer.core.ReactorServiceInstanceLoadBalancer
 import org.springframework.cloud.loadbalancer.core.SelectedInstanceCallback
 import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier
 import reactor.core.publisher.Mono
 import java.util.Random
 import java.util.concurrent.atomic.AtomicInteger
-import kotlin.math.abs
 
 /**
  * 支持灰度调用的loadbalancer
@@ -26,9 +23,9 @@ class GraySupportedLoadBalancer(
     private val loadBalancerProperties: DevOpsLoadBalancerProperties,
     private val registration: Registration,
     private val serviceInstanceListSupplierProvider: ObjectProvider<ServiceInstanceListSupplier>,
-    private val serviceId: String,
-    private val position: AtomicInteger = AtomicInteger(Random().nextInt(1000))
-) : ReactorServiceInstanceLoadBalancer {
+    serviceId: String,
+    position: AtomicInteger = AtomicInteger(Random().nextInt(1000))
+) : BaseLoadBalancer(serviceInstanceListSupplierProvider, serviceId, position) {
     override fun choose(request: Request<*>?): Mono<Response<ServiceInstance>> {
         val supplier = serviceInstanceListSupplierProvider.getIfAvailable { NoopServiceInstanceListSupplier() }
         return supplier.get(request).next().map { processInstanceResponse(supplier, it) }
@@ -45,7 +42,7 @@ class GraySupportedLoadBalancer(
         return serviceInstanceResponse
     }
 
-    private fun getInstanceResponse(instances: List<ServiceInstance>): Response<ServiceInstance> {
+    override fun getInstanceResponse(instances: List<ServiceInstance>): Response<ServiceInstance> {
         val filteredInstances = if (loadBalancerProperties.gray.enabled) {
             if (loadBalancerProperties.gray.metaKey.isEmpty()) {
                 logger.warn("Load balancer gray meta-key is empty.")
@@ -63,20 +60,6 @@ class GraySupportedLoadBalancer(
         }
 
         return roundRobinChoose(filteredInstances)
-    }
-
-    private fun roundRobinChoose(instances: List<ServiceInstance>): Response<ServiceInstance> {
-        if (instances.isEmpty()) {
-            if (logger.isWarnEnabled) {
-                logger.warn("No servers available for service: $serviceId")
-            }
-            return EmptyResponse()
-        }
-
-        // TODO: enforce order?
-        val pos = abs(this.position.incrementAndGet())
-        val instance = instances[pos % instances.size]
-        return DefaultResponse(instance)
     }
 
     companion object {

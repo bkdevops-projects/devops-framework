@@ -12,6 +12,7 @@ class CopyToReleaseAction : Action<Copy> {
 
     override fun execute(copy: Copy) {
         with(copy) {
+            copy.dependsOn(project.tasks.named("bootJar"))
             val withVersion = project.findPropertyOrEmpty(COPY_WITH_VERSION).toBoolean()
             val bootJar = project.tasks.withType(BootJar::class.java).first()
             from(bootJar.archiveFile)

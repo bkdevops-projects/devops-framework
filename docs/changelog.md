@@ -1,6 +1,8 @@
 # 更新日志
+## [0.0.6] (待发布)
 
 ## [0.0.5](https://github.com/bkdevops-projects/devops-framework/releases/tag/0.0.4) (2022-01-13)
+
 ### Features
 - 日志路径支持自定义 #96
 - 开发分布式调度中心组件schedule-starter #103

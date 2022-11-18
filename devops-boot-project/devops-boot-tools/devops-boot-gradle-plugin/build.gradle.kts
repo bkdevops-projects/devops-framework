@@ -13,7 +13,7 @@ dependencies {
     implementation(Libs.KotlinSpringGradlePlugin)
     implementation(Libs.GoogleJibPlugin)
     implementation(Libs.KtLint) {
-        // ktlint 引用了1.4.31版本，和项目引入的1.4.32有冲突
+        // ktlint 引用了1.4.31版本，和项目引入的1.6.21有冲突
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib-jdk8")
     }
 }

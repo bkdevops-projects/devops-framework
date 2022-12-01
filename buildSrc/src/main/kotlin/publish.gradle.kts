@@ -28,13 +28,9 @@ configure<PublishingExtension> {
                     url.set("https://opensource.org/licenses/MIT")
                 }
             }
-            developers {
-                developer {
-                    name.set("carrypan")
-                    email.set("carrypan@tencent.com")
-                    url.set("https://github.com/carrypann")
-                    roles.set(listOf("Java Developer"))
-                }
+            organization {
+                name.set("Tencent BK-CI")
+                url.set("https://github.com/Tencent/bk-ci")
             }
             scm {
                 connection.set("scm:git:git://github.com/bkdevops-projects/devops-framework.git")

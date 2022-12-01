@@ -22,8 +22,6 @@ class RepositoryConvention {
      */
     private fun configureRepository(project: Project) {
         with(project.repositories) {
-            // cache
-            mavenLocal()
             // customize
             project.findPropertyOrNull("mavenRepoUrl")?.let { url ->
                 maven { it.url = URI(url) }
@@ -44,6 +42,7 @@ class RepositoryConvention {
                     descriptor.snapshotsOnly()
                 }
             }
+            mavenLocal()
         }
     }
 

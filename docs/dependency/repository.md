@@ -2,10 +2,10 @@
 
 ## 优先级
 ```
-mavenLocal()
 自定义库
 release库
 snapshot库
+mavenLocal()
 ```
 
 #### 一. 自定义库

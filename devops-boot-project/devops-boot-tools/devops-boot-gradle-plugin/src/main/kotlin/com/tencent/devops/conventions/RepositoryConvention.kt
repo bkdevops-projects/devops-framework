@@ -34,6 +34,8 @@ class RepositoryConvention {
                 mavenCentral()
                 gradlePluginPortal()
             }
+            // spring
+            maven { it.url = URI("https://repo.spring.io/milestone") }
             // snapshot
             maven {
                 it.name = "MavenSnapshot"

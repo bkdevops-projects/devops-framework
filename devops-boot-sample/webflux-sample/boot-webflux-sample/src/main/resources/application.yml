@@ -1,0 +1,17 @@
+logging:
+  level:
+    com.tencent: debug
+devops:
+  logging:
+    path: D://
+    app-file: sample.log
+    error-file: sample-error.log
+  loadbalancer:
+    gray:
+      enabled: true
+      meta-key: env
+    local-prior:
+      enabled: true
+context:
+  initializer:
+    classes: com.tencent.devops.sample.config.BeansInitializer

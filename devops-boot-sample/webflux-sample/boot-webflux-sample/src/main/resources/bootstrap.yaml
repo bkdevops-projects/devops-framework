@@ -1,0 +1,24 @@
+service:
+  prefix: devops-
+spring:
+  application:
+    name: kotlin-sample
+  cloud:
+    consul:
+      discovery:
+        tags: env=xxx, a=b
+        metadata:
+          env: aaa
+server:
+  port: 8080
+
+resilience4j:
+  thread-pool-bulkhead:
+    instances:
+      backendA:
+        maxThreadPoolSize: 1
+        coreThreadPoolSize: 1
+  bulkhead:
+    instances:
+      backendB:
+        maxConcurrentCalls: 10

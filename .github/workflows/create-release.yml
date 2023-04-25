@@ -1,0 +1,46 @@
+
+name: Create release branch
+on:
+  workflow_dispatch:
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Get version
+        run: |
+          version_file=buildSrc/src/main/kotlin/Versions.kt
+          version=$(awk '/Version =/ {print $5}' $version_file |sed 's/\"//g' |sed 's/-SNAPSHOT//g')
+          echo "RELEASE_VERSION=$version" >> $GITHUB_ENV
+          echo "VERSION_FILE=$version_file" >> $GITHUB_ENV
+      - name: Setup git configuration
+        run: |
+          git config user.name "DevOps Project Bot"
+          git config user.email "devops-project-bot@users.noreply.github.com"
+      - name: Create release branch
+        run: git checkout -b release-${{ env.RELEASE_VERSION }}
+      - name: Version Bump
+        run: |
+          sed -i 's/${{ env.RELEASE_VERSION }}-SNAPSHOT/${{ env.RELEASE_VERSION }}/g' ${{ env.VERSION_FILE }}
+      - name: Commit version file
+        id: commit-version-file
+        run: |
+          git add ${{ env.VERSION_FILE }}
+          git commit --message "Prepare release ${{ env.RELEASE_VERSION }}"
+          echo "::set-output name=commit::$(git rev-parse HEAD)"
+      - name: Push new branch
+        run: git push origin release-${{ env.RELEASE_VERSION }}
+      - name: Create pull request into master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ./.github/scripts/create_pr_body.sh \
+          ${{ github.actor }} \
+          ${{ github.repository }} \
+          ${{ github.run_id }} \
+          ${{ steps.commit-version-file.outputs.commit }} | \
+          gh pr create -B master -H release-${{ env.RELEASE_VERSION }} \
+          --title 'Release version ${{ env.RELEASE_VERSION }}' \
+          --reviewer ${{ github.actor }} \
+          --body-file -

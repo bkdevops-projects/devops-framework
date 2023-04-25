@@ -45,7 +45,7 @@ class PluginEndpoint(
      * @param id 需要加载的插件id
      */
     @WriteOperation
-    fun load(@Selector id: String): WebEndpointResponse<String> {
+    fun loadOne(@Selector id: String): WebEndpointResponse<String> {
         return try {
             pluginManager.load(id)
             WebEndpointResponse("ok")

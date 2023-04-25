@@ -1,0 +1,57 @@
+
+name: Release
+on:
+  pull_request:
+    branches:
+      - master
+    types:
+      - closed
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    # only merged pull requests that begin with 'release-' must trigger this job
+    if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'release-')
+    steps:
+      - name: Get version
+        if: startsWith(github.event.pull_request.head.ref, 'release-')
+        run: |
+          branch_name="${{ github.event.pull_request.head.ref }}"
+          version=${branch_name#release-}
+          echo "RELEASE_VERSION=$version" >> $GITHUB_ENV
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - name: Setup git configuration
+        run: |
+          git config user.name "DevOps Project Bot"
+          git config user.email "devops-project-bot@users.noreply.github.com"
+      - name: Create tag
+        run: git tag v${{ env.RELEASE_VERSION }}
+      - name: Push git tag
+        run: git push origin v${{ env.RELEASE_VERSION }}
+      - name: Setup Docker
+        uses: docker-practice/actions-setup-docker@master
+      - name: Generate changelog
+        id: generate-changelog
+        run: |
+          CONFIG_DIR=$(pwd)/.github/config
+          docker run --rm -v $CONFIG_DIR:/generated-changelog springio/github-changelog-generator:0.0.8 ls /generated-changelog 
+          docker run --rm -v $CONFIG_DIR:/generated-changelog springio/github-changelog-generator:0.0.8  \
+          java -jar -Dfile.encoding=utf-8 github-changelog-generator.jar \
+          --spring.config.location=/generated-changelog/changelog-generator.yml \
+          --github.username=${{ github.actor }} \
+          --github.password=${{ secrets.GITHUB_TOKEN }} \
+          ${{ env.RELEASE_VERSION }} \
+          /generated-changelog/changelog.md
+          echo "::set-output name=changelog_path::$CONFIG_DIR/changelog.md"
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ env.RELEASE_VERSION }}
+          release_name: v${{ env.RELEASE_VERSION }}
+          body_path: ${{ steps.generate-changelog.outputs.changelog_path }}
+          draft: true
+          prerelease: true

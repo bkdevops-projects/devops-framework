@@ -22,8 +22,6 @@ class RepositoryConvention {
      */
     private fun configureRepository(project: Project) {
         with(project.repositories) {
-            // cache
-            mavenLocal()
             // customize
             project.findPropertyOrNull("mavenRepoUrl")?.let { url ->
                 maven { it.url = URI(url) }
@@ -36,6 +34,8 @@ class RepositoryConvention {
                 mavenCentral()
                 gradlePluginPortal()
             }
+            // spring
+            maven { it.url = URI("https://repo.spring.io/milestone") }
             // snapshot
             maven {
                 it.name = "MavenSnapshot"
@@ -44,6 +44,7 @@ class RepositoryConvention {
                     descriptor.snapshotsOnly()
                 }
             }
+            mavenLocal()
         }
     }
 

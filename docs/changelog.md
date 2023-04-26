@@ -41,7 +41,7 @@
 - kotlin编译增加-java-parameters参数
 
 ### Dependencies
-- kotlin升级1.6.21
+- kotlin升级1.4.32
 - ktlint升级0.41.0
 - SpringBoot升级2.4.5
 - SpringCloud升级2020.0.2

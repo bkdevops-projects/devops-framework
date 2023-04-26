@@ -1,5 +1,5 @@
 plugins {
-    id("com.tencent.devops.boot") version "0.0.8"
+    id("com.tencent.devops.boot") version "0.0.8-SNAPSHOT"
 }
 
 allprojects {

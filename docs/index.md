@@ -48,8 +48,8 @@
 | JDK          | 1.8+          |
 | Kotlin       | 1.6.21        |
 | Gradle       | 6.8.3         |
-| Spring Boot  | 2.4.5         |
-| Spring Cloud | 2020.0.2      |
+| Spring Boot  | 2.6.13         |
+| Spring Cloud | 2021.0.5      |
 
 ## 示例
 

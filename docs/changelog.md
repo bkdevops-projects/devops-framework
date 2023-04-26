@@ -1,7 +1,9 @@
 # 更新日志
-## [0.0.7-SNAPSHOT] (待发布)
+## [0.0.7] (https://github.com/bkdevops-projects/devops-framework/releases/tag/0.0.7) (2023-04-25)
 
-## [0.0.5](https://github.com/bkdevops-projects/devops-framework/releases/tag/0.0.4) (2022-01-13)
+## [0.0.6] (https://github.com/bkdevops-projects/devops-framework/releases/tag/0.0.6) (2022-08-10)
+
+## [0.0.5](https://github.com/bkdevops-projects/devops-framework/releases/tag/0.0.5) (2022-01-13)
 
 ### Features
 - 日志路径支持自定义 #96

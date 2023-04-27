@@ -17,6 +17,4 @@ echo "
 
 这个PR是发布工作流自动创建的: https://github.com/$REPOSITORY/actions/runs/$RUN_ID。
 我已经修改了版本号在这个commit: $COMMIT_ID。
-
-合并这个PR将会创建一个GitHub release。
 "

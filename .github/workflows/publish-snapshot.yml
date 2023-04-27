@@ -3,7 +3,7 @@ name: Build and Publish snapshot package
 on:
   push:
     branches:
-      - develop
+      - master
 
 jobs:
   build:

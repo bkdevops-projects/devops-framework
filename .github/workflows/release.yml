@@ -20,21 +20,10 @@ jobs:
           echo "RELEASE_VERSION=$version" >> $GITHUB_ENV
           echo "RELEASE_VERSION=$version" >> $GITHUB_OUTPUT
       - uses: actions/checkout@v2
-      - name: Setup git configuration
-        run: |
-          git config user.name "DevOps Project Bot"
-          git config user.email "devops-project-bot@users.noreply.github.com"
-      - name: Create tag
-        run: git tag v${{ env.RELEASE_VERSION }} -m "Release v${{ env.RELEASE_VERSION }}"
-      - name: Push git tag
-        run: git push origin v${{ env.RELEASE_VERSION }}
-      - name: Setup Docker
-        uses: docker-practice/actions-setup-docker@master
       - name: Generate changelog
         id: generate-changelog
         run: |
           CONFIG_DIR=$(pwd)/.github/config
-          docker run --rm -v $CONFIG_DIR:/generated-changelog springio/github-changelog-generator:0.0.8 ls /generated-changelog 
           docker run --rm -v $CONFIG_DIR:/generated-changelog springio/github-changelog-generator:0.0.8  \
           java -jar -Dfile.encoding=utf-8 github-changelog-generator.jar \
           --spring.config.location=/generated-changelog/changelog-generator.yml \
@@ -43,6 +32,14 @@ jobs:
           ${{ env.RELEASE_VERSION }} \
           /generated-changelog/changelog.md
           echo "::set-output name=changelog_path::$CONFIG_DIR/changelog.md"
+      - name: Setup git configuration
+        run: |
+          git config user.name "DevOps Project Bot"
+          git config user.email "devops-project-bot@users.noreply.github.com"
+      - name: Create tag
+        run: git tag v${{ env.RELEASE_VERSION }} -m "Release v${{ env.RELEASE_VERSION }}"
+      - name: Push git tag
+        run: git push origin v${{ env.RELEASE_VERSION }}
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1

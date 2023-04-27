@@ -32,6 +32,14 @@ configure<PublishingExtension> {
                 name.set("Tencent BK-CI")
                 url.set("https://github.com/Tencent/bk-ci")
             }
+            developers {
+                developer {
+                    name.set("blueking")
+                    email.set("contactus_bk@tencent.com")
+                    url.set("https://github.com/TencentBlueKing")
+                    roles.set(listOf("Java Developer"))
+                }
+            }
             scm {
                 connection.set("scm:git:git://github.com/bkdevops-projects/devops-framework.git")
                 developerConnection.set("scm:git:ssh://github.com/bkdevops-projects/devops-framework.git")

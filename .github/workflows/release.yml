@@ -20,8 +20,6 @@ jobs:
           echo "RELEASE_VERSION=$version" >> $GITHUB_ENV
           echo "RELEASE_VERSION=$version" >> $GITHUB_OUTPUT
       - uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
       - name: Setup git configuration
         run: |
           git config user.name "DevOps Project Bot"

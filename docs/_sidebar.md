@@ -22,4 +22,4 @@
   - [Maven仓库](/dependency/repository.md)
 - [常见问题](/faq.md)
 - [参与开发](/contribute.md)
-- [更新日志](/changelog.md)
+- [更新日志](https://github.com/bkdevops-projects/devops-framework/releases)

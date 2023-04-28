@@ -7,11 +7,14 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
-    # only merged pull requests that begin with 'release-' must trigger this job
-    if: startsWith(github.ref_name,'release-')
     outputs:
       RELEASE_VERSION: ${{ steps.get-version.outputs.RELEASE_VERSION }}
     steps:
+      - name: check branch
+        if: startsWith(github.ref_name,'release-') != true
+        run: |
+          echo "Releases can only from release-** branch"
+          exit 1
       - name: Get version
         id: get-version
         run: |

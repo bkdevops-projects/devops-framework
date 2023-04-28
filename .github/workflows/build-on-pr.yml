@@ -1,6 +1,10 @@
 # Trigger building on pull request event
 name: Build
-on: pull_request
+on:
+  pull_request:
+    paths-ignore:
+      - '.github/**'
+      - 'docs/**'
 
 jobs:
   build:

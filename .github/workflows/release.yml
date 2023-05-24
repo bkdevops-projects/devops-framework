@@ -37,8 +37,8 @@ jobs:
           echo "::set-output name=changelog_path::$CONFIG_DIR/changelog.md"
       - name: Setup git configuration
         run: |
-          git config user.name "DevOps Project Bot"
-          git config user.email "devops-project-bot@users.noreply.github.com"
+          git config user.name "bkci-bot"
+          git config user.email "64278246+bkci-bot@users.noreply.github.com"
       - name: Create tag
         run: git tag v${{ env.RELEASE_VERSION }} -m "Release v${{ env.RELEASE_VERSION }}"
       - name: Push git tag

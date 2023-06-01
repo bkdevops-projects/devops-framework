@@ -24,7 +24,7 @@ class ReleasePluginHelper(private val project: Project) {
      * */
     fun releaseVersion(): String {
         val specificVersion = project.findProperty("release.releaseVersion")
-        if (specificVersion != null) {
+        if (specificVersion != null && specificVersion.toString().isNotBlank()) {
             return specificVersion.toString()
         }
         val releaseVersion = currentVersion().removeSuffix(extension.snapshotSuffix.get())
@@ -36,7 +36,7 @@ class ReleasePluginHelper(private val project: Project) {
      * */
     fun developmentVersion(): String {
         val specificVersion = project.findProperty("release.developmentVersion")
-        if (specificVersion != null) {
+        if (specificVersion != null && specificVersion.toString().isNotBlank()) {
             return specificVersion.toString()
         }
         val policyStr = extension.incrementPolicy.get()
@@ -55,7 +55,7 @@ class ReleasePluginHelper(private val project: Project) {
      * */
     fun tagName(): String {
         val specificTagName = project.findProperty("release.tagName")
-        if (specificTagName != null) {
+        if (specificTagName != null && specificTagName.toString().isNotBlank()) {
             return specificTagName.toString()
         }
         return "v${releaseVersion()}"

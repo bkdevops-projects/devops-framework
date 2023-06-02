@@ -27,23 +27,23 @@ class DevOpsReleasePlugin : Plugin<Project> {
             group = GROUP_NAME
             description = "Manage project version,automatically perform releases, update, and version control."
         }
-        project.task("showVersion").apply {
-            group = GROUP_NAME
-            description = "Show current version."
-            doLast {
-                logger.lifecycle(pluginHelper.currentVersion())
-            }
-        }
 
-        project.task("preview").apply {
+        project.task("generateReleaseProperties").apply {
             group = GROUP_NAME
-            description = "Preview release parameters, which will be used in the release."
+            description = "Generate a release.properties file that contains some information related to the release."
             doLast {
-                logger.lifecycle("Current Version: ${pluginHelper.currentVersion()}")
-                logger.lifecycle("Release Version: ${pluginHelper.releaseVersion()}")
-                logger.lifecycle("Next Development Version: ${pluginHelper.developmentVersion()}")
-                logger.lifecycle("Tag Name: ${pluginHelper.tagName()}")
-                logger.lifecycle("Scm Url: ${extension.scmUrl.get()}")
+                val propertiesFile = project.rootDir.resolve("release.properties")
+                if (propertiesFile.exists()) {
+                    propertiesFile.delete()
+                }
+                propertiesFile.createNewFile()
+                propertiesFile.apply {
+                    appendText("version=${pluginHelper.currentVersion()}\n")
+                    appendText("release.version=${pluginHelper.releaseVersion()}\n")
+                    appendText("next.development.version=${pluginHelper.developmentVersion()}\n")
+                    appendText("tag.name=${pluginHelper.tagName()}\n")
+                    appendText("scm.url=${extension.scmUrl.get()}")
+                }
             }
         }
     }

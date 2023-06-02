@@ -1,6 +1,7 @@
 package com.tencent.devops.util
 
 import com.tencent.devops.dsl.DevOpsReleasePluginExtension
+import com.tencent.devops.plugin.common.PropertyUtil.findPropertyOrEmpty
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.semver.Version
@@ -23,9 +24,9 @@ class ReleasePluginHelper(private val project: Project) {
      * 获取发布版本
      * */
     fun releaseVersion(): String {
-        val specificVersion = project.findProperty("release.releaseVersion")
-        if (specificVersion != null && specificVersion.toString().isNotBlank()) {
-            return specificVersion.toString()
+        val specificVersion = findPropertyOrEmpty(project, "release.releaseVersion")
+        if (specificVersion.isNotEmpty()) {
+            return specificVersion
         }
         val releaseVersion = currentVersion().removeSuffix(extension.snapshotSuffix.get())
         return Version.parse(releaseVersion).toString()
@@ -35,9 +36,9 @@ class ReleasePluginHelper(private val project: Project) {
      * 获取开发版本
      * */
     fun developmentVersion(): String {
-        val specificVersion = project.findProperty("release.developmentVersion")
-        if (specificVersion != null && specificVersion.toString().isNotBlank()) {
-            return specificVersion.toString()
+        val specificVersion = findPropertyOrEmpty(project, "release.developmentVersion")
+        if (specificVersion.isNotEmpty()) {
+            return specificVersion
         }
         val policyStr = extension.incrementPolicy.get()
         if (!availablePolicy.contains(policyStr)) {
@@ -54,9 +55,9 @@ class ReleasePluginHelper(private val project: Project) {
      * 获取标签名
      * */
     fun tagName(): String {
-        val specificTagName = project.findProperty("release.tagName")
-        if (specificTagName != null && specificTagName.toString().isNotBlank()) {
-            return specificTagName.toString()
+        val specificTagName = findPropertyOrEmpty(project, "release.tagName")
+        if (specificTagName.isNotEmpty()) {
+            return specificTagName
         }
         return "v${releaseVersion()}"
     }

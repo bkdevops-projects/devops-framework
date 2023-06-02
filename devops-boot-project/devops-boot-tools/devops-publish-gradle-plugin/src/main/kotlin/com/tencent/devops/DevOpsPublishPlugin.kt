@@ -1,5 +1,7 @@
 package com.tencent.devops
 
+import com.tencent.devops.plugin.common.PropertyUtil.findPropertyOrDefault
+import com.tencent.devops.plugin.common.PropertyUtil.findPropertyOrEmpty
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPlatformPlugin
@@ -112,42 +114,7 @@ class DevOpsPublishPlugin : Plugin<Project> {
         }
     }
 
-    /**
-     * 查找属性, 如果[name]不存在则返回空字符串 优先级如下：
-     * 1. 命令行 -Dkey=value
-     * 2. 配置文件gradle.properties key=value
-     * 3. 系统环境变量key=value
-     */
-    private fun findPropertyOrEmpty(project: Project, name: String): String {
-        return findProperty(project, name) ?: EMPTY
-    }
-
-    /**
-     * 查找属性, 如果[name]不存在则返回默认值[default] 优先级如下：
-     * 1. 命令行 -Dkey=value
-     * 2. 系统环境变量key=value
-     * 3. 配置文件gradle.properties key=value
-     */
-    private fun findPropertyOrDefault(project: Project, name: String, default: String): String {
-        return findProperty(project, name) ?: default
-    }
-
-    /**
-     * 查找属性, 如果[name]不存在则返回null 优先级如下：
-     * 1. 命令行 -Dkey=value
-     * 2. 系统环境变量key=value
-     * 3. 配置文件gradle.properties key=value
-     */
-    private fun findProperty(project: Project, name: String): String? {
-        return System.getProperty(name) ?: System.getenv(name) ?: run {
-            if (project.hasProperty(name)) {
-                return project.property(name).toString()
-            } else null
-        }
-    }
-
     companion object {
-        private const val EMPTY = ""
         private const val PUBLISH_TASK_PATH = "publish"
         private const val SIGNING_KEY = "signingKey"
         private const val SIGNING_KEY_ID = "signingKeyId"

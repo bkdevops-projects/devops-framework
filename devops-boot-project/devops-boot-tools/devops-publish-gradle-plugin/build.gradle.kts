@@ -7,6 +7,7 @@ plugins {
 description = "DevOps Publish Gradle Plugin"
 
 dependencies {
+    implementation(project(":devops-boot-project:devops-boot-tools:devops-gradle-plugin-common"))
     implementation(Libs.KotlinGradlePlugin)
     implementation(Libs.DependencyManagement)
 }

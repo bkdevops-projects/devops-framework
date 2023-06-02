@@ -6,7 +6,7 @@ plugins {
 description = "DevOps Publish Gradle Plugin"
 
 dependencies {
-    implementation(Libs.KotlinGradlePlugin)
+    implementation(project(":devops-boot-project:devops-boot-tools:devops-gradle-plugin-common"))
     implementation("org.semver:api:0.9.33")
     implementation("org.apache.maven.scm:maven-scm-api:2.0.1")
     implementation("org.apache.maven.scm:maven-scm-provider-gitexe:2.0.1")

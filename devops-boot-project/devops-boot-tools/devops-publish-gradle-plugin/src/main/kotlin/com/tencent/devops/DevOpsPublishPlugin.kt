@@ -1,5 +1,6 @@
 package com.tencent.devops
 
+import com.tencent.devops.plugin.common.PropertyUtil
 import com.tencent.devops.plugin.common.PropertyUtil.findPropertyOrDefault
 import com.tencent.devops.plugin.common.PropertyUtil.findPropertyOrEmpty
 import org.gradle.api.Plugin
@@ -82,9 +83,9 @@ class DevOpsPublishPlugin : Plugin<Project> {
         project.run {
             afterEvaluate {
                 extensions.getByType(SigningExtension::class.java).run {
-                    val signingKey = findPropertyOrEmpty(project, SIGNING_KEY)
-                    val signingKeyId = findPropertyOrEmpty(project, SIGNING_KEY_ID)
-                    val signingPassword = findPropertyOrEmpty(project, SIGNING_PASSWORD)
+                    val signingKey = PropertyUtil.findProperty(project, SIGNING_KEY)
+                    val signingKeyId = PropertyUtil.findProperty(project, SIGNING_KEY_ID)
+                    val signingPassword = PropertyUtil.findProperty(project, SIGNING_PASSWORD)
                     useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
                     this.setRequired({ isReleaseVersion && gradle.taskGraph.hasTask(PUBLISH_TASK_PATH) })
                     sign(extensions.getByType(PublishingExtension::class.java).publications)

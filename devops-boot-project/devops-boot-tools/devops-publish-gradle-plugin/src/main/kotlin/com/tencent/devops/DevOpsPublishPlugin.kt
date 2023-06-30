@@ -15,6 +15,7 @@ import org.gradle.jvm.tasks.Jar
 import org.gradle.plugins.signing.Sign
 import org.gradle.plugins.signing.SigningExtension
 import org.gradle.plugins.signing.SigningPlugin
+import java.io.File
 
 /**
  * DevOps Publish Gradle插件，提供公共配置
@@ -84,9 +85,11 @@ class DevOpsPublishPlugin : Plugin<Project> {
             afterEvaluate {
                 extensions.getByType(SigningExtension::class.java).run {
                     val signingKey = PropertyUtil.findProperty(project, SIGNING_KEY)
+                    val signingKeyFile = PropertyUtil.findProperty(project, SIGNING_KEY_FILE)
                     val signingKeyId = PropertyUtil.findProperty(project, SIGNING_KEY_ID)
                     val signingPassword = PropertyUtil.findProperty(project, SIGNING_PASSWORD)
-                    useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+                    val secretKey: String? = signingKey ?: signingKeyFile?.let { File(it).readText() }
+                    useInMemoryPgpKeys(signingKeyId, secretKey, signingPassword)
                     this.setRequired({ isReleaseVersion && gradle.taskGraph.hasTask(PUBLISH_TASK_PATH) })
                     sign(extensions.getByType(PublishingExtension::class.java).publications)
                 }
@@ -118,6 +121,7 @@ class DevOpsPublishPlugin : Plugin<Project> {
     companion object {
         private const val PUBLISH_TASK_PATH = "publish"
         private const val SIGNING_KEY = "signingKey"
+        private const val SIGNING_KEY_FILE = "signingKeyFile"
         private const val SIGNING_KEY_ID = "signingKeyId"
         private const val SIGNING_PASSWORD = "signingPassword"
 

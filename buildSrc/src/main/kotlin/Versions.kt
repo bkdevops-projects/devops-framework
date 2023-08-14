@@ -10,7 +10,7 @@ object Versions {
     const val SpringBoot = "2.6.13"
     const val SpringCloud = "2021.0.5"
     const val DependencyManagement = "1.0.15.RELEASE"
-    const val NexusPublish = "0.4.0"
+    const val GradleNexuxPublish = "1.3.0"
     const val NexusStaging = "0.22.0"
     const val KtLint = "0.41.0"
 }

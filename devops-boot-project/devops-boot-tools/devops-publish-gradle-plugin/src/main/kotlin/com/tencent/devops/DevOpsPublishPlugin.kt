@@ -1,8 +1,9 @@
 package com.tencent.devops
 
-import com.tencent.devops.plugin.common.PropertyUtil
-import com.tencent.devops.plugin.common.PropertyUtil.findPropertyOrDefault
+import com.tencent.devops.plugin.common.PropertyUtil.findProperty
 import com.tencent.devops.plugin.common.PropertyUtil.findPropertyOrEmpty
+import io.github.gradlenexus.publishplugin.NexusPublishExtension
+import io.github.gradlenexus.publishplugin.NexusPublishPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPlatformPlugin
@@ -29,6 +30,7 @@ class DevOpsPublishPlugin : Plugin<Project> {
         isReleaseVersion = !project.version.toString().endsWith("SNAPSHOT")
         project.pluginManager.apply(MavenPublishPlugin::class.java)
         project.pluginManager.apply(SigningPlugin::class.java)
+        project.pluginManager.apply(NexusPublishPlugin::class.java)
         configurePublishing(project)
         configureSigning(project)
         configureManifest(project)
@@ -58,21 +60,14 @@ class DevOpsPublishPlugin : Plugin<Project> {
                         }
                     }
                 }
-                repositories.run {
-                    maven {
-                        it.name = "remote"
-                        val url = if (isReleaseVersion) {
-                            findPropertyOrDefault(project, RELEASE_REPO_URL, SONATYPE_RELEASE_REPO)
-                        } else {
-                            findPropertyOrDefault(project, SNAPSHOT_REPO_URL, SONATYPE_SNAPSHOT_REPO)
-                        }
-                        it.url = uri(url)
-                        it.credentials { credentials ->
-                            credentials.username = findPropertyOrEmpty(project, REPO_USERNAME)
-                            credentials.password = findPropertyOrEmpty(project, REPO_PASSWORD)
-                        }
-                    }
-                }
+            }
+            extensions.getByType(NexusPublishExtension::class.java).repositories.sonatype { repo ->
+                val releaseUrl = findProperty(project, RELEASE_REPO_URL)
+                val snapshotUrl = findProperty(project, SNAPSHOT_REPO_URL)
+                releaseUrl?.let { repo.nexusUrl.set(uri(releaseUrl)) }
+                snapshotUrl?.let { repo.snapshotRepositoryUrl.set(uri(snapshotUrl)) }
+                repo.username.set(findPropertyOrEmpty(project, REPO_USERNAME))
+                repo.password.set(findPropertyOrEmpty(project, REPO_PASSWORD))
             }
         }
     }
@@ -84,10 +79,10 @@ class DevOpsPublishPlugin : Plugin<Project> {
         project.run {
             afterEvaluate {
                 extensions.getByType(SigningExtension::class.java).run {
-                    val signingKey = PropertyUtil.findProperty(project, SIGNING_KEY)
-                    val signingKeyFile = PropertyUtil.findProperty(project, SIGNING_KEY_FILE)
-                    val signingKeyId = PropertyUtil.findProperty(project, SIGNING_KEY_ID)
-                    val signingPassword = PropertyUtil.findProperty(project, SIGNING_PASSWORD)
+                    val signingKey = findProperty(project, SIGNING_KEY)
+                    val signingKeyFile = findProperty(project, SIGNING_KEY_FILE)
+                    val signingKeyId = findProperty(project, SIGNING_KEY_ID)
+                    val signingPassword = findProperty(project, SIGNING_PASSWORD)
                     val secretKey: String? = signingKey ?: signingKeyFile?.let { File(it).readText() }
                     useInMemoryPgpKeys(signingKeyId, secretKey, signingPassword)
                     this.setRequired({ isReleaseVersion && gradle.taskGraph.hasTask(PUBLISH_TASK_PATH) })
@@ -109,7 +104,7 @@ class DevOpsPublishPlugin : Plugin<Project> {
             afterEvaluate {
                 val manifestMap = mapOf(
                     "Implementation-Title" to (project.description ?: project.name),
-                    "Implementation-Version" to project.version
+                    "Implementation-Version" to project.version,
                 )
                 tasks.withType(Jar::class.java) {
                     it.manifest { manifest -> manifest.attributes(manifestMap) }
@@ -129,7 +124,5 @@ class DevOpsPublishPlugin : Plugin<Project> {
         private const val SNAPSHOT_REPO_URL = "snapshotRepoUrl"
         private const val REPO_USERNAME = "repoUsername"
         private const val REPO_PASSWORD = "repoPassword"
-        private const val SONATYPE_RELEASE_REPO = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-        private const val SONATYPE_SNAPSHOT_REPO = "https://oss.sonatype.org/content/repositories/snapshots/"
     }
 }

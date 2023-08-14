@@ -14,8 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping
  */
 @Api("Sample 服务接口")
 @Primary
-@FeignClient("devops-kotlin-sample", contextId = "SampleClient")
-@RequestMapping("/service/sample")
+@FeignClient("devops-kotlin-sample", contextId = "SampleClient", path = "/service/sample")
 interface SampleClient {
 
     @ApiOperation("获取Sample")

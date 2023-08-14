@@ -7,7 +7,7 @@ object Libs {
     const val KotlinSpringGradlePlugin = "org.jetbrains.kotlin:kotlin-allopen:${Versions.Kotlin}"
     const val KtLint = "com.pinterest:ktlint:${Versions.KtLint}"
     const val GoogleJibPlugin = "gradle.plugin.com.google.cloud.tools:jib-gradle-plugin:${Versions.Jib}"
-    const val GradleNexuxPublishPlugin = "io.github.gradle-nexus:publish-plugin:${Versions.GradleNexuxPublish}"
+    const val GradleNexuxPublishPlugin = "io.github.gradle-nexus:publish-plugin:${Versions.GradleNexusPublish}"
 }
 
 object MavenBom {

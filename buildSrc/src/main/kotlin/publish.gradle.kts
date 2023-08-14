@@ -1,6 +1,7 @@
 @file:Suppress("UnstableApiUsage")
 
 apply(plugin = "signing")
+apply(plugin = "maven-publish")
 
 val isReleaseVersion = !version.toString().endsWith("SNAPSHOT")
 

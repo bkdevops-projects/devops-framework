@@ -42,5 +42,8 @@ dependencies {
 
         // s3
         api("com.amazonaws:aws-java-sdk-s3:1.11.700")
+
+        // crypto
+        api("com.tencent.bk.sdk:crypto-java-sdk:1.1.1")
     }
 }

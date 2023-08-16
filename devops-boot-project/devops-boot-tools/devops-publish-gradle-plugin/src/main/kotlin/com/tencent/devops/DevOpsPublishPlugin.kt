@@ -30,10 +30,15 @@ class DevOpsPublishPlugin : Plugin<Project> {
         isReleaseVersion = !project.version.toString().endsWith("SNAPSHOT")
         project.pluginManager.apply(MavenPublishPlugin::class.java)
         project.pluginManager.apply(SigningPlugin::class.java)
-        project.pluginManager.apply(NexusPublishPlugin::class.java)
-        configurePublishing(project)
-        configureSigning(project)
-        configureManifest(project)
+        if (project.rootProject == project) {
+            project.pluginManager.apply(NexusPublishPlugin::class.java)
+            configureNexusPublish(project)
+        }
+        project.afterEvaluate {
+            configurePublishing(project)
+            configureSigning(project)
+            configureManifest(project)
+        }
     }
 
     /**
@@ -61,6 +66,11 @@ class DevOpsPublishPlugin : Plugin<Project> {
                     }
                 }
             }
+        }
+    }
+
+    private fun configureNexusPublish(project: Project) {
+        project.run {
             extensions.getByType(NexusPublishExtension::class.java).repositories.sonatype { repo ->
                 val releaseUrl = findProperty(project, RELEASE_REPO_URL)
                 val snapshotUrl = findProperty(project, SNAPSHOT_REPO_URL)
@@ -77,21 +87,19 @@ class DevOpsPublishPlugin : Plugin<Project> {
      */
     private fun configureSigning(project: Project) {
         project.run {
-            afterEvaluate {
-                extensions.getByType(SigningExtension::class.java).run {
-                    val signingKey = findProperty(project, SIGNING_KEY)
-                    val signingKeyFile = findProperty(project, SIGNING_KEY_FILE)
-                    val signingKeyId = findProperty(project, SIGNING_KEY_ID)
-                    val signingPassword = findProperty(project, SIGNING_PASSWORD)
-                    val secretKey: String? = signingKey ?: signingKeyFile?.let { File(it).readText() }
-                    useInMemoryPgpKeys(signingKeyId, secretKey, signingPassword)
-                    this.setRequired({ isReleaseVersion && gradle.taskGraph.hasTask(PUBLISH_TASK_PATH) })
-                    sign(extensions.getByType(PublishingExtension::class.java).publications)
-                }
+            extensions.getByType(SigningExtension::class.java).run {
+                val signingKey = findProperty(project, SIGNING_KEY)
+                val signingKeyFile = findProperty(project, SIGNING_KEY_FILE)
+                val signingKeyId = findProperty(project, SIGNING_KEY_ID)
+                val signingPassword = findProperty(project, SIGNING_PASSWORD)
+                val secretKey: String? = signingKey ?: signingKeyFile?.let { File(it).readText() }
+                useInMemoryPgpKeys(signingKeyId, secretKey, signingPassword)
+                this.setRequired({ isReleaseVersion && tasks.findByName(PUBLISH_TASK_PATH) != null })
+                sign(extensions.getByType(PublishingExtension::class.java).publications)
+            }
 
-                tasks.withType(Sign::class.java) {
-                    it.onlyIf { isReleaseVersion }
-                }
+            tasks.withType(Sign::class.java) {
+                it.onlyIf { isReleaseVersion }
             }
         }
     }
@@ -101,14 +109,12 @@ class DevOpsPublishPlugin : Plugin<Project> {
      */
     private fun configureManifest(project: Project) {
         project.run {
-            afterEvaluate {
-                val manifestMap = mapOf(
-                    "Implementation-Title" to (project.description ?: project.name),
-                    "Implementation-Version" to project.version,
-                )
-                tasks.withType(Jar::class.java) {
-                    it.manifest { manifest -> manifest.attributes(manifestMap) }
-                }
+            val manifestMap = mapOf(
+                "Implementation-Title" to (project.description ?: project.name),
+                "Implementation-Version" to project.version,
+            )
+            tasks.withType(Jar::class.java) {
+                it.manifest { manifest -> manifest.attributes(manifestMap) }
             }
         }
     }

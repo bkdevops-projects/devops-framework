@@ -3,13 +3,13 @@ package com.tencent.devops.schedule.config
 import com.tencent.devops.api.pojo.Response
 import com.tencent.devops.schedule.constants.SCHEDULE_API_AUTH_HEADER
 import com.tencent.devops.schedule.utils.JwtUtils
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.web.servlet.HandlerInterceptor
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 
 /**
  * 调度中心认证拦截器
@@ -21,7 +21,7 @@ class ScheduleServerAuthInterceptor(
     private val signingKey = JwtUtils.createSigningKey(authProperties.secretKey)
 
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
-        if (request.method == HttpMethod.OPTIONS.name) {
+        if (request.method == HttpMethod.OPTIONS.name()) {
             return true
         }
         val jwtToken = request.getHeader(SCHEDULE_API_AUTH_HEADER)

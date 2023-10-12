@@ -1,16 +1,15 @@
 package com.tencent.devops.api.pojo
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import io.swagger.annotations.ApiModel
-import io.swagger.annotations.ApiModelProperty
+import io.swagger.v3.oas.annotations.media.Schema
 
-@ApiModel("数据返回包装模型")
+@Schema(description = "数据返回包装模型")
 data class Response<out T>(
-    @ApiModelProperty("返回码")
+    @Schema(description = "返回码")
     val code: Int,
-    @ApiModelProperty("提示信息")
+    @Schema(description = "提示信息")
     val message: String? = null,
-    @ApiModelProperty("数据")
+    @Schema(description = "数据")
     val data: T? = null
 ) {
     /**

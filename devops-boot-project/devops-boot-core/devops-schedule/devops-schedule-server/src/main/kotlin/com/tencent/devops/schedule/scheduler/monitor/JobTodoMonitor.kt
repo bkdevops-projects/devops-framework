@@ -68,7 +68,7 @@ open class JobTodoMonitor(
         var hasRingData = false
         if (timeRingMap.isNotEmpty()) {
             for (second in timeRingMap.keys) {
-                if(timeRingMap[second]?.isNotEmpty() == true) {
+                if (timeRingMap[second]?.isNotEmpty() == true) {
                     hasRingData = true
                     break
                 }
@@ -146,9 +146,14 @@ open class JobTodoMonitor(
                 logger.warn("job[${job.id}] is misfire, retry")
                 jobScheduler.trigger(job.id.orEmpty(), TriggerTypeEnum.MISFIRE)
             }
+
             MisfireStrategyEnum.IGNORE -> {
                 logger.warn("job[${job.id}] is misfire, ignore")
                 // do nothing
+            }
+
+            else -> {
+                throw RuntimeException("misfire strategy is illegal")
             }
         }
         // fresh next

@@ -38,7 +38,6 @@ class SwaggerConfiguration {
         val info = Info()
             .title(applicationName)
             .description(applicationDesc)
-            .description(applicationDesc)
             .version(applicationVersion)
         val components = Components().addSecuritySchemes(
             BASIC_AUTH,

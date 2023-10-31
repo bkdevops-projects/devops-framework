@@ -30,10 +30,10 @@ package com.tencent.devops.stream.binder.pulsar.util
 import com.tencent.devops.stream.binder.pulsar.constant.DLQ
 import com.tencent.devops.stream.binder.pulsar.constant.PATH_SPLIT
 import com.tencent.devops.stream.binder.pulsar.constant.RETRY
+import jakarta.validation.constraints.NotBlank
 import org.apache.pulsar.client.api.DeadLetterPolicy
 import java.io.UnsupportedEncodingException
 import java.util.StringJoiner
-import javax.validation.constraints.NotBlank
 
 object PulsarUtils {
 
@@ -58,12 +58,12 @@ object PulsarUtils {
 
     private fun validateByte(b: Byte): Boolean {
         return (
-            b >= 'a'.toByte() && b <= 'z'.toByte() ||
-                b >= 'A'.toByte() && b <= 'Z'.toByte() ||
-                b >= '0'.toByte() && b <= '9'.toByte() ||
-                b == '.'.toByte() || b == '-'.toByte() ||
-                b == '_'.toByte()
-            )
+                b >= 'a'.code.toByte() && b <= 'z'.code.toByte() ||
+                        b >= 'A'.code.toByte() && b <= 'Z'.code.toByte() ||
+                        b >= '0'.code.toByte() && b <= '9'.code.toByte() ||
+                        b == '.'.code.toByte() || b == '-'.code.toByte() ||
+                        b == '_'.code.toByte()
+                )
     }
 
     /**

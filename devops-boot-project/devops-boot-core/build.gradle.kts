@@ -32,6 +32,10 @@ subprojects {
     }
 
     tasks {
+        compileJava {
+            sourceCompatibility = Versions.Java
+            targetCompatibility = Versions.Java
+        }
         compileKotlin {
             kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict")
             kotlinOptions.jvmTarget = Versions.Java
@@ -41,6 +45,9 @@ subprojects {
         }
         test {
             useJUnitPlatform()
+        }
+        withType(org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask::class.java).configureEach {
+            kotlinOptions.jvmTarget = Versions.Java
         }
     }
 }

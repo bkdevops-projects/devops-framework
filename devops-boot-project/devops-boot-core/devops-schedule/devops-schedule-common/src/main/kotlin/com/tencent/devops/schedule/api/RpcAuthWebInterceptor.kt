@@ -1,11 +1,11 @@
 package com.tencent.devops.schedule.api
 
 import com.tencent.devops.schedule.constants.SCHEDULE_RPC_AUTH_HEADER
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.web.servlet.HandlerInterceptor
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 
 class RpcAuthWebInterceptor(
     private val accessToken: String

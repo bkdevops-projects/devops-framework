@@ -1,6 +1,5 @@
 package com.tencent.devops.utils
 
-import com.tencent.devops.conventions.SpringCloudConvention
 import com.tencent.devops.enums.AssemblyMode
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
@@ -16,10 +15,10 @@ const val DEVOPS_JAVA_VERSION = "devops.javaVersion"
 const val DEVOPS_KOTLIN = "devops.kotlin"
 
 /**
- * 查找java version, 默认1.8
+ * 查找java version, 默认17
  */
 fun findJavaVersion(project: Project): String {
-    return project.findPropertyOrDefault(DEVOPS_JAVA_VERSION, JavaVersion.VERSION_1_8.toString())
+    return project.findPropertyOrDefault(DEVOPS_JAVA_VERSION, JavaVersion.VERSION_17.toString())
 }
 
 /**

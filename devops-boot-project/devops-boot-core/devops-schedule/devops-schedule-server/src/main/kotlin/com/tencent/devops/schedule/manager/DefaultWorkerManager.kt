@@ -60,12 +60,17 @@ open class DefaultWorkerManager(
         require(address.isNotBlank())
         require(group.isNotBlank())
         val status = WorkerStatusEnum.ofCode(param.status)
-        when(status) {
+        when (status) {
             WorkerStatusEnum.RUNNING -> {
                 workerProvider.upsertWorker(group, address)
             }
+
             WorkerStatusEnum.STOP -> {
                 workerProvider.deleteWorker(group, address)
+            }
+
+            else -> {
+                throw RuntimeException("worker status is illegal")
             }
         }
         logger.debug("worker[$group-$address] heartbeat, status[$status]")
@@ -91,7 +96,6 @@ open class DefaultWorkerManager(
         val time = from.minusSeconds(timeout.toLong())
         return workerProvider.listWorkerByUpdateTimeGreaterThan(time)
     }
-
 
 
     companion object {

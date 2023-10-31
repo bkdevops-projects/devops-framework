@@ -32,9 +32,10 @@ dependencies {
         api("com.google.guava:guava:29.0-jre")
 
         // swagger
-        api("io.swagger:swagger-annotations:1.5.20")
-        api("io.swagger:swagger-models:1.5.20")
-        api("io.springfox:springfox-boot-starter:3.0.0")
+        api("io.swagger.core.v3:swagger-annotations:2.2.16")
+        api("io.swagger.core.v3:swagger-models:2.2.16")
+        api("io.swagger.core.v3:swagger-jaxrs2:2.2.16")
+        api("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 
         // mq stream
         api("org.apache.pulsar:pulsar-client:2.9.1")

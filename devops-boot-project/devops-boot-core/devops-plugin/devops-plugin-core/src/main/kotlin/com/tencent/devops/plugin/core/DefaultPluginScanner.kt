@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
-import kotlin.streams.toList
+import java.util.stream.Collectors
 
 /**
  * 插件扫描器默认实现
@@ -22,7 +22,7 @@ class DefaultPluginScanner(
             logger.error("Failed to load plugin, Path[$pluginDir] is not a directory.")
             return emptyList()
         }
-        return Files.walk(pluginDir).filter { it.toString().endsWith(".jar") }.toList()
+        return Files.walk(pluginDir).filter { it.toString().endsWith(".jar") }.collect(Collectors.toList())
     }
 
     override fun scan(id: String): Path? {
@@ -35,7 +35,7 @@ class DefaultPluginScanner(
             val filename = it.toString()
             val name = filename.substringAfter("-").substringBeforeLast("-")
             name == id
-        }.toList().firstOrNull()
+        }.collect(Collectors.toList()).firstOrNull()
     }
 
     companion object {

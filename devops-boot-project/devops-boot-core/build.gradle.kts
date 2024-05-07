@@ -33,7 +33,7 @@ subprojects {
 
     tasks {
         compileKotlin {
-            kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict")
+            kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict", "-java-parameters")
             kotlinOptions.jvmTarget = Versions.Java
         }
         compileTestKotlin {

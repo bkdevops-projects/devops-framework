@@ -6,5 +6,5 @@ dependencies {
     api(project(":devops-boot-project:devops-boot-core:devops-utils"))
     api("org.springframework:spring-web")
     api("org.springframework.boot:spring-boot-starter-actuator")
-    api("io.springfox:springfox-boot-starter")
+    api("org.springdoc:springdoc-openapi-starter-webmvc-ui")
 }

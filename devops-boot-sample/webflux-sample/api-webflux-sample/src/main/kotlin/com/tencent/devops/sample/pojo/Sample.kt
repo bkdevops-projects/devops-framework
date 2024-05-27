@@ -1,12 +1,12 @@
 package com.tencent.devops.sample.pojo
 
-import io.swagger.annotations.ApiModel
-import io.swagger.annotations.ApiModelProperty
+import io.swagger.v3.oas.annotations.media.Schema
 
-@ApiModel("样例")
+
+@Schema(description = "样例")
 data class Sample(
-    @ApiModelProperty("id")
+    @Schema(description = "id")
     val id: Long,
-    @ApiModelProperty("名称")
+    @Schema(description = "名称")
     val name: String,
 )

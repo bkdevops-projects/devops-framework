@@ -4,9 +4,10 @@ plugins {
 
 repositories {
     mavenCentral()
-    jcenter()
 }
 
-kotlinDslPluginOptions {
-    experimentalWarning.set(false)
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    kotlinOptions {
+        incremental = false
+    }
 }

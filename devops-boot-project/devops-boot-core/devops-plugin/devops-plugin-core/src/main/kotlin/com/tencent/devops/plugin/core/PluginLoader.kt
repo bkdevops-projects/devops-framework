@@ -4,7 +4,11 @@ import com.tencent.devops.plugin.api.EXTENSION_LOCATION
 import com.tencent.devops.plugin.api.ExtensionType
 import com.tencent.devops.plugin.api.PluginInfo
 import com.tencent.devops.plugin.api.PluginMetadata
+import org.springframework.boot.loader.LaunchedURLClassLoader
+import org.springframework.boot.loader.archive.Archive
+import org.springframework.boot.loader.archive.JarFileArchive
 import java.io.IOException
+import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Path
 import java.security.MessageDigest
@@ -16,10 +20,10 @@ import java.util.jar.JarFile
  * 插件加载器
  */
 class PluginLoader(
-    private val pluginPath: Path
+    private val pluginPath: Path,
 ) {
 
-    val classLoader = PluginClassLoader(pluginPath, javaClass.classLoader)
+    val classLoader = createClassloader(pluginPath)
 
     init {
         check(Files.exists(pluginPath)) { "Plugin file[$pluginPath] does not exist." }
@@ -35,7 +39,7 @@ class PluginLoader(
                 metadata = metadata,
                 digest = digest,
                 extensionPoints = extensions[ExtensionType.POINT].orEmpty(),
-                extensionControllers = extensions[ExtensionType.CONTROLLER].orEmpty()
+                extensionControllers = extensions[ExtensionType.CONTROLLER].orEmpty(),
             )
         }
     }
@@ -79,7 +83,7 @@ class PluginLoader(
                 version = version,
                 scope = scope,
                 author = author,
-                description = description
+                description = description,
             )
         } catch (ex: IOException) {
             throw IllegalArgumentException("Unable to load manifest from location [$MANIFEST_LOCATION]", ex)
@@ -110,6 +114,16 @@ class PluginLoader(
         }
     }
 
+    private fun createClassloader(pluginPath: Path): ClassLoader {
+        val jarArchive = JarFileArchive(pluginPath.toFile())
+        val archives = jarArchive.getNestedArchives(searchFilter, nestedFilter)
+        val urls = mutableListOf<URL>(jarArchive.url)
+        archives.forEach {
+            urls.add(it.url)
+        }
+        return LaunchedURLClassLoader(false, jarArchive, urls.toTypedArray(), javaClass.classLoader)
+    }
+
     companion object {
         private const val MANIFEST_LOCATION = "META-INF/MANIFEST.MF"
         private const val PLUGIN_ID = "Plugin-Id"
@@ -117,5 +131,9 @@ class PluginLoader(
         private const val PLUGIN_SCOPE = "Plugin-Scope"
         private const val PLUGIN_AUTHOR = "Plugin-Author"
         private const val PLUGIN_DESCRIPTION = "Plugin-Description"
+        val searchFilter = Archive.EntryFilter { entry -> entry.name.startsWith("lib/") }
+        val nestedFilter = Archive.EntryFilter { entry ->
+            !entry.isDirectory && entry.name.startsWith("lib/")
+        }
     }
 }

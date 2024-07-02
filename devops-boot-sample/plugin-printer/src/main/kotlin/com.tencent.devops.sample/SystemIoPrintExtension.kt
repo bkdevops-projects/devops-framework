@@ -6,6 +6,7 @@ import com.tencent.devops.sample.extension.PrintExtension
 @Extension
 class SystemIoPrintExtension : PrintExtension {
     override fun print(content: String) {
-        println(content)
+        val loaded = javaClass.classLoader.loadClass("org.bytedeco.ffmpeg.global.avformat") != null
+        println("lib sdk loaded:$loaded, $content")
     }
 }

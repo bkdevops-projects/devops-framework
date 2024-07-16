@@ -1,5 +1,6 @@
 package com.tencent.devops.schedule.mongo.provider
 
+import com.mongodb.MongoServerException
 import com.mongodb.client.result.UpdateResult
 import com.tencent.devops.schedule.mongo.model.TLockInfo
 import com.tencent.devops.schedule.provider.LockProvider
@@ -17,7 +18,7 @@ import java.util.UUID
  * 基于mongodb实现的lock
  */
 class MongoLockProvider(
-    private val mongoTemplate: MongoTemplate
+    private val mongoTemplate: MongoTemplate,
 ) : LockProvider {
     override fun acquire(key: String, expiration: Long): String? {
         val query = Query.query(where(TLockInfo::id).isEqualTo(key))
@@ -29,38 +30,49 @@ class MongoLockProvider(
 
         val options = FindAndModifyOptions().upsert(true)
             .returnNew(true)
-        val lock = mongoTemplate.findAndModify(
-            query, update, options,
-            TLockInfo::class.java
-        )!!
-        val locked = lock.token == token
+        try {
+            val lock = mongoTemplate.findAndModify(
+                query,
+                update,
+                options,
+                TLockInfo::class.java,
+            )!!
+            val locked = lock.token == token
 
-        // 如果已过期
-        if (!locked && lock.expireAt < System.currentTimeMillis()) {
-            val deleted = mongoTemplate.remove(
-                Query.query(
-                    where(TLockInfo::id).isEqualTo(key)
-                        .and(TLockInfo::token).isEqualTo(lock.token)
-                        .and(TLockInfo::expireAt).`is`(lock.expireAt)
-                ),
-                TLockInfo::class.java
-            )
-            if (deleted.deletedCount >= 1) {
-                // 成功释放锁， 再次尝试获取锁
-                return acquire(key, expiration)
+            // 如果已过期
+            if (!locked && lock.expireAt < System.currentTimeMillis()) {
+                val deleted = mongoTemplate.remove(
+                    Query.query(
+                        where(TLockInfo::id).isEqualTo(key)
+                            .and(TLockInfo::token).isEqualTo(lock.token)
+                            .and(TLockInfo::expireAt).`is`(lock.expireAt),
+                    ),
+                    TLockInfo::class.java,
+                )
+                if (deleted.deletedCount >= 1) {
+                    // 成功释放锁， 再次尝试获取锁
+                    return acquire(key, expiration)
+                }
+            }
+            return if (locked) {
+                logger.trace("Acquired lock for key {} with token {}", key, token)
+                return token
+            } else {
+                null
+            }
+        } catch (e: MongoServerException) {
+            if (e.code == 11000) { // duplicate key
+                return null
+            } else {
+                throw e
             }
         }
-
-        return if (locked) {
-            logger.trace("Acquired lock for key {} with token {}", key, token)
-            return token
-        } else null
     }
 
     override fun release(key: String, token: String): Boolean {
         val query = Query.query(
             where(TLockInfo::id).isEqualTo(key)
-                .and(TLockInfo::token).isEqualTo(token)
+                .and(TLockInfo::token).isEqualTo(token),
         )
         val deleted = mongoTemplate.remove(query, TLockInfo::class.java)
         val released = deleted.deletedCount == 1L
@@ -78,7 +90,7 @@ class MongoLockProvider(
     override fun refresh(key: String, token: String, expiration: Long): Boolean {
         val query = Query.query(
             where(TLockInfo::id).isEqualTo(key)
-                .and(TLockInfo::token).isEqualTo(token)
+                .and(TLockInfo::token).isEqualTo(token),
         )
         val update = Update.update(TLockInfo::expireAt.name, System.currentTimeMillis() + expiration)
         val updated: UpdateResult = mongoTemplate.updateFirst(query, update, TLockInfo::class.java)
@@ -90,15 +102,15 @@ class MongoLockProvider(
         } else {
             logger.warn(
                 "Refresh query did not affect any records for key {} with token {}. " +
-                        "This is possible when refresh interval fires for the final time " +
-                        "after the lock has been released",
-                key, token
+                    "This is possible when refresh interval fires for the final time " +
+                    "after the lock has been released",
+                key,
+                token,
             )
         }
 
         return refreshed
     }
-
 
     companion object {
         private val logger = LoggerFactory.getLogger(MongoLockProvider::class.java)

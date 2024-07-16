@@ -98,4 +98,12 @@ data class JobInfo(
      * 下次执行时间
      */
     var nextTriggerTime: Long = 0,
+    /**
+     * 资源内容，可以是脚本，也可以是yaml
+     * */
+    var source: String? = null,
+    /**
+     * 镜像地址
+     * */
+    var image: String? = null,
 )

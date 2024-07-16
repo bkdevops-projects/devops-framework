@@ -6,7 +6,6 @@ import com.tencent.devops.schedule.enums.BlockStrategyEnum
 import com.tencent.devops.schedule.enums.ExecutionCodeEnum
 import com.tencent.devops.schedule.enums.RouteStrategyEnum
 import com.tencent.devops.schedule.enums.TriggerCodeEnum
-import com.tencent.devops.schedule.enums.TriggerStatusEnum
 import com.tencent.devops.schedule.enums.TriggerTypeEnum
 import com.tencent.devops.schedule.manager.JobManager
 import com.tencent.devops.schedule.manager.WorkerManager
@@ -35,13 +34,14 @@ class DefaultJobScheduler(
     private val workerManager: WorkerManager,
     private val lockProvider: LockProvider,
     private val scheduleServerProperties: ScheduleServerProperties,
-    private val workerRpcClient: WorkerRpcClient
+    private val workerRpcClient: WorkerRpcClient,
 ) : JobScheduler, InitializingBean, DisposableBean {
 
     private lateinit var triggerThreadPool: ThreadPoolExecutor
     private lateinit var jobTodoMonitor: JobTodoMonitor
     private lateinit var jobRetryMonitor: JobRetryMonitor
-    //private lateinit var jobLostMonitor: JobLostMonitor
+
+    // private lateinit var jobLostMonitor: JobLostMonitor
     private lateinit var workerStatusMonitor: WorkerStatusMonitor
 
     override fun getJobManager() = jobManager
@@ -84,17 +84,13 @@ class DefaultJobScheduler(
         triggerType: TriggerTypeEnum,
         retryCount: Int?,
         jobParam: String?,
-        shardingParam: String?
+        shardingParam: String?,
     ) {
         logger.debug("prepare trigger job[$jobId]")
         triggerThreadPool.execute {
             try {
                 val job = jobManager.findJobById(jobId) ?: run {
                     logger.warn("trigger job[$jobId] failed: job not exists.")
-                    return@execute
-                }
-                if (job.triggerStatus == TriggerStatusEnum.STOP.code()) {
-                    logger.warn("trigger job[$jobId] failed: job is stopped.")
                     return@execute
                 }
                 jobParam?.let { job.jobParam = it }
@@ -133,7 +129,7 @@ class DefaultJobScheduler(
         triggerType: TriggerTypeEnum,
         retryCount: Int,
         index: Int,
-        total: Int
+        total: Int,
     ) {
         val blockStrategy = BlockStrategyEnum.ofCode(job.blockStrategy)
         val routeStrategy = RouteStrategyEnum.ofCode(job.routeStrategy)
@@ -146,7 +142,7 @@ class DefaultJobScheduler(
             jobId = job.id.orEmpty(),
             groupId = group.id.orEmpty(),
             triggerType = triggerType.code(),
-            triggerTime = LocalDateTime.now()
+            triggerTime = LocalDateTime.now(),
         )
         val logId = jobManager.addJobLog(jobLog)
         // 2. 构造trigger param
@@ -159,7 +155,11 @@ class DefaultJobScheduler(
             logId = logId,
             triggerTime = jobLog.triggerTime,
             broadcastIndex = index,
-            broadcastTotal = total
+            broadcastTotal = total,
+            updateTime = job.updateTime,
+            source = job.source,
+            image = job.image,
+            jobMode = job.jobMode,
         )
         // 3. 选择worker地址
         require(group.registryList.isNotEmpty()) { "没有可用的worker地址" }
@@ -199,7 +199,7 @@ class DefaultJobScheduler(
             scheduleServerProperties.maxTriggerPoolSize,
             60L,
             TimeUnit.SECONDS,
-            LinkedBlockingQueue(1000)
+            LinkedBlockingQueue(1000),
         ) { runnable ->
             Thread(runnable, "job-trigger-${runnable.hashCode()}")
         }
@@ -213,7 +213,9 @@ class DefaultJobScheduler(
         return try {
             if (parts.size == 2) {
                 Pair(parts[0].toInt(), parts[1].toInt())
-            } else null
+            } else {
+                null
+            }
         } catch (ignored: Exception) {
             null
         }
@@ -223,4 +225,3 @@ class DefaultJobScheduler(
         private val logger = LoggerFactory.getLogger(DefaultJobScheduler::class.java)
     }
 }
-

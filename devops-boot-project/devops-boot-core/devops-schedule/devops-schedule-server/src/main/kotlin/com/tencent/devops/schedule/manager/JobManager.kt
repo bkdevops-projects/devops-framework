@@ -46,6 +46,13 @@ interface JobManager {
     fun deleteJob(id: String)
 
     /**
+     * 触发任务
+     * @param id 任务id
+     * @param executorParam 任务参数
+     * */
+    fun triggerJob(id: String, executorParam: String?)
+
+    /**
      * 更新任务调度信息
      * 只更新调度状态、上次调度时间、下次调度时间
      * @param job 任务信息

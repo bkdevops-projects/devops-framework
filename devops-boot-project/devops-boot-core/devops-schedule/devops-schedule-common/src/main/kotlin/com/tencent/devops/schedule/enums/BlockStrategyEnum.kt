@@ -5,10 +5,13 @@ package com.tencent.devops.schedule.enums
  */
 enum class BlockStrategyEnum(
     private val code: Int,
-    private val label: String
-): DictItem {
+    private val label: String,
+) : DictItem {
 
-    DEFAULT(1, "默认策略");
+    SERIAL_EXECUTION(1, "串行"),
+    DISCARD_LATER(2, "丢弃最后"),
+    COVER_EARLY(3, "覆盖之前"),
+    ;
 
     override fun code() = code
     override fun description() = label

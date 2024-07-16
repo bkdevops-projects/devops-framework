@@ -4,10 +4,13 @@ import com.tencent.devops.schedule.constants.DATE_TIME_FORMATTER
 import com.tencent.devops.schedule.constants.MAX_LOG_MESSAGE_SIZE
 import com.tencent.devops.schedule.constants.PRE_LOAD_TIME
 import com.tencent.devops.schedule.enums.BlockStrategyEnum
+import com.tencent.devops.schedule.enums.JobModeEnum
+import com.tencent.devops.schedule.enums.JobModeEnum.Companion.DEFAULT_IMAGE
 import com.tencent.devops.schedule.enums.MisfireStrategyEnum
 import com.tencent.devops.schedule.enums.RouteStrategyEnum
 import com.tencent.devops.schedule.enums.ScheduleTypeEnum
 import com.tencent.devops.schedule.enums.TriggerStatusEnum
+import com.tencent.devops.schedule.enums.TriggerTypeEnum
 import com.tencent.devops.schedule.pojo.job.JobCreateRequest
 import com.tencent.devops.schedule.pojo.job.JobInfo
 import com.tencent.devops.schedule.pojo.job.JobQueryParam
@@ -17,10 +20,13 @@ import com.tencent.devops.schedule.pojo.log.LogQueryParam
 import com.tencent.devops.schedule.pojo.page.Page
 import com.tencent.devops.schedule.provider.JobProvider
 import com.tencent.devops.schedule.provider.WorkerProvider
+import com.tencent.devops.schedule.scheduler.JobScheduler
 import com.tencent.devops.schedule.utils.computeNextTriggerTime
 import com.tencent.devops.schedule.utils.validate
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.json.BasicJsonParser
+import org.springframework.context.annotation.Lazy
 import org.springframework.scheduling.support.CronExpression
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -30,10 +36,14 @@ import java.time.temporal.ChronoUnit
  */
 open class DefaultJobManager(
     private val jobProvider: JobProvider,
-    private val workerProvider: WorkerProvider
+    private val workerProvider: WorkerProvider,
 ) : JobManager {
 
     private val jsonParser = BasicJsonParser()
+
+    @Lazy
+    @Autowired
+    private lateinit var jobScheduler: JobScheduler
 
     override fun listJobPage(param: JobQueryParam): Page<JobInfo> {
         return jobProvider.listJobPage(param)
@@ -70,7 +80,7 @@ open class DefaultJobManager(
                 request.jobParam = "{}"
             }
             validate { jsonParser.parseMap(request.jobParam) }
-            require(request.jobHandler.isNotBlank())
+
             // 验证路由策略
             requireNotNull(RouteStrategyEnum.ofCode(routeStrategy))
             // 验证过期策略
@@ -80,6 +90,14 @@ open class DefaultJobManager(
             // 验证group存在
             val workerGroup = workerProvider.findGroupById(groupId)
             requireNotNull(workerGroup)
+
+            // 验证任务类型
+            val jobModeEnum = JobModeEnum.ofCode(jobMode)
+            requireNotNull(jobModeEnum)
+            val finalImage = if (jobModeEnum.isContainer && image == null) DEFAULT_IMAGE else image
+            if (jobModeEnum == JobModeEnum.BEAN) {
+                require(request.jobHandler.isNotBlank())
+            }
 
             val jobInfo = JobInfo(
                 name = name,
@@ -97,16 +115,21 @@ open class DefaultJobManager(
                 maxRetryCount = maxRetryCount,
                 lastTriggerTime = 0,
                 nextTriggerTime = 0,
-                triggerStatus = TriggerStatusEnum.RUNNING.code(),
+                triggerStatus = TriggerStatusEnum.STOP.code(),
                 createTime = LocalDateTime.now(),
-                updateTime = LocalDateTime.now()
+                updateTime = LocalDateTime.now(),
+                source = source,
+                image = finalImage,
             )
 
-            // 生成下次执行时间
-            val from = LocalDateTime.now().plus(PRE_LOAD_TIME, ChronoUnit.MILLIS)
-            val nextTriggerTime = computeNextTriggerTime(jobInfo, from)
-            requireNotNull(nextTriggerTime)
-            jobInfo.nextTriggerTime = nextTriggerTime
+            // 一次性任务，不主动触发
+            if (scheduleTypeEnum != ScheduleTypeEnum.IMMEDIATELY) {
+                // 生成下次执行时间
+                val from = LocalDateTime.now().plus(PRE_LOAD_TIME, ChronoUnit.MILLIS)
+                val nextTriggerTime = computeNextTriggerTime(jobInfo, from)
+                requireNotNull(nextTriggerTime)
+                jobInfo.nextTriggerTime = nextTriggerTime
+            }
 
             return jobProvider.addJob(jobInfo).also {
                 jobInfo.id = it
@@ -152,6 +175,13 @@ open class DefaultJobManager(
                 requireNotNull(BlockStrategyEnum.ofCode(it))
                 jobInfo.blockStrategy = it
             }
+            image?.let {
+                jobInfo.image = image
+            }
+            source?.let {
+                jobInfo.source = it
+            }
+            jobInfo.updateTime = LocalDateTime.now()
             jobProvider.updateJob(jobInfo).also {
                 logger.info("update job[${jobInfo.id}] success")
             }
@@ -161,6 +191,9 @@ open class DefaultJobManager(
     override fun startJob(id: String) {
         val job = jobProvider.findJobById(id)
         requireNotNull(job)
+        if (job.scheduleType == ScheduleTypeEnum.IMMEDIATELY.code()) {
+            throw IllegalArgumentException("IMMEDIATELY schedule type limit start.")
+        }
         // 生成下次执行时间, 延后一段时间执行，避开预读周期
         val from = LocalDateTime.now().plus(PRE_LOAD_TIME, ChronoUnit.MILLIS)
         val nextTriggerTime = computeNextTriggerTime(job, from)
@@ -192,6 +225,12 @@ open class DefaultJobManager(
             jobProvider.deleteLogByJobId(id)
         }
         logger.info("delete job[$id] success")
+    }
+
+    override fun triggerJob(id: String, executorParam: String?) {
+        val job = jobProvider.findJobById(id)
+        requireNotNull(job)
+        jobScheduler.trigger(job.id.orEmpty(), TriggerTypeEnum.MANUAL, jobParam = executorParam)
     }
 
     override fun updateJobSchedule(job: JobInfo) {
@@ -249,9 +288,11 @@ open class DefaultJobManager(
                 val triggerTime = validate { LocalDateTime.parse(scheduleConf, DATE_TIME_FORMATTER) }
                 require(triggerTime.isAfter(LocalDateTime.now()))
             }
+
             ScheduleTypeEnum.FIX_RATE -> {
                 validate { scheduleConf.toLong() > 0 }
             }
+
             ScheduleTypeEnum.CRON -> {
                 validate { CronExpression.parse(scheduleConf) }
             }

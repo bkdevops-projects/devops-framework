@@ -64,5 +64,13 @@ data class JobCreateRequest(
     /**
      * 最大重试次数
      */
-    val maxRetryCount: Int
+    val maxRetryCount: Int,
+    /**
+     * 资源内容，可以是脚本，也可以是yaml，使用了basic64编码，使用时需要先解码
+     * */
+    val source: String? = null,
+    /**
+     * 镜像地址，容器任务需要
+     * */
+    val image: String? = null,
 )

@@ -6,6 +6,9 @@ import java.time.LocalDateTime
 
 data class TriggerParam(
     var jobId: String,
+    var jobMode: Int,
+    var source: String? = null,
+    var image: String? = null,
     var jobHandler: String,
     var jobParam: String,
     var blockStrategy: Int,
@@ -15,5 +18,6 @@ data class TriggerParam(
     var triggerTime: LocalDateTime,
     var broadcastIndex: Int = 0,
     var broadcastTotal: Int = 0,
-    var workerAddress: String? = null
+    var workerAddress: String? = null,
+    var updateTime: LocalDateTime,
 )

@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("$SERVER_BASE_PATH$SERVER_API_V1")
 class JobController(
-    private val jobManager: JobManager
+    private val jobManager: JobManager,
 ) {
 
     @GetMapping("/job/list")
@@ -56,6 +56,12 @@ class JobController(
     @PostMapping("/job/start")
     fun start(@RequestParam id: String): Response<Void> {
         jobManager.startJob(id)
+        return Response.success()
+    }
+
+    @PostMapping("/job/trigger")
+    fun trigger(@RequestParam id: String, @RequestBody(required = false) executorParam: String?): Response<Void> {
+        jobManager.triggerJob(id, executorParam)
         return Response.success()
     }
 

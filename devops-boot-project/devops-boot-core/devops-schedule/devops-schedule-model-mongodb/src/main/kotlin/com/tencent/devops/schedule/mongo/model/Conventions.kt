@@ -25,7 +25,9 @@ fun TJobInfo.convert(): JobInfo {
         maxRetryCount = maxRetryCount,
         triggerStatus = triggerStatus,
         lastTriggerTime = lastTriggerTime,
-        nextTriggerTime = nextTriggerTime
+        nextTriggerTime = nextTriggerTime,
+        source = source,
+        image = image,
     )
 }
 
@@ -49,7 +51,9 @@ fun JobInfo.convert(): TJobInfo {
         maxRetryCount = maxRetryCount,
         triggerStatus = triggerStatus,
         lastTriggerTime = lastTriggerTime,
-        nextTriggerTime = nextTriggerTime
+        nextTriggerTime = nextTriggerTime,
+        source = source,
+        image = image,
     )
 }
 
@@ -59,7 +63,7 @@ fun TWorkerGroup.convert(): WorkerGroup {
         name = name,
         discoveryType = discoveryType,
         updateTime = updateTime,
-        registryList = addressList.split(",")
+        registryList = addressList.split(","),
     )
 }
 
@@ -69,7 +73,7 @@ fun WorkerGroup.convert(): TWorkerGroup {
         name = name,
         discoveryType = discoveryType,
         updateTime = updateTime,
-        addressList = registryList.joinToString(",")
+        addressList = registryList.joinToString(","),
     )
 }
 
@@ -90,7 +94,7 @@ fun TJobLog.convert(): JobLog {
         executionTime = executionTime,
         executionCode = executionCode,
         executionMsg = executionMsg,
-        alarmStatus = alarmStatus
+        alarmStatus = alarmStatus,
     )
 }
 
@@ -111,7 +115,7 @@ fun JobLog.convert(): TJobLog {
         executionTime = executionTime,
         executionCode = executionCode,
         executionMsg = executionMsg,
-        alarmStatus = alarmStatus
+        alarmStatus = alarmStatus,
     )
 }
 
@@ -120,7 +124,7 @@ fun TWorker.convert(): WorkerInfo {
         id = id.orEmpty(),
         address = address,
         group = group,
-        updateTime = updateTime
+        updateTime = updateTime,
     )
 }
 
@@ -129,6 +133,6 @@ fun WorkerInfo.convert(): TWorker {
         id = id.orEmpty(),
         address = address,
         group = group,
-        updateTime = updateTime
+        updateTime = updateTime,
     )
 }

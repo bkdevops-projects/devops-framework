@@ -20,11 +20,23 @@ data class JobContext(
      */
     var triggerTime: LocalDateTime,
     /**
+     * 任务更新时间
+     * */
+    var updateTime: LocalDateTime,
+    /**
      * 分片广播序号
      */
     var broadcastIndex: Int = 0,
     /**
      * 分片广播总数
      */
-    var broadcastTotal: Int = 1
+    var broadcastTotal: Int = 1,
+    /**
+     * 资源内容，可以是脚本，也可以是yaml
+     * */
+    var source: String?,
+    /**
+     * k8s任务使用的镜像
+     * */
+    var image: String?,
 )

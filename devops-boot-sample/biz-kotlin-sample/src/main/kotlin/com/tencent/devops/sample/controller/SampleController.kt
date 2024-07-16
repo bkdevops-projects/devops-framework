@@ -3,7 +3,6 @@ package com.tencent.devops.sample.controller
 import com.tencent.devops.api.pojo.Response
 import com.tencent.devops.sample.client.SampleClient
 import com.tencent.devops.sample.pojo.Sample
-import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
@@ -11,7 +10,6 @@ import java.util.UUID
  * Sample Controller
  */
 @RestController
-@RequestMapping("/service/sample")
 class SampleController : SampleClient {
 
     override fun getSample(): Response<Sample> {

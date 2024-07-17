@@ -12,14 +12,20 @@ import org.springframework.util.StringUtils
 import org.springframework.web.bind.annotation.RequestMapping
 
 /**
- * 解决feign client不允许@RequestMapping注解的问题
+ * 新版本的Spring Cloud的@FeignClient出于安全考虑（不是十分理解），不允许使用@RequestMapping，
+ * 但这对现有的使用方式有很大的影响，需要修改所有的FeignClient，所以这里我们恢复之前的逻辑，允许在
+ * FeignClient上使用RequestMapping定义公共的路由前缀。
  * */
-class CustomSpringMvcContract(
+class OldSpringMvcContract(
     annotatedParameterProcessors: List<AnnotatedParameterProcessor>,
     conversionService: ConversionService,
     private val decodeSlash: Boolean,
 ) : SpringMvcContract(annotatedParameterProcessors, conversionService, decodeSlash) {
     private val resourceLoader = DefaultResourceLoader()
+
+    /**
+     * 旧版本的SpringMvcContract处理逻辑
+     * */
     override fun processAnnotationOnClass(data: MethodMetadata, clz: Class<*>) {
         if (clz.interfaces.isEmpty()) {
             val classAnnotation = findMergedAnnotation(clz, RequestMapping::class.java)

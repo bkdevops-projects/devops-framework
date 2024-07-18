@@ -1,9 +1,11 @@
 package com.tencent.devops.enums
 
 enum class AssemblyMode {
+    NONE,
     CONSUL,
     K8S,
-    KUBERNETES;
+    KUBERNETES,
+    ;
 
     companion object {
         fun ofValueOrDefault(value: String): AssemblyMode {

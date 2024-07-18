@@ -57,8 +57,8 @@ class K8sShellHandler(
                         }
                         data = mapOf(CMD to source)
                     }
-                    val configMap = api.createNamespacedConfigMap(namespace, configMapBody, null, null, null)
-                    logger.info("Created configmap $configMap")
+                    api.createNamespacedConfigMap(namespace, configMapBody, null, null, null)
+                    logger.info("Created configmap $configMapName")
                 }
                 val podBody = V1Pod {
                     metadata {
@@ -73,7 +73,8 @@ class K8sShellHandler(
                             setEnv(context)
                             volumeMounts {
                                 name = "shell-$logId"
-                                mountPath = WORK_SPACE
+                                mountPath = "$WORK_SPACE/$CMD"
+                                subPath = CMD
                                 readOnly = true
                             }
                             resources {
@@ -116,21 +117,37 @@ class K8sShellHandler(
                     status = pod?.status?.phase.orEmpty()
                 }
                 logger.info("Pod status: $status")
-                val log = api.readNamespacedPodLog(
-                    podName,
-                    namespace,
-                    logId,
-                    true,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                )
-                logger.info("Pod log: $log")
-                check(pod?.status?.phase == "Succeeded")
+                if (logger.isDebugEnabled) {
+                    val log = api.readNamespacedPodLog(
+                        podName,
+                        namespace,
+                        logId,
+                        false,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                    )
+                    logger.debug("Pod log: $log")
+                }
+                check(pod?.status?.phase == "Succeeded") {
+                    api.readNamespacedPodLog(
+                        podName,
+                        namespace,
+                        logId,
+                        false,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        LOG_TAIL_LINES,
+                        null,
+                    )
+                }
             } catch (e: ApiException) {
                 logger.error(e.buildMessage())
                 throw e
@@ -179,5 +196,6 @@ class K8sShellHandler(
         private val logger = LoggerFactory.getLogger(K8sShellHandler::class.java)
         private const val CMD = "run.sh"
         private const val WORK_SPACE = "/data/workspace"
+        private const val LOG_TAIL_LINES = 20
     }
 }

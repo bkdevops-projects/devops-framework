@@ -26,9 +26,14 @@ class SpringCloudConvention {
                 project.dependencies.add(IMPLEMENTATION, CONSUL_CONFIG)
                 project.dependencies.add(IMPLEMENTATION, CONSUL_DISCOVERY)
             }
+
             AssemblyMode.K8S, AssemblyMode.KUBERNETES -> {
                 project.dependencies.add(IMPLEMENTATION, K8S_CONFIG)
                 project.dependencies.add(IMPLEMENTATION, K8S_DISCOVERY)
+            }
+
+            AssemblyMode.NONE -> {
+                // 独立部署，不依赖任何微服务环境
             }
         }
     }

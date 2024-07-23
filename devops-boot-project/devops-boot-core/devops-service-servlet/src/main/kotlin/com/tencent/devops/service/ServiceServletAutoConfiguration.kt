@@ -1,5 +1,6 @@
 package com.tencent.devops.service
 
+import com.tencent.devops.service.feign.FeignGlobalConfiguration
 import com.tencent.devops.service.feign.FeignFilterRequestMappingHandlerMapping
 import org.springframework.boot.autoconfigure.AutoConfigureBefore
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
@@ -7,6 +8,7 @@ import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguratio
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Import
 import org.springframework.context.annotation.PropertySource
 
 /**
@@ -15,6 +17,7 @@ import org.springframework.context.annotation.PropertySource
 @Configuration(proxyBeanMethods = false)
 @PropertySource("classpath:common-service.properties")
 @ConditionalOnWebApplication
+@Import(FeignGlobalConfiguration::class)
 @AutoConfigureBefore(WebMvcAutoConfiguration::class)
 class ServiceServletAutoConfiguration {
 

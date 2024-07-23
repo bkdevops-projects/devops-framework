@@ -5,9 +5,9 @@ plugins {
 dependencies {
     // 引入插件扩展点定义，实际开发中通过jar包引入
     implementation(project(":api-kotlin-sample"))
+    implementation("org.bytedeco:ffmpeg:6.0-1.5.9")
     kapt("com.tencent.devops:devops-plugin-processor")
 }
-
 
 val pluginId: String? by project
 val pluginVersion: String? by project
@@ -30,4 +30,9 @@ tasks.withType<Jar> {
             "Plugin-Description" to pluginDescription
         )
     }
+    // 添加lib
+    from(configurations.runtimeClasspath.get().filter { it.name.endsWith(".jar") }) {
+        into("lib")
+    }
+    entryCompression = ZipEntryCompression.STORED
 }

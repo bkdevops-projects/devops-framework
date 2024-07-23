@@ -5,10 +5,10 @@ package com.tencent.devops.schedule.enums
  */
 enum class ScheduleTypeEnum(
     private val code: Int,
-    private val label: String
-): DictItem {
+    private val label: String,
+) : DictItem {
     /**
-     * 立即执行
+     * 立即执行,调度器不会进行调度，需要主动触发才会执行
      */
     IMMEDIATELY(1, "立即执行"),
 
@@ -25,7 +25,8 @@ enum class ScheduleTypeEnum(
     /**
      * cron表达式
      */
-    CRON(4, "Cron表达式");
+    CRON(4, "Cron表达式"),
+    ;
 
     override fun code() = code
     override fun description() = label

@@ -2,6 +2,7 @@ package com.tencent.devops.schedule.config
 
 import com.tencent.devops.schedule.config.ScheduleWorkerProperties.Companion.PREFIX
 import com.tencent.devops.schedule.constants.WorkerRegistryMode
+import com.tencent.devops.schedule.k8s.K8sProperties
 import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties(prefix = PREFIX)
@@ -19,13 +20,21 @@ data class ScheduleWorkerProperties(
      */
     var address: String = "",
     /**
+     * 资源存放路径
+     * */
+    var sourcePath: String = System.getProperty("java.io.tmpdir"),
+    /**
      * 执行器配置
      */
     var executor: ScheduleWorkerExecutorProperties = ScheduleWorkerExecutorProperties(),
     /**
      * 调度中心配置
      */
-    var server: ScheduleWorkerServerProperties = ScheduleWorkerServerProperties()
+    var server: ScheduleWorkerServerProperties = ScheduleWorkerServerProperties(),
+    /**
+     * k8s环境配置
+     * */
+    var k8s: K8sProperties = K8sProperties(),
 ) {
     companion object {
         const val PREFIX = "devops.schedule.worker"
@@ -59,7 +68,6 @@ data class ScheduleWorkerProperties(
         /**
          * 调度中心地址，DISCOVERY模式下可填写服务名称
          */
-        var address: String = "http://localhost:8080"
+        var address: String = "http://localhost:8080",
     )
-
 }

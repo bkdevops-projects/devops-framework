@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping
  */
 @Tag(name = "Sample 服务接口")
 @Primary
-@FeignClient("devops-kotlin-sample", contextId = "SampleClient", path = "/service/sample")
+@FeignClient("devops-kotlin-sample", contextId = "SampleClient")
+@RequestMapping("/service/sample")
 interface SampleClient {
 
     @Operation(description = "获取Sample")

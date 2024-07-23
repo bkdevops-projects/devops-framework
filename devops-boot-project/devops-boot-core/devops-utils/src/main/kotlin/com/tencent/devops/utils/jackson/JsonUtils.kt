@@ -15,7 +15,7 @@ import java.io.InputStream
  */
 object JsonUtils {
     val objectMapper = ObjectMapper().apply {
-        registerModule(KotlinModule())
+        registerModule(KotlinModule.Builder().build())
         registerModule(JavaTimeModule())
         registerModule(ParameterNamesModule())
         registerModule(Jdk8Module())

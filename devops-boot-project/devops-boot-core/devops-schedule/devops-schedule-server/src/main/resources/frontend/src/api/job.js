@@ -1,15 +1,27 @@
 import request from '@/utils/request'
 
+function encodeBase64(data) {
+  data.source = btoa(data.source)
+  return data
+}
+
+function decodeBase64(res) {
+  for (const item of res.data.records) {
+    item.source = atob(item.source)
+  }
+  return res
+}
+
 export const list = (data) => request({
   url: '/job/list',
   method: 'get',
   params: data
-})
+}).then(res => decodeBase64(res))
 
 export const create = (data) => request({
   url: '/job/create',
   method: 'post',
-  data: data
+  data: encodeBase64(data)
 })
 
 export const update = (id, data) => request({

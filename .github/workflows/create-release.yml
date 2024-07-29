@@ -13,7 +13,6 @@ on:
 jobs:
   create-release:
     runs-on: ubuntu-latest
-    needs: prepare-create
     env:
       RELEASE_VERSION: ${{ github.event.inputs.release_version }}
       NEXT_VERSION: ${{ github.event.inputs.next_version }}

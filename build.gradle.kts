@@ -36,5 +36,5 @@ subprojects {
 }
 
 release {
-    scmUrl.set("scm:git:git@github.com:bkdevops-projects/devops-framework.git")
+    scmUrl.set("scm:git:git@github.com:felixncheng/devops-framework.git")
 }

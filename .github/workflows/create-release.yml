@@ -2,13 +2,6 @@
 name: Create release branch
 on:
   workflow_dispatch:
-    inputs:
-      release_version:
-        description: "指定发布版本，默认根据项目语义化版本进行迭代"
-        required: false
-      next_version:
-        description: "指定下一个开发版本，默认根据项目语义化版本进行迭代"
-        required: false
 
 jobs:
   create-release:
@@ -30,7 +23,7 @@ jobs:
       - name: Release
         run: |
           ./gradlew generateReleaseProperties
-          ./gradlew release -Prelease.releaseVersion=${{ env.RELEASE_VERSION }} -Prelease.developmentVersion=${{ env.NEXT_VERSION }}
+          ./gradlew release
       - name: Push new release branch
         run: |
           version=$(grep "release.version=" release.properties | awk -F "=" '{print $2}')

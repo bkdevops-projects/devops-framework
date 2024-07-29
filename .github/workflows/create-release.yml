@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
     inputs:
       release_version:
-        description: "指定发布版本"
+        description: "指定发布版本，默认根据项目语义化版本进行迭代"
         required: false
       next_version:
-        description: "指定下一个开发版本"
+        description: "指定下一个开发版本，默认根据项目语义化版本进行迭代"
         required: false
 
 jobs:
@@ -17,7 +17,7 @@ jobs:
       RELEASE_VERSION: ${{ github.event.inputs.release_version }}
       NEXT_VERSION: ${{ github.event.inputs.next_version }}
     steps:
-      - name: check branch
+      - name: Check branch
         if: github.ref_name != 'master' && startsWith(github.ref_name,'hotfix-') != true
         run: |
           echo "Create release branch can only from master or hotfix-** branch"
@@ -27,8 +27,13 @@ jobs:
         run: |
           git config user.name "bkci-bot"
           git config user.email "64278246+bkci-bot@users.noreply.github.com"
-      - name: Version Bump
+      - name: Release
         run: |
           ./gradlew release -Prelease.releaseVersion=${{ env.RELEASE_VERSION }} -Prelease.developmentVersion=${{ env.NEXT_VERSION }}
       - name: Push new release branch
-        run: git push origin release-${{ env.RELEASE_VERSION }}
+        run: |
+          version=${{ env.RELEASE_VERSION }}
+          [[ -z version ]] && version=$(<version.txt)
+          release_branch=release-$version
+          git checkout -b $release_branch v$version
+          git push origin $release_branch

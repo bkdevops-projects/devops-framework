@@ -32,8 +32,9 @@ jobs:
           ./gradlew release -Prelease.releaseVersion=${{ env.RELEASE_VERSION }} -Prelease.developmentVersion=${{ env.NEXT_VERSION }}
       - name: Push new release branch
         run: |
-          version=${{ env.RELEASE_VERSION }}
-          [[ -z version ]] && version=$(<version.txt)
+          version=$([ -z "${{ env.RELEASE_VERSION }}" ] && cat version.txt || echo "${{ env.RELEASE_VERSION }}")
           release_branch=release-$version
+          echo "version=$version"
+          echo "branch_name=$release_branch"
           git checkout -b $release_branch v$version
           git push origin $release_branch

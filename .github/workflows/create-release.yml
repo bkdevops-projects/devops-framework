@@ -29,10 +29,11 @@ jobs:
           git config user.email "64278246+bkci-bot@users.noreply.github.com"
       - name: Release
         run: |
+          ./gradlew generateReleaseProperties
           ./gradlew release -Prelease.releaseVersion=${{ env.RELEASE_VERSION }} -Prelease.developmentVersion=${{ env.NEXT_VERSION }}
       - name: Push new release branch
         run: |
-          version=$([ -z "${{ env.RELEASE_VERSION }}" ] && cat version.txt || echo "${{ env.RELEASE_VERSION }}")
+          version=$(grep "release.version=" release.properties | awk -F "=" '{print $2}')
           release_branch=release-$version
           echo "version=$version"
           echo "branch_name=$release_branch"

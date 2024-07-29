@@ -1,8 +1,7 @@
 # devops-release-gradle-plugin
 
 ## 功能介绍
-`devops-release-gradle-plugin`是一个用于自动化发布的一个插件，帮助我们管理项目版本,简化发布流程，自动
-完成以下内容：
+`devops-release-gradle-plugin`是一个用于自动化发布的一个插件，帮助我们管理项目版本,简化发布流程，自动完成以下内容：
 
 - 检查是否有未提交的内容
 - 去掉-SNAPSHOT,生成发布版本号
@@ -39,8 +38,9 @@ gradle release
 
 ## 配置插件
 
-默认是根据version.txt文件，自动生成发布版本，并根据SemVer，增加MINOR，生成下一个开发版本，标签则是在发布版本
-前增加v。可以使用gradle preview，预览发布插件自动生成的信息。
+默认是根据version.txt文件，自动生成发布版本，并根据SemVer，增加MINOR，生成下一个开发版本，标签则是在发布版本前增加v。
+
+可以使用gradle generateReleaseProperties，预览发布插件自动生成的信息。
 
 所以我们只需添加如下配置：
 

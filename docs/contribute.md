@@ -18,9 +18,9 @@ devops-framework/
 ### 分支管理
 项目采用主干开发模式，主要包含以下几种分支：
 
-* master 主干开发分支
-* release-* 已发布的版本分支
-* ... 其他特性分支，如jdk17
+* `master` 主干开发分支
+* `release-*` 已发布的版本分支
+* `...` 其他特性分支，如jdk17
 
 ## How to publish to maven repository?
 

@@ -35,14 +35,6 @@ jobs:
           ${{ env.RELEASE_VERSION }} \
           /generated-changelog/changelog.md
           echo "::set-output name=changelog_path::$CONFIG_DIR/changelog.md"
-      - name: Setup git configuration
-        run: |
-          git config user.name "bkci-bot"
-          git config user.email "64278246+bkci-bot@users.noreply.github.com"
-      - name: Create tag
-        run: git tag v${{ env.RELEASE_VERSION }} -m "Release v${{ env.RELEASE_VERSION }}"
-      - name: Push git tag
-        run: git push origin v${{ env.RELEASE_VERSION }}
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1

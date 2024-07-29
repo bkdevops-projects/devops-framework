@@ -37,4 +37,5 @@ subprojects {
 
 release {
     scmUrl.set("scm:git:https://github.com/felixncheng/devops-framework.git")
+    incrementPolicy.set("PATCH")
 }

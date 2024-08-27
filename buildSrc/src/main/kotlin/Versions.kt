@@ -1,6 +1,8 @@
+import java.io.File
+
 object Release {
     const val Group = "com.tencent.devops"
-    const val Version = "0.1.0-SNAPSHOT"
+    val Version = File("version.txt").readText().trim()
 }
 
 object Versions {
@@ -12,4 +14,5 @@ object Versions {
     const val DependencyManagement = "1.1.6"
     const val GradleNexusPublish = "1.3.0"
     const val KtLint = "0.50.0"
+    const val DevopsReleasePlugin = "0.0.9"
 }

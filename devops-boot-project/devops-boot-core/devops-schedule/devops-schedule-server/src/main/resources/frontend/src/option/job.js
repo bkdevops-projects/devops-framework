@@ -29,8 +29,11 @@ export default (safe) => {
       },
       {
         label: '调度类型',
-        prop: 'scheduleType',
+        prop: 'scheduleType1', // 这里字段名不能跟下面的scheduleType重复，不然下面框的控制会失效
         dicUrl: '/dict/ScheduleType',
+        props: {
+          value: 'scheduleType'
+        },
         display: false
       },
       {
@@ -146,6 +149,7 @@ export default (safe) => {
                     label: 'Cron表达式',
                     display: true,
                     type: 'input',
+                    placeholder: '请输入Cron表达式',
                     value: '',
                     rules: [{
                       required: true,
@@ -164,7 +168,8 @@ export default (safe) => {
           },
           {
             label: '调度配置',
-            prop: 'scheduleConf'
+            prop: 'scheduleConf',
+            display: false
           }
         ]
       },
@@ -178,6 +183,45 @@ export default (safe) => {
             type: 'select',
             value: 1,
             dicUrl: '/dict/JobMode',
+            control: (val, form) => {
+              if (val === 1) {
+                return {
+                  image: {
+                    display: false
+                  },
+                  jobHandler: {
+                    display: true
+                  },
+                  source: {
+                    display: false
+                  },
+                }
+              } else if (val === 2) {
+                return {
+                  image: {
+                    display: false
+                  },
+                  jobHandler: {
+                    display: false
+                  },
+                  source: {
+                    display: true
+                  },
+                }
+              } else if (val === 3) {
+                return {
+                  image: {
+                    display: true
+                  },
+                  jobHandler: {
+                    display: false
+                  },
+                  source: {
+                    display: true
+                  },
+                }
+              }
+            },
             rules: [{
               required: true,
               message: '请选择运行模式',
@@ -188,11 +232,31 @@ export default (safe) => {
             label: 'jobHandler',
             prop: 'jobHandler',
             type: 'input',
+            display: false,
             rules: [{
-              required: true,
               message: '请输入job handler',
               trigger: 'blur'
             }]
+          },
+          {
+            label: '镜像',
+            prop: 'image',
+            type: 'input',
+            display: false,
+            rules: [{
+              message: '请输入镜像',
+              trigger: 'blur'
+            }]
+          },
+          {
+            label: '资源',
+            prop: 'source',
+            type: 'textarea',
+            display: false,
+            placeholder: '请输入资源',
+            maxlength: 10240,
+            showWordLimit: true,
+            span: 24
           },
           {
             label: '任务参数',

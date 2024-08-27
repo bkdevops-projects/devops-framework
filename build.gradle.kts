@@ -8,6 +8,7 @@ plugins {
     kotlin("plugin.spring") version Versions.Kotlin apply false
     id("io.spring.dependency-management") version Versions.DependencyManagement apply false
     id("io.github.gradle-nexus.publish-plugin") version Versions.GradleNexusPublish
+    id("com.tencent.devops.release") version Versions.DevopsReleasePlugin
 }
 
 allprojects {
@@ -31,4 +32,9 @@ nexusPublishing {
 
 subprojects {
     apply(plugin = "ktlint")
+}
+
+release {
+    scmUrl.set("scm:git:https://github.com/bkdevops-projects/devops-framework.git")
+    incrementPolicy.set("PATCH")
 }

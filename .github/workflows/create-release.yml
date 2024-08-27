@@ -2,98 +2,33 @@
 name: Create release branch
 on:
   workflow_dispatch:
-    inputs:
-      next_version:
-        description: "Next development version (ie 1.1.0),hotfix use '-'"
-        required: true
 
 jobs:
-  prepare-create:
+  create-release:
     runs-on: ubuntu-latest
-    outputs:
-      RELEASE_VERSION: ${{ steps.get-version.outputs.RELEASE_VERSION }}
-      VERSION_FILE: ${{ steps.get-version.outputs.VERSION_FILE }}
+    env:
+      RELEASE_VERSION: ${{ github.event.inputs.release_version }}
+      NEXT_VERSION: ${{ github.event.inputs.next_version }}
     steps:
-      - name: check branch
+      - name: Check branch
         if: github.ref_name != 'master' && startsWith(github.ref_name,'hotfix-') != true
         run: |
           echo "Create release branch can only from master or hotfix-** branch"
           exit 1
       - uses: actions/checkout@v2
-      - name: Get version
-        id: get-version
-        run: |
-          version_file=buildSrc/src/main/kotlin/Versions.kt
-          version=$(awk '/Version =/ {print $5}' $version_file |sed 's/\"//g' |sed 's/-SNAPSHOT//g')
-          echo "RELEASE_VERSION=$version" >> $GITHUB_OUTPUT
-          echo "VERSION_FILE=$version_file" >> $GITHUB_OUTPUT
-  create-release:
-    runs-on: ubuntu-latest
-    needs: prepare-create
-    env:
-      RELEASE_VERSION: ${{ needs.prepare-create.outputs.RELEASE_VERSION }}
-      VERSION_FILE: ${{ needs.prepare-create.outputs.VERSION_FILE }}
-    steps:
-      - uses: actions/checkout@v2
       - name: Setup git configuration
         run: |
           git config user.name "bkci-bot"
           git config user.email "64278246+bkci-bot@users.noreply.github.com"
-      - name: Create release branch
-        run: git checkout -b release-${{ env.RELEASE_VERSION }}
-      - name: Version Bump
+      - name: Release
         run: |
-          sed -i 's/${{ env.RELEASE_VERSION }}-SNAPSHOT/${{ env.RELEASE_VERSION }}/g' ${{ env.VERSION_FILE }}
-      - name: Commit version file -- release branch
-        run: |
-          git add ${{ env.VERSION_FILE }}
-          git commit --message "Prepare release ${{ env.RELEASE_VERSION }}"
+          ./gradlew generateReleaseProperties
+          ./gradlew release
       - name: Push new release branch
-        run: git push origin release-${{ env.RELEASE_VERSION }}
-  create-develop:
-      runs-on: ubuntu-latest
-      needs: prepare-create
-      if: github.event.inputs.next_version != '-'
-      env:
-        RELEASE_VERSION: ${{ needs.prepare-create.outputs.RELEASE_VERSION }}
-        NEXT_VERSION: ${{ github.event.inputs.next_version }}
-        VERSION_FILE: ${{ needs.prepare-create.outputs.VERSION_FILE }}
-      steps:
-        - uses: actions/checkout@v2
-          with:
-            ref: master
-        - name: Setup git configuration
-          run: |
-            git config user.name "bkci-bot"
-            git config user.email "64278246+bkci-bot@users.noreply.github.com"
-        - name: Create develop branch
-          run: git checkout -b develop-${{ env.NEXT_VERSION }}
-        - name: Version Bump
-          id: version-bump
-          run: |
-            sed -i 's/${{ env.RELEASE_VERSION }}/${{ env.NEXT_VERSION }}/g' ${{ env.VERSION_FILE }}
-            sample_version_file=devops-boot-sample/build.gradle.kts
-            sed -i 's/${{ env.RELEASE_VERSION }}/${{ env.NEXT_VERSION }}/g' $sample_version_file
-            echo "::set-output name=SAMPLE_VERSION_FILE::$sample_version_file"
-        - name: Commit version file -- develop branch
-          id: commit-version-file-master
-          run: |
-            git add ${{ env.VERSION_FILE }}
-            git add ${{ steps.version-bump.outputs.SAMPLE_VERSION_FILE }}
-            git commit --message "Prepare for next development iteration ${{ env.NEXT_VERSION }}"
-            echo "::set-output name=commit::$(git rev-parse HEAD)"
-        - name: Push new develop branch
-          run: git push origin develop-${{ env.NEXT_VERSION }}
-        - name: Create pull request into master
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          run: |
-            ./.github/scripts/create_pr_body.sh \
-            ${{ github.actor }} \
-            ${{ github.repository }} \
-            ${{ github.run_id }} \
-            ${{ steps.commit-version-file-master.outputs.commit }} | \
-            gh pr create -B master -H develop-${{ env.NEXT_VERSION }} \
-            --title 'Update version ${{ env.NEXT_VERSION }}-SNAPSHOT' \
-            --reviewer ${{ github.actor }} \
-            --body-file -
+        run: |
+          version=$(grep "release.version=" release.properties | awk -F "=" '{print $2}')
+          release_branch=release-$version
+          echo "version=$version"
+          echo "branch_name=$release_branch"
+          git checkout -b $release_branch v$version
+          git push origin $release_branch

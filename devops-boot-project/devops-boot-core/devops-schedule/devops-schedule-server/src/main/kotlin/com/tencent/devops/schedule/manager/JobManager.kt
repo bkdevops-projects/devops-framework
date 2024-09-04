@@ -73,8 +73,9 @@ interface JobManager {
     /**
      * 加载在指定时间前触发的任务列表
      * @param time 指定时间
+     * @param limit 返回任务限制数量
      */
-    fun findTodoJobs(time: Long): List<JobInfo>
+    fun findTodoJobs(time: Long, limit: Int): List<JobInfo>
 
     /**
      * 添加任务日志

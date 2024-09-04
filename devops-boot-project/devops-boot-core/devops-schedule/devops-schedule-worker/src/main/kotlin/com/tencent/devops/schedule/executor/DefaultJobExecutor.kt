@@ -12,10 +12,13 @@ import com.tencent.devops.schedule.handler.ShellHandler
 import com.tencent.devops.schedule.k8s.K8sHelper
 import com.tencent.devops.schedule.pojo.trigger.TriggerParam
 import com.tencent.devops.schedule.thread.JobThread
+import com.tencent.devops.schedule.thread.JobThreadGroup
+import com.tencent.devops.schedule.thread.TriggerTask
 import com.tencent.devops.web.util.SpringContextHolder
 import org.slf4j.LoggerFactory
 import org.springframework.beans.BeansException
 import org.springframework.beans.factory.DisposableBean
+import java.lang.IllegalStateException
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -26,12 +29,10 @@ class DefaultJobExecutor(
     private val serverRpcClient: ServerRpcClient,
 ) : JobExecutor, DisposableBean {
 
-    init {
-        Companion.serverRpcClient = serverRpcClient
-    }
-
     private val k8sShellHandler: K8sShellHandler by lazy { createK8sHandler() }
     private val shellHandler: ShellHandler = ShellHandler(workerProperties.sourcePath)
+    private val threadGroup = JobThreadGroup(workerProperties.executor.threads, serverRpcClient)
+    private val jobThreadRepository = ConcurrentHashMap<String, JobThread>()
 
     override fun execute(param: TriggerParam) {
         val jobId = param.jobId
@@ -66,16 +67,14 @@ class DefaultJobExecutor(
             val blockStrategy = BlockStrategyEnum.ofCode(param.blockStrategy)
             when (blockStrategy) {
                 BlockStrategyEnum.DISCARD_LATER -> {
-                    if (jobThread.running.get()) {
-                        logger.warn("discard task $logId")
-                        return
+                    if (jobThread.hasRunningJobs(jobId)) {
+                        throw IllegalStateException("discard task $logId by block strategy[DISCARD_LATER]")
                     }
                 }
 
                 BlockStrategyEnum.COVER_EARLY -> {
-                    if (jobThread.running.get()) {
-                        logger.warn("cover early $logId")
-                        jobThread = null
+                    if (jobThread.hasRunningJobs(jobId)) {
+                        jobThread.removeEarlyJob(jobId)
                     }
                 }
 
@@ -83,26 +82,24 @@ class DefaultJobExecutor(
                     // 入队
                 }
             }
+        } else {
+            jobThread = registerJobThread(jobId)
         }
-        if (jobThread == null) {
-            jobThread = registerJobThread(jobId, handler)
-        }
-        jobThread.pushTriggerQueue(param)
+        val task = TriggerTask(jobId, handler, param)
+        jobThread.pushTriggerQueue(task)
     }
 
     override fun destroy() {
-        jobThreadRepository.values.forEach {
-            logger.info("Destroying job thread ${it.name}")
-            val oldJobThread = removeJobThread(it.jobId)
-            if (oldJobThread != null) {
-                try {
-                    oldJobThread.join()
-                } catch (e: Exception) {
-                    logger.error("JobThread destroy(join) error, jobId:{}", oldJobThread.jobId)
-                }
-            }
-        }
+        threadGroup.close()
         jobThreadRepository.clear()
+    }
+
+    private fun registerJobThread(jobId: String): JobThread {
+        return jobThreadRepository.computeIfAbsent(jobId) { threadGroup.next() }
+    }
+
+    private fun loadJobThread(jobId: String): JobThread? {
+        return jobThreadRepository[jobId]
     }
 
     private fun createK8sHandler(): K8sShellHandler {
@@ -113,26 +110,5 @@ class DefaultJobExecutor(
 
     companion object {
         private val logger = LoggerFactory.getLogger(DefaultJobExecutor::class.java)
-        private val jobThreadRepository = ConcurrentHashMap<String, JobThread>()
-        private lateinit var serverRpcClient: ServerRpcClient
-        fun registerJobThread(jobId: String, handler: JobHandler): JobThread {
-            val newJobThread = JobThread(jobId, handler, serverRpcClient)
-            newJobThread.start()
-            jobThreadRepository.putIfAbsent(jobId, newJobThread)?.toStop()
-            return newJobThread
-        }
-
-        fun removeJobThread(jobId: String): JobThread? {
-            val oldJobThread = jobThreadRepository.remove(jobId)
-            if (oldJobThread != null) {
-                oldJobThread.toStop()
-                return oldJobThread
-            }
-            return null
-        }
-
-        fun loadJobThread(jobId: String): JobThread? {
-            return jobThreadRepository[jobId]
-        }
     }
 }

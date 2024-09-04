@@ -1,10 +1,10 @@
 package com.tencent.devops.schedule.mongo.provider
 
-import com.mongodb.MongoServerException
 import com.mongodb.client.result.UpdateResult
 import com.tencent.devops.schedule.mongo.model.TLockInfo
 import com.tencent.devops.schedule.provider.LockProvider
 import org.slf4j.LoggerFactory
+import org.springframework.dao.DuplicateKeyException
 import org.springframework.data.mongodb.core.FindAndModifyOptions
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Query
@@ -60,13 +60,9 @@ class MongoLockProvider(
             } else {
                 null
             }
-        } catch (e: MongoServerException) {
-            if (e.code == 11000) { // duplicate key
-                return null
-            } else {
-                throw e
-            }
+        } catch (ignore: DuplicateKeyException) {
         }
+        return null
     }
 
     override fun release(key: String, token: String): Boolean {

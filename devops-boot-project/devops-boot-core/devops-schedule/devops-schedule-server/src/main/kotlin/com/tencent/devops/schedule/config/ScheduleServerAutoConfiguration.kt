@@ -10,15 +10,21 @@ import com.tencent.devops.schedule.provider.LockProvider
 import com.tencent.devops.schedule.provider.WorkerProvider
 import com.tencent.devops.schedule.scheduler.DefaultJobScheduler
 import com.tencent.devops.schedule.scheduler.JobScheduler
+import com.tencent.devops.schedule.scheduler.ScheduleServerMetricsListener
+import io.micrometer.core.instrument.MeterRegistry
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(ScheduleServerProperties::class)
-@Import(ScheduleServerWebConfiguration::class)
+@Import(
+    ScheduleServerWebConfiguration::class,
+    ScheduleServerMetricsListener::class,
+)
 class ScheduleServerAutoConfiguration {
 
     @Bean
@@ -28,9 +34,19 @@ class ScheduleServerAutoConfiguration {
         workerManager: WorkerManager,
         lockProvider: LockProvider,
         scheduleServerProperties: ScheduleServerProperties,
-        workerRpcClient: WorkerRpcClient
+        workerRpcClient: WorkerRpcClient,
+        registry: MeterRegistry,
+        publisher: ApplicationEventPublisher,
     ): JobScheduler {
-        return DefaultJobScheduler(jobManager, workerManager, lockProvider, scheduleServerProperties, workerRpcClient)
+        return DefaultJobScheduler(
+            jobManager,
+            workerManager,
+            lockProvider,
+            scheduleServerProperties,
+            workerRpcClient,
+            registry,
+            publisher,
+        )
     }
 
     @Bean
@@ -44,5 +60,4 @@ class ScheduleServerAutoConfiguration {
     fun workerManager(workerProvider: WorkerProvider): WorkerManager {
         return DefaultWorkerManager(workerProvider)
     }
-
 }

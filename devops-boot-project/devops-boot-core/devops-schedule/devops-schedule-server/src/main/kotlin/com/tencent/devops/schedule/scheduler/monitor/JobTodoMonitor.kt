@@ -4,53 +4,59 @@ import com.tencent.devops.schedule.constants.JOB_LOAD_LOCK_KEY
 import com.tencent.devops.schedule.constants.PRE_LOAD_TIME
 import com.tencent.devops.schedule.enums.MisfireStrategyEnum
 import com.tencent.devops.schedule.enums.TriggerStatusEnum
-import com.tencent.devops.schedule.enums.TriggerTypeEnum
+import com.tencent.devops.schedule.enums.TriggerTypeEnum.CRON
+import com.tencent.devops.schedule.enums.TriggerTypeEnum.MISFIRE
 import com.tencent.devops.schedule.pojo.job.JobInfo
 import com.tencent.devops.schedule.provider.LockProvider
 import com.tencent.devops.schedule.scheduler.JobScheduler
+import com.tencent.devops.schedule.scheduler.JobTriggerContext
+import com.tencent.devops.schedule.scheduler.event.JobMisfireEvent
 import com.tencent.devops.schedule.utils.alignTime
 import com.tencent.devops.schedule.utils.computeNextTriggerTime
 import com.tencent.devops.schedule.utils.sleep
 import com.tencent.devops.schedule.utils.terminate
 import org.slf4j.LoggerFactory
+import org.springframework.context.ApplicationEventPublisher
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.concurrent.thread
-import kotlin.system.measureTimeMillis
 
 /**
  * 任务加载器
  */
 open class JobTodoMonitor(
     private val jobScheduler: JobScheduler,
-    private val lockProvider: LockProvider
+    private val lockProvider: LockProvider,
+    private val publisher: ApplicationEventPublisher,
+    private val loadCountFunction: () -> Int,
 ) {
     private val jobManager = jobScheduler.getJobManager()
 
-    private val timeRingMap: MutableMap<Int, MutableList<String>> = ConcurrentHashMap()
+    private val timeRingMap: MutableMap<Int, MutableList<JobTriggerContext>> = ConcurrentHashMap()
     private lateinit var loaderThread: Thread
     private lateinit var timeRingThread: Thread
     private var loaderThreadRunning = true
     private var timeRingThreadRunning = true
-
     fun start() {
         loaderThread = thread(
             isDaemon = true,
-            name = "job-todo-loader-thread"
+            name = "job-todo-loader-thread",
         ) {
             alignTime(PRE_LOAD_TIME)
             while (loaderThreadRunning) {
-                val elapsed = measureTimeMillis { loadJobs() }
+                val start = System.currentTimeMillis()
+                val loads = loadJobs()
+                val elapsed = System.currentTimeMillis() - start
                 if (elapsed < 1000) {
-                    alignTime(PRE_LOAD_TIME)
+                    alignTime(if (loads > 0) 1000 else PRE_LOAD_TIME)
                 }
             }
         }
         timeRingThread = thread(
             isDaemon = true,
-            name = "job-time-ring-thread"
+            name = "job-time-ring-thread",
         ) {
             while (timeRingThreadRunning) {
                 alignTime(1000)
@@ -68,7 +74,7 @@ open class JobTodoMonitor(
         var hasRingData = false
         if (timeRingMap.isNotEmpty()) {
             for (second in timeRingMap.keys) {
-                if(timeRingMap[second]?.isNotEmpty() == true) {
+                if (timeRingMap[second]?.isNotEmpty() == true) {
                     hasRingData = true
                     break
                 }
@@ -90,24 +96,27 @@ open class JobTodoMonitor(
             // 加锁
             lockToken = lockProvider.acquire(JOB_LOAD_LOCK_KEY, PRE_LOAD_TIME)
             if (lockToken == null) {
-                return count
+                return 0
             }
-            val now = System.currentTimeMillis()
-            val jobs = jobManager.findTodoJobs(now + PRE_LOAD_TIME)
+            val jobs = jobManager.findTodoJobs(System.currentTimeMillis() + PRE_LOAD_TIME, loadCountFunction())
             count = jobs.size
             for (job in jobs) {
+                // 每次都获取新的当前时间戳，可以提高任务精度
+                val now = System.currentTimeMillis()
                 val nextTriggerTime = job.nextTriggerTime
                 if (nextTriggerTime < now - PRE_LOAD_TIME) {
                     // 超出执行时间，任务过期
                     handleMisfireJob(job)
                 } else if (nextTriggerTime <= now) {
                     // 未超出执行时间，立即触发，计算延迟触发时长
-                    triggerJob(job, now)
+                    triggerJob(job)
                 } else {
                     // 还未到执行时间，time-ring 触发
                     pushTimeRingJob(job)
                 }
-                jobManager.updateJobSchedule(job)
+            }
+            jobs.forEach {
+                jobManager.updateJobSchedule(it)
             }
         } catch (e: Exception) {
             logger.error("load jobs failed: $e", e)
@@ -122,15 +131,22 @@ open class JobTodoMonitor(
 
     private fun triggerTimeRingJobs() {
         try {
+            val start = System.currentTimeMillis()
             val second = LocalDateTime.now().second
-            // 向前处理2秒
-            val jobs = mutableListOf<String>()
-            repeat(3) {
+            logger.trace("Second $second")
+            // 避免调度时间过长，导致任务丢失，所以这里向前跨度处理2秒
+            val jobs = mutableListOf<JobTriggerContext>()
+            repeat(TICK_RANGE) {
                 jobs.addAll(timeRingMap.remove((second + 60 - it) % 60).orEmpty())
             }
             jobs.forEach {
-                jobScheduler.trigger(it, TriggerTypeEnum.CRON)
+                jobScheduler.trigger(it, CRON)
             }
+            val elapsed = System.currentTimeMillis() - start
+            if (elapsed > TICK_RANGE * 1000) {
+                logger.warn("Too much tasks at slot $second")
+            }
+            logger.trace("Second $second completed,trigger ${jobs.size} jobs, elapsed $elapsed ms.")
             jobs.clear()
         } catch (e: Exception) {
             logger.error("trigger time ring jobs failed: $e", e)
@@ -141,27 +157,28 @@ open class JobTodoMonitor(
      * 处理过期任务
      */
     private fun handleMisfireJob(job: JobInfo) {
+        val triggerContext = triggerFired(job)
         when (MisfireStrategyEnum.ofCode(job.misfireStrategy)) {
             MisfireStrategyEnum.RETRY -> {
-                logger.warn("job[${job.id}] is misfire, retry")
-                jobScheduler.trigger(job.id.orEmpty(), TriggerTypeEnum.MISFIRE)
+                logger.warn("${job.id} is misfire, retry")
+                jobScheduler.trigger(triggerContext, MISFIRE)
             }
+
             MisfireStrategyEnum.IGNORE -> {
-                logger.warn("job[${job.id}] is misfire, ignore")
+                logger.warn("${job.id} is misfire, ignore")
                 // do nothing
             }
         }
-        // fresh next
-        generateNextTriggerTime(job)
+        publisher.publishEvent(JobMisfireEvent(job.id.orEmpty()))
     }
 
     /**
      * 触发任务
      */
-    private fun triggerJob(job: JobInfo, now: Long) {
-        jobScheduler.trigger(job.id.orEmpty(), TriggerTypeEnum.CRON)
-        generateNextTriggerTime(job)
-        if (job.triggerStatus == TriggerStatusEnum.RUNNING.code() && job.nextTriggerTime <= now + PRE_LOAD_TIME) {
+    private fun triggerJob(job: JobInfo) {
+        val triggerContext = triggerFired(job)
+        jobScheduler.trigger(triggerContext, CRON)
+        if (job.triggerStatus == TriggerStatusEnum.RUNNING.code() && job.nextTriggerTime <= System.currentTimeMillis() + PRE_LOAD_TIME) {
             pushTimeRingJob(job)
         }
     }
@@ -171,10 +188,10 @@ open class JobTodoMonitor(
      */
     private fun pushTimeRingJob(job: JobInfo) {
         val ringSecond = (job.nextTriggerTime / 1000 % 60).toInt()
-        val timeRingItem = timeRingMap.computeIfAbsent(ringSecond) { mutableListOf() }
-        timeRingItem.add(job.id.orEmpty())
         val from = Instant.ofEpochMilli(job.nextTriggerTime).atZone(ZoneId.systemDefault()).toLocalDateTime()
-        generateNextTriggerTime(job, from)
+        val triggerContext = triggerFired(job, from)
+        val timeRingItem = timeRingMap.computeIfAbsent(ringSecond) { mutableListOf() }
+        timeRingItem.add(triggerContext)
     }
 
     private fun generateNextTriggerTime(job: JobInfo, from: LocalDateTime = LocalDateTime.now()) {
@@ -185,7 +202,7 @@ open class JobTodoMonitor(
             job.nextTriggerTime = 0
             logger.warn(
                 "failed to generate next trigger time for job[${job.id}]: scheduleType={${job.scheduleType}}, " +
-                        "scheduleConf={${job.scheduleConf}}"
+                    "scheduleConf={${job.scheduleConf}}",
             )
             return
         }
@@ -193,7 +210,20 @@ open class JobTodoMonitor(
         job.nextTriggerTime = nextTriggerTime
     }
 
+    private fun triggerFired(job: JobInfo, from: LocalDateTime = LocalDateTime.now()): JobTriggerContext {
+        val prevFireTime = job.lastTriggerTime
+        generateNextTriggerTime(job, from)
+        return JobTriggerContext(
+            job = job,
+            fireTime = System.currentTimeMillis(),
+            prevFireTime = prevFireTime,
+            nextFireTime = job.nextTriggerTime,
+            scheduledFireTime = job.lastTriggerTime,
+        )
+    }
+
     companion object {
         private val logger = LoggerFactory.getLogger(JobTodoMonitor::class.java)
+        private const val TICK_RANGE = 3 // 时间轮处理任务范围，这里的3表示，每次可以处理3个刻度，即过去2s到当前这一秒
     }
 }

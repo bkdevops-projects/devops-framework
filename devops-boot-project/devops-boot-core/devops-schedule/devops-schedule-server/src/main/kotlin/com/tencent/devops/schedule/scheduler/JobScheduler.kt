@@ -14,7 +14,6 @@ interface JobScheduler {
      */
     fun start()
 
-
     /**
      * 停止调度器
      */
@@ -29,11 +28,27 @@ interface JobScheduler {
      * @param shardingParam 分片参数，可选
      */
     fun trigger(
+        triggerContext: JobTriggerContext,
+        triggerType: TriggerTypeEnum,
+        retryCount: Int? = null,
+        jobParam: String? = null,
+        shardingParam: String? = null,
+    )
+
+    /**
+     * 触发任务
+     * @param jobId 任务id
+     * @param triggerType 触发类型
+     * @param retryCount 重试次数，可选。不为空时，job参数使用[jobParam]
+     * @param jobParam 任务参数，可选。null则使用默认job参数
+     * @param shardingParam 分片参数，可选
+     */
+    fun trigger(
         jobId: String,
         triggerType: TriggerTypeEnum,
         retryCount: Int? = null,
         jobParam: String? = null,
-        shardingParam: String? = null
+        shardingParam: String? = null,
     )
 
     /**

@@ -34,7 +34,7 @@ import java.time.LocalDateTime
 class MongoJobProvider(
     private val jobRepository: JobRepository,
     private val logRepository: LogRepository,
-    private val mongoTemplate: MongoTemplate
+    private val mongoTemplate: MongoTemplate,
 ) : JobProvider {
     override fun addJob(jobInfo: JobInfo): String {
         return jobInfo.convert().apply { jobRepository.save(this) }.id.orEmpty()
@@ -67,14 +67,14 @@ class MongoJobProvider(
             pageNumber = param.pageNumber,
             pageSize = param.pageSize,
             totalRecords = total,
-            records = records
+            records = records,
         )
     }
 
-    override fun findTodoJobs(time: Long): List<JobInfo> {
+    override fun findTodoJobs(time: Long, limit: Int): List<JobInfo> {
         val criteria = where(TJobInfo::nextTriggerTime).lte(time)
             .and(TJobInfo::triggerStatus).isEqualTo(TriggerStatusEnum.RUNNING.code())
-        val query = Query(criteria)
+        val query = Query(criteria).limit(limit)
         return mongoTemplate.find(query, TJobInfo::class.java).map { it.convert() }
     }
 
@@ -118,7 +118,7 @@ class MongoJobProvider(
             pageNumber = param.pageNumber,
             pageSize = param.pageSize,
             totalRecords = total,
-            records = records
+            records = records,
         )
     }
 
@@ -127,11 +127,11 @@ class MongoJobProvider(
         val criteria = where(TJobLog::alarmStatus).isEqualTo(AlarmStatusEnum.TODO.code())
             .orOperator(
                 where(TJobLog::triggerCode).lt(TriggerCodeEnum.INITIALED.code()),
-                where(TJobLog::executionCode).lt(ExecutionCodeEnum.INITIALED.code())
+                where(TJobLog::executionCode).lt(ExecutionCodeEnum.INITIALED.code()),
             )
         val query = Query.query(criteria).with(pageable)
         query.fields().include(TJobLog::id.name)
-        return mongoTemplate.find(query, IdEntity::class.java).map { it.id }
+        return mongoTemplate.find(query, IdEntity::class.java, "job_log").map { it.id }
     }
 
     override fun findLostJobLogIds(triggerTime: LocalDateTime): List<String> {
@@ -140,7 +140,7 @@ class MongoJobProvider(
             .and(TJobLog::triggerTime).lt(triggerTime)
         val query = Query.query(criteria)
         query.fields().include(TJobLog::id.name)
-        return mongoTemplate.find(query, IdEntity::class.java).map { it.id }
+        return mongoTemplate.find(query, IdEntity::class.java, "job_log").map { it.id }
     }
 
     override fun deleteLogByJobId(jobId: String) {
@@ -158,7 +158,7 @@ class MongoJobProvider(
         logId: String,
         executionCode: Int,
         executionMessage: String,
-        executionTime: LocalDateTime
+        executionTime: LocalDateTime,
     ): Int {
         val criteria = where(TJobLog::id).`is`(logId)
         val query = Query.query(criteria)

@@ -41,8 +41,9 @@ interface JobProvider {
     /**
      * 根据下次触发时间查询需要执行的任务
      * @param time 下次触发时间
+     * @param limit 返回限制数量
      */
-    fun findTodoJobs(time: Long): List<JobInfo>
+    fun findTodoJobs(time: Long, limit: Int): List<JobInfo>
 
     /**
      * 根据id查找任务
@@ -108,7 +109,7 @@ interface JobProvider {
         logId: String,
         executionCode: Int,
         executionMessage: String,
-        executionTime: LocalDateTime
+        executionTime: LocalDateTime,
     ): Int
 
     /**
@@ -122,5 +123,4 @@ interface JobProvider {
      * @param jobId 任务id
      */
     fun deleteLogByJobId(jobId: String)
-
 }

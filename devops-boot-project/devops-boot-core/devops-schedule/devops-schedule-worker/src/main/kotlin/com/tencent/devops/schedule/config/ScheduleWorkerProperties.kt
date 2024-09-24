@@ -41,21 +41,10 @@ data class ScheduleWorkerProperties(
     }
 
     class ScheduleWorkerExecutorProperties(
-
-        /**
-         * 最大线程数
-         */
-        var maximumPoolSize: Int = 100,
-
         /**
          * 核心线程数
          */
-        var corePoolSize: Int = 1,
-
-        /**
-         * 线程存活时间，单位秒
-         */
-        var keepAliveTime: Long = 60,
+        var threads: Int = Runtime.getRuntime().availableProcessors() * 2,
     )
 
     class ScheduleWorkerServerProperties(

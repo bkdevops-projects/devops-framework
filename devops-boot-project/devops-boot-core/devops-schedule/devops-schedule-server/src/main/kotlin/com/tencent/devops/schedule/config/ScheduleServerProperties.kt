@@ -25,6 +25,22 @@ data class ScheduleServerProperties(
     var maxTriggerPoolSize: Int = 100,
 
     /**
+     * 任务触发线程池队列大小
+     */
+    var maxTriggerQueueSize: Int = 1000,
+
+    /**
+     * 调度延迟SLO，单位s
+     * */
+    var slo: List<Int> = listOf(5),
+
+    /**
+     * 期望的最大的调度延迟时间
+     * 当实际调度延迟大于设置阈值时，则会降低调度吞吐量，以达到期望的调度延迟
+     * */
+    var maxScheduleLatencyMillis: Long = Long.MAX_VALUE,
+
+    /**
      * UI配置
      */
     var ui: ScheduleServerUiProperties = ScheduleServerUiProperties(),
@@ -32,7 +48,7 @@ data class ScheduleServerProperties(
     /**
      * 认证配置
      */
-    var auth: ScheduleServerAuthProperties = ScheduleServerAuthProperties()
+    var auth: ScheduleServerAuthProperties = ScheduleServerAuthProperties(),
 ) {
     companion object {
         const val PREFIX = "devops.schedule.server"
@@ -42,7 +58,7 @@ data class ScheduleServerProperties(
         /**
          * 是否开启ui界面
          */
-        var enabled: Boolean = true
+        var enabled: Boolean = true,
     )
 
     class ScheduleServerAuthProperties(

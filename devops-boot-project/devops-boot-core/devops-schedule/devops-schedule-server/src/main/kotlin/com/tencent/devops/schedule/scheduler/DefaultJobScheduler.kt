@@ -1,5 +1,8 @@
 package com.tencent.devops.schedule.scheduler
 
+import com.google.common.cache.CacheBuilder
+import com.google.common.cache.CacheLoader
+import com.google.common.cache.LoadingCache
 import com.tencent.devops.schedule.api.WorkerRpcClient
 import com.tencent.devops.schedule.config.ScheduleServerProperties
 import com.tencent.devops.schedule.enums.BlockStrategyEnum
@@ -15,14 +18,19 @@ import com.tencent.devops.schedule.pojo.trigger.TriggerParam
 import com.tencent.devops.schedule.pojo.worker.WorkerGroup
 import com.tencent.devops.schedule.provider.LockProvider
 import com.tencent.devops.schedule.router.Routes
+import com.tencent.devops.schedule.scheduler.event.JobTriggerEvent
 import com.tencent.devops.schedule.scheduler.monitor.JobRetryMonitor
 import com.tencent.devops.schedule.scheduler.monitor.JobTodoMonitor
 import com.tencent.devops.schedule.scheduler.monitor.WorkerStatusMonitor
+import io.micrometer.core.instrument.Gauge
+import io.micrometer.core.instrument.MeterRegistry
+import io.micrometer.core.instrument.binder.jvm.ExecutorServiceMetrics
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.DisposableBean
 import org.springframework.beans.factory.InitializingBean
+import org.springframework.context.ApplicationEventPublisher
 import java.time.LocalDateTime
-import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.LinkedBlockingDeque
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 
@@ -35,6 +43,8 @@ class DefaultJobScheduler(
     private val lockProvider: LockProvider,
     private val scheduleServerProperties: ScheduleServerProperties,
     private val workerRpcClient: WorkerRpcClient,
+    private val registry: MeterRegistry,
+    private val publisher: ApplicationEventPublisher,
 ) : JobScheduler, InitializingBean, DisposableBean {
 
     private lateinit var triggerThreadPool: ThreadPoolExecutor
@@ -43,17 +53,25 @@ class DefaultJobScheduler(
 
     // private lateinit var jobLostMonitor: JobLostMonitor
     private lateinit var workerStatusMonitor: WorkerStatusMonitor
+    private var cc = JobCongestionControl(scheduleServerProperties.maxScheduleLatencyMillis)
+
+    private var workGroupCache: LoadingCache<String, WorkerGroup?> = CacheBuilder.newBuilder()
+        .maximumSize(1000)
+        .expireAfterWrite(3, TimeUnit.SECONDS)
+        .build(CacheLoader.from { groupId -> groupId?.let { workerManager.findGroupById(it) } })
 
     override fun getJobManager() = jobManager
     override fun getWorkerManager() = workerManager
 
     override fun start() {
         triggerThreadPool = createThreadPool()
-        jobTodoMonitor = JobTodoMonitor(this, lockProvider).apply { start() }
+        ExecutorServiceMetrics(triggerThreadPool, "triggerThreadPool", emptyList()).bindTo(registry)
+        jobTodoMonitor = JobTodoMonitor(this, lockProvider, publisher, this::determineLoadCount).apply { start() }
         jobRetryMonitor = JobRetryMonitor(this).apply { start() }
         // TODO 初版实现不去主动监控任务状态丢失的任务，触发成功则表示执行成功，执行结果由worker上报
         // jobLostMonitor = JobLostMonitor(this).apply { start() }
         workerStatusMonitor = WorkerStatusMonitor(this).apply { start() }
+        monitor()
         logger.info("start upjob scheduler success")
     }
 
@@ -80,40 +98,64 @@ class DefaultJobScheduler(
      *
      */
     override fun trigger(
+        triggerContext: JobTriggerContext,
+        triggerType: TriggerTypeEnum,
+        retryCount: Int?,
+        jobParam: String?,
+        shardingParam: String?,
+    ) {
+        val jobId = triggerContext.job.id.orEmpty()
+        logger.debug("prepare trigger job[{}]", triggerContext)
+        triggerThreadPool.execute {
+            val startTime = System.currentTimeMillis()
+            val triggerTime = triggerContext.scheduledFireTime ?: triggerContext.fireTime
+            try {
+                val job = triggerContext.job
+                jobParam?.let { job.jobParam = it }
+                val finalRetryCount = retryCount ?: job.maxRetryCount
+                val group = workGroupCache.get(job.groupId) ?: run {
+                    throw IllegalArgumentException("group[${job.groupId}] not exists.")
+                }
+
+                val pair = resolveShardingParam(shardingParam)
+                if (pair == null && isShardingBroadcastJob(job, group)) {
+                    repeat(group.registryList.size) {
+                        processTrigger(triggerContext, group, triggerType, finalRetryCount, it, group.registryList.size)
+                    }
+                } else {
+                    val index = pair?.first ?: 0
+                    val total = pair?.second ?: 1
+                    processTrigger(triggerContext, group, triggerType, finalRetryCount, index, total)
+                }
+            } catch (e: Exception) {
+                logger.error("trigger job[$jobId] error: ${e.message}", e)
+            } finally {
+                val triggerEvent = JobTriggerEvent.create(
+                    jobId,
+                    startTime,
+                    System.currentTimeMillis(),
+                    triggerTime,
+                )
+                publisher.publishEvent(triggerEvent)
+                cc.updateLatency(System.currentTimeMillis() - triggerTime)
+            }
+        }
+    }
+
+    override fun trigger(
         jobId: String,
         triggerType: TriggerTypeEnum,
         retryCount: Int?,
         jobParam: String?,
         shardingParam: String?,
     ) {
-        logger.debug("prepare trigger job[$jobId]")
-        triggerThreadPool.execute {
-            try {
-                val job = jobManager.findJobById(jobId) ?: run {
-                    logger.warn("trigger job[$jobId] failed: job not exists.")
-                    return@execute
-                }
-                jobParam?.let { job.jobParam = it }
-                val finalRetryCount = retryCount ?: job.maxRetryCount
-                val group = workerManager.findGroupById(job.groupId) ?: run {
-                    logger.warn("trigger job[$jobId] failed: group[${job.groupId}] not exists.")
-                    return@execute
-                }
-
-                val pair = resolveShardingParam(shardingParam)
-                if (pair == null && isShardingBroadcastJob(job, group)) {
-                    repeat(group.registryList.size) {
-                        processTrigger(job, group, triggerType, finalRetryCount, it, group.registryList.size)
-                    }
-                } else {
-                    val index = pair?.first ?: 0
-                    val total = pair?.second ?: 1
-                    processTrigger(job, group, triggerType, finalRetryCount, index, total)
-                }
-            } catch (e: Exception) {
-                logger.error("trigger job[$jobId] error: ${e.message}", e)
-            }
-        }
+        val job = jobManager.findJobById(jobId) ?: throw IllegalArgumentException("No job $jobId")
+        val triggerContext = JobTriggerContext(
+            job = job,
+            fireTime = System.currentTimeMillis(),
+            prevFireTime = job.lastTriggerTime,
+        )
+        trigger(triggerContext, triggerType, retryCount, jobParam, shardingParam)
     }
 
     private fun isShardingBroadcastJob(job: JobInfo, group: WorkerGroup): Boolean {
@@ -124,13 +166,14 @@ class DefaultJobScheduler(
      * 处理
      */
     private fun processTrigger(
-        job: JobInfo,
+        triggerContext: JobTriggerContext,
         group: WorkerGroup,
         triggerType: TriggerTypeEnum,
         retryCount: Int,
         index: Int,
         total: Int,
     ) {
+        val job = triggerContext.job
         val blockStrategy = BlockStrategyEnum.ofCode(job.blockStrategy)
         val routeStrategy = RouteStrategyEnum.ofCode(job.routeStrategy)
         requireNotNull(blockStrategy)
@@ -174,8 +217,12 @@ class DefaultJobScheduler(
             val result = workerRpcClient.runJob(triggerParam)
             jobLog.triggerCode = result.code
             jobLog.triggerMsg = result.message
-            jobLog.executionCode = ExecutionCodeEnum.RUNNING.code()
-            logger.info("trigger job[${job.id}] success: $result")
+            if (result.code == TriggerCodeEnum.SUCCESS.code()) {
+                jobLog.executionCode = ExecutionCodeEnum.RUNNING.code()
+                logger.info("trigger job[${job.id}] success: $result")
+            } else {
+                logger.info("trigger job[${job.id}] failed: $result")
+            }
         } catch (e: Exception) {
             logger.error("trigger job[${jobLog.jobId}] error: ${e.message}", e)
             jobLog.triggerCode = TriggerCodeEnum.FAILED.code()
@@ -194,12 +241,13 @@ class DefaultJobScheduler(
      * 创建任务trigger调度线程池
      */
     private fun createThreadPool(): ThreadPoolExecutor {
+        // 队列不能太长，如果下游延迟加大，会导致队列中的所有任务调度延迟都加大
         return ThreadPoolExecutor(
-            10,
+            Runtime.getRuntime().availableProcessors() * 2,
             scheduleServerProperties.maxTriggerPoolSize,
             60L,
             TimeUnit.SECONDS,
-            LinkedBlockingQueue(1000),
+            LinkedBlockingDeque(scheduleServerProperties.maxTriggerQueueSize),
         ) { runnable ->
             Thread(runnable, "job-trigger-${runnable.hashCode()}")
         }
@@ -219,6 +267,23 @@ class DefaultJobScheduler(
         } catch (ignored: Exception) {
             null
         }
+    }
+
+    private fun monitor() {
+        Gauge.builder("devops.schedule.server.trigger.load", this::determineLoadCount)
+            .description("加载任务数")
+            .baseUnit("TASK")
+            .register(registry)
+    }
+
+    private fun determineLoadCount(): Int {
+        val availableThreads = if (triggerThreadPool.poolSize == 0) {
+            // 线程池还未提交任务
+            triggerThreadPool.corePoolSize
+        } else {
+            triggerThreadPool.poolSize - triggerThreadPool.activeCount
+        }
+        return maxOf(availableThreads, cc.getCwnd())
     }
 
     companion object {

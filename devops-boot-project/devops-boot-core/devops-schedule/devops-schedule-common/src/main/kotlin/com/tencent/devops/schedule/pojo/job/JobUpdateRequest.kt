@@ -63,4 +63,14 @@ data class JobUpdateRequest(
      * 镜像地址，容器任务需要
      * */
     val image: String? = null,
+
+    /**
+     * 调度配置
+     * */
+    val scheduleConf: String? = null,
+
+    /**
+     * 调度类型
+     */
+    val scheduleType: Int? = null,
 )

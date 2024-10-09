@@ -19,6 +19,11 @@ data class JobContext(
      * 本次任务触发时间
      */
     var triggerTime: LocalDateTime,
+
+    /**
+     * 本次任务调度时间
+     * */
+    var scheduledFireTime: LocalDateTime,
     /**
      * 任务更新时间
      * */

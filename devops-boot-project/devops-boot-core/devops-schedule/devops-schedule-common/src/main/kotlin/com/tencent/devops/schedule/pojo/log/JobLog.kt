@@ -40,6 +40,7 @@ data class JobLog(
     var triggerCode: Int = ExecutionCodeEnum.INITIALED.code(),
     var triggerMsg: String? = null,
     var triggerType: Int,
+    var scheduledFireTime: LocalDateTime,
 
     /**
      * handle信息

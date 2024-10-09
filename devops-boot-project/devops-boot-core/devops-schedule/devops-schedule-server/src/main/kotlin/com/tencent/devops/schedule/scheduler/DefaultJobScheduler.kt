@@ -29,7 +29,9 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.DisposableBean
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.context.ApplicationEventPublisher
+import java.time.Instant
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.concurrent.LinkedBlockingDeque
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
@@ -108,7 +110,7 @@ class DefaultJobScheduler(
         logger.debug("prepare trigger job[{}]", triggerContext)
         triggerThreadPool.execute {
             val startTime = System.currentTimeMillis()
-            val triggerTime = triggerContext.scheduledFireTime ?: triggerContext.fireTime
+            val fireTime = triggerContext.scheduledFireTime ?: triggerContext.fireTime
             try {
                 val job = triggerContext.job
                 jobParam?.let { job.jobParam = it }
@@ -134,10 +136,10 @@ class DefaultJobScheduler(
                     jobId,
                     startTime,
                     System.currentTimeMillis(),
-                    triggerTime,
+                    fireTime,
                 )
                 publisher.publishEvent(triggerEvent)
-                cc.updateLatency(System.currentTimeMillis() - triggerTime)
+                cc.updateLatency(System.currentTimeMillis() - fireTime)
             }
         }
     }
@@ -153,7 +155,6 @@ class DefaultJobScheduler(
         val triggerContext = JobTriggerContext(
             job = job,
             fireTime = System.currentTimeMillis(),
-            prevFireTime = job.lastTriggerTime,
         )
         trigger(triggerContext, triggerType, retryCount, jobParam, shardingParam)
     }
@@ -181,11 +182,13 @@ class DefaultJobScheduler(
         val shardingParam = if (routeStrategy == RouteStrategyEnum.SHARDING_BROADCAST) "$index/$total" else null
 
         // 1. 保存日志
+        val fireTime = triggerContext.scheduledFireTime ?: triggerContext.fireTime
         val jobLog = JobLog(
             jobId = job.id.orEmpty(),
             groupId = group.id.orEmpty(),
             triggerType = triggerType.code(),
             triggerTime = LocalDateTime.now(),
+            scheduledFireTime = Instant.ofEpochMilli(fireTime).atZone(ZoneId.systemDefault()).toLocalDateTime(),
         )
         val logId = jobManager.addJobLog(jobLog)
         // 2. 构造trigger param
@@ -197,6 +200,7 @@ class DefaultJobScheduler(
             jobTimeout = job.jobTimeout,
             logId = logId,
             triggerTime = jobLog.triggerTime,
+            scheduledFireTime = jobLog.scheduledFireTime,
             broadcastIndex = index,
             broadcastTotal = total,
             updateTime = job.updateTime,

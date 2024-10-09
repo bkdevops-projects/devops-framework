@@ -60,6 +60,7 @@ data class TJobLog(
     var triggerCode: Int,
     var triggerMsg: String? = null,
     var triggerType: Int,
+    var scheduledFireTime: LocalDateTime,
 
     /**
      * execution信息

@@ -109,6 +109,8 @@ class MongoJobProvider(
             } ?: run {
                 triggerTimeTo?.let { to -> criteria.and(TJobLog::triggerTime).lte(to) }
             }
+            executionCode?.let { criteria.and(TJobLog::executionCode).isEqualTo(it) }
+            triggerCode?.let { criteria.and(TJobLog::triggerCode).isEqualTo(it) }
         }
         val query = Query.query(criteria).with(Sort.by(Sort.Direction.DESC, TJobLog::triggerTime.name))
         val total = mongoTemplate.count(query, TJobLog::class.java)

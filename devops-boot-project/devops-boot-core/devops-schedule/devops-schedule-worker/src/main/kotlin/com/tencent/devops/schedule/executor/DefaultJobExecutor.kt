@@ -10,6 +10,7 @@ import com.tencent.devops.schedule.enums.JobModeEnum.SHELL
 import com.tencent.devops.schedule.handler.K8sShellHandler
 import com.tencent.devops.schedule.handler.ShellHandler
 import com.tencent.devops.schedule.k8s.K8sHelper
+import com.tencent.devops.schedule.pojo.ScheduleResponse
 import com.tencent.devops.schedule.pojo.trigger.TriggerParam
 import com.tencent.devops.schedule.thread.JobThread
 import com.tencent.devops.schedule.thread.JobThreadGroup
@@ -18,7 +19,6 @@ import com.tencent.devops.web.util.SpringContextHolder
 import org.slf4j.LoggerFactory
 import org.springframework.beans.BeansException
 import org.springframework.beans.factory.DisposableBean
-import java.lang.IllegalStateException
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -34,7 +34,7 @@ class DefaultJobExecutor(
     private val threadGroup = JobThreadGroup(workerProperties.executor.threads, serverRpcClient)
     private val jobThreadRepository = ConcurrentHashMap<String, JobThread>()
 
-    override fun execute(param: TriggerParam) {
+    override fun execute(param: TriggerParam): ScheduleResponse {
         val jobId = param.jobId
         val logId = param.logId
         logger.debug("prepare to execute job[$jobId], log[$logId]: {}", param)
@@ -68,7 +68,7 @@ class DefaultJobExecutor(
             when (blockStrategy) {
                 BlockStrategyEnum.DISCARD_LATER -> {
                     if (jobThread.hasRunningJobs(jobId)) {
-                        throw IllegalStateException("discard task $logId by block strategy[DISCARD_LATER]")
+                        return ScheduleResponse.failed("discard by block strategy")
                     }
                 }
 
@@ -87,9 +87,11 @@ class DefaultJobExecutor(
         }
         val task = TriggerTask(jobId, handler, param)
         jobThread.pushTriggerQueue(task)
+        return ScheduleResponse.success()
     }
 
     override fun destroy() {
+        logger.info("Destroying DefaultJobExecutor")
         threadGroup.close()
         jobThreadRepository.clear()
     }

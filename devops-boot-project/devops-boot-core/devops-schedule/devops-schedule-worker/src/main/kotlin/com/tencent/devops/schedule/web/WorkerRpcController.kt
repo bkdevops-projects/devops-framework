@@ -22,7 +22,6 @@ class WorkerRpcController(
     override fun runJob(@RequestBody param: TriggerParam): ScheduleResponse {
         return try {
             jobExecutor.execute(param)
-            ScheduleResponse.success()
         } catch (e: Exception) {
             logger.error("execute job[$param] error: ${e.message}", e)
             ScheduleResponse.failed(e.message.orEmpty())

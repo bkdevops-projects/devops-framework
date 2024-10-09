@@ -26,6 +26,7 @@ class JobThreadGroup(nThreads: Int, serverRpcClient: ServerRpcClient) : AutoClos
     override fun close() {
         threads.forEach {
             it.toStop()
+            it.interrupt()
             it.join()
         }
     }

@@ -16,6 +16,8 @@ data class TriggerParam(
     var logId: String,
     @JsonFormat(pattern = DATE_TIME_PATTERN)
     var triggerTime: LocalDateTime,
+    @JsonFormat(pattern = DATE_TIME_PATTERN)
+    var scheduledFireTime: LocalDateTime,
     var broadcastIndex: Int = 0,
     var broadcastTotal: Int = 0,
     var workerAddress: String? = null,

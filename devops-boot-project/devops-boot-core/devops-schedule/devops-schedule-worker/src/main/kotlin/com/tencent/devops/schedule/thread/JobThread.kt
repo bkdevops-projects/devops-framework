@@ -84,7 +84,6 @@ class JobThread(private val serverRpcClient: ServerRpcClient) : Thread() {
     }
 
     fun toStop() {
-        logger.info("Stopping $name")
         stop.set(true)
     }
 
@@ -105,7 +104,7 @@ class JobThread(private val serverRpcClient: ServerRpcClient) : Thread() {
         if (logId == stopLogId) {
             cancelJobs.remove(task.jobId)
         }
-        val result = JobExecutionResult.failed("cancelled by block strategy[COVER_EARLY]")
+        val result = JobExecutionResult.failed("cancelled by block strategy")
         result.logId = logId
         submitResult(task.jobId, result)
         return false
@@ -118,6 +117,7 @@ class JobThread(private val serverRpcClient: ServerRpcClient) : Thread() {
                 jobParamMap = jobParam.readJsonString(),
                 logId = logId,
                 triggerTime = triggerTime,
+                scheduledFireTime = scheduledFireTime,
                 broadcastIndex = broadcastIndex,
                 broadcastTotal = broadcastTotal,
                 source = if (source != null) String(base64Decoder.decode(param.source)) else null,

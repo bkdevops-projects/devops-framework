@@ -11,7 +11,7 @@ plugins {
     id("com.tencent.devops.publish") version Versions.DevopsReleasePlugin
 }
 
-val projectVersion = rootProject.file("version.txt").readText()
+val projectVersion = rootProject.file("version.txt").readText().trim()
 
 allprojects {
     group = "com.tencent.devops"

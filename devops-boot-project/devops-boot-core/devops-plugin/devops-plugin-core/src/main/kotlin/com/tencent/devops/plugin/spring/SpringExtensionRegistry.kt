@@ -30,7 +30,10 @@ class SpringExtensionRegistry : ExtensionRegistry, ApplicationContextAware {
         require(WebApplicationContext::class.java.isAssignableFrom(applicationContext::class.java))
         this.applicationContext = applicationContext
         this.beanFactory = applicationContext.autowireCapableBeanFactory as DefaultListableBeanFactory
-        this.requestMappingHandlerMapping = applicationContext.getBean(RequestMappingHandlerMapping::class.java)
+        this.requestMappingHandlerMapping = applicationContext.getBean(
+            "requestMappingHandlerMapping",
+            RequestMappingHandlerMapping::class.java
+        )
     }
 
     override fun registerExtensionController(plugin: String, name: String, type: Class<*>) {

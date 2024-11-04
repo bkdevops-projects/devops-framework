@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 description = "Tools for DevOps Boot"
@@ -7,7 +8,9 @@ subprojects {
 
     tasks {
         getByName<KotlinCompile>("compileKotlin") {
-            kotlinOptions.jvmTarget = Versions.Java
+            compilerOptions {
+                jvmTarget.set(JvmTarget.fromTarget(Versions.Java))
+            }
         }
     }
 }

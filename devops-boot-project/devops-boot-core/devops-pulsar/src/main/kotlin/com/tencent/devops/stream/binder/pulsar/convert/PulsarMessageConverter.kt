@@ -71,7 +71,7 @@ class PulsarMessageConverter {
                     ClassUtils.forName(
                         "com.alibaba.fastjson.support.spring.messaging.MappingFastJsonMessageConverter",
                         ClassUtils.getDefaultClassLoader()
-                    ).newInstance() as MessageConverter
+                    ).getDeclaredConstructor().newInstance() as MessageConverter
                 )
             } catch (ignored: ClassNotFoundException) {
                 // ignore this exception

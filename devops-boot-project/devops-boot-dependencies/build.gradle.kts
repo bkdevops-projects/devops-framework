@@ -33,13 +33,12 @@ dependencies {
         api("com.google.guava:guava:33.2.1-jre")
 
         // swagger
-        api("io.swagger.core.v3:swagger-annotations:2.2.22")
-        api("io.swagger.core.v3:swagger-models:2.2.22")
-        api("io.swagger.core.v3:swagger-jaxrs2:2.2.22")
-        api("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
+        api("io.swagger.core.v3:swagger-annotations:2.2.25")
+        api("io.swagger.core.v3:swagger-models:2.2.25")
+        api("io.swagger.core.v3:swagger-jaxrs2:2.2.25")
+        api("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0")
 
         // mq stream
-        api("org.apache.pulsar:pulsar-client:2.9.5")
         api("com.google.protobuf:protobuf-java:3.19.6")
 
         // s3
@@ -47,5 +46,8 @@ dependencies {
 
         // crypto
         api("com.tencent.bk.sdk:crypto-java-sdk:1.1.1")
+
+        //okhttp
+        api("com.squareup.okhttp3:okhttp:4.12.0")
     }
 }

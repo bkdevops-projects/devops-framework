@@ -32,7 +32,7 @@ class ServiceBootstrapEnvironmentPostProcessor: EnvironmentPostProcessor, Ordere
         with(Properties()) {
             if (isConsulPresent()) {
                 setProperty("spring.cloud.consul.config.name", SERVICE_NAME)
-                setProperty("spring.cloud.consul.config.prefix", CONSUL_CONFIG_PREFIX)
+                setProperty("spring.cloud.consul.config.prefixes", CONSUL_CONFIG_PREFIX)
                 setProperty("spring.cloud.consul.config.format", CONSUL_CONFIG_FORMAT)
                 setProperty("spring.cloud.consul.config.profile-separator", CONSUL_CONFIG_SEPARATOR)
                 setProperty("spring.cloud.consul.discovery.service-name", SERVICE_NAME)

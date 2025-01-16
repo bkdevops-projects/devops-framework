@@ -1,10 +1,3 @@
-import java.io.File
-
-object Release {
-    const val Group = "com.tencent.devops"
-    val Version = File("version.txt").readText().trim()
-}
-
 object Versions {
     const val Jib: String = "3.2.0"
     const val Java = "1.8"

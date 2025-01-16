@@ -8,7 +8,6 @@ description = "Starter for DevOps Boot"
 subprojects {
     apply(plugin = "java-library")
     apply(plugin = "io.spring.dependency-management")
-    apply(plugin = "publish")
 
     dependencyManagement {
         imports {

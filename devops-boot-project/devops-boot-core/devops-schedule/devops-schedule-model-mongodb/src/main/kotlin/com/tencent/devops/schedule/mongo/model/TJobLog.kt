@@ -10,6 +10,8 @@ import com.tencent.devops.schedule.mongo.model.TJobLog.Companion.TRIGGER_CODE_ID
 import com.tencent.devops.schedule.mongo.model.TJobLog.Companion.TRIGGER_CODE_IDX_DEF
 import com.tencent.devops.schedule.mongo.model.TJobLog.Companion.TRIGGER_TIME_IDX
 import com.tencent.devops.schedule.mongo.model.TJobLog.Companion.TRIGGER_TIME_IDX_DEF
+import com.tencent.devops.schedule.mongo.model.TJobLog.Companion.WORKER_ADDRESS_IDX
+import com.tencent.devops.schedule.mongo.model.TJobLog.Companion.WORKER_ADDRESS_IDX_DEF
 import org.springframework.data.mongodb.core.index.CompoundIndex
 import org.springframework.data.mongodb.core.index.CompoundIndexes
 import org.springframework.data.mongodb.core.mapping.Document
@@ -25,6 +27,7 @@ import java.time.LocalDateTime
     CompoundIndex(name = TRIGGER_CODE_IDX, def = TRIGGER_CODE_IDX_DEF, background = true),
     CompoundIndex(name = EXECUTION_CODE_IDX, def = EXECUTION_CODE_IDX_DEF, background = true),
     CompoundIndex(name = ALARM_STATUS_IDX, def = ALARM_STATUS_IDX_DEF, background = true),
+    CompoundIndex(name = WORKER_ADDRESS_IDX, def = WORKER_ADDRESS_IDX_DEF, background = true),
 )
 data class TJobLog(
 
@@ -85,5 +88,7 @@ data class TJobLog(
         const val EXECUTION_CODE_IDX_DEF = "{'executionCode': 1}"
         const val ALARM_STATUS_IDX = "alarmStatus_idx"
         const val ALARM_STATUS_IDX_DEF = "{'alarmStatus': 1}"
+        const val WORKER_ADDRESS_IDX = "workerAddress_idx"
+        const val WORKER_ADDRESS_IDX_DEF = "{'workerAddress': 1}"
     }
 }

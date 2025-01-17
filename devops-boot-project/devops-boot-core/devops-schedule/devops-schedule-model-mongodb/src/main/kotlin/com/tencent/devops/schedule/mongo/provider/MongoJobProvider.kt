@@ -170,5 +170,11 @@ class MongoJobProvider(
         return mongoTemplate.updateFirst(query, update, TJobLog::class.java).modifiedCount.toInt()
     }
 
+    override fun countByWorkerAddress(executionCode: Int, workerAddress: String): Int {
+        val criteria = where(TJobLog::executionCode).`is`(executionCode).and(TJobLog::workerAddress).`is`(workerAddress)
+        val query = Query.query(criteria)
+        return mongoTemplate.count(query,"job_log").toInt()
+    }
+
     data class IdEntity(val id: String)
 }

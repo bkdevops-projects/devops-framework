@@ -26,6 +26,10 @@ export default (safe) => {
         search: true
       },
       {
+        label: '调度节点',
+        prop: 'workerAddress',
+      },
+      {
         label: '调度结果',
         prop: 'triggerCode',
         dicUrl: '/dict/TriggerCode'

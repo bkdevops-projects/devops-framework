@@ -133,4 +133,12 @@ interface JobManager {
      * @param executionMessage 执行结果
      */
     fun completeJob(logId: String, executionCode: Int, executionMessage: String?)
+
+    /**
+     * 查询worker上的任务数
+     * @param executionCode 执行结果码
+     * @param workerAddress worker地址
+     * @return 对应状态的任务数量
+     * */
+    fun countByWorkerAddress(executionCode: Int, workerAddress:String): Int
 }

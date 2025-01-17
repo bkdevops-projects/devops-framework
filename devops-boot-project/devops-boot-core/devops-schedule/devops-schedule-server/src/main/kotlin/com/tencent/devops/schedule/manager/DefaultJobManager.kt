@@ -289,6 +289,10 @@ open class DefaultJobManager(
         return jobProvider.findFailJobLogIds(limit)
     }
 
+    override fun countByWorkerAddress(executionCode: Int, workerAddress: String): Int {
+        return jobProvider.countByWorkerAddress(executionCode, workerAddress)
+    }
+
     /**
      * 验证调度参数
      */

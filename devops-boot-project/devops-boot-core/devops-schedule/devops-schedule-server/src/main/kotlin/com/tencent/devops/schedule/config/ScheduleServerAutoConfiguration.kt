@@ -8,6 +8,7 @@ import com.tencent.devops.schedule.manager.WorkerManager
 import com.tencent.devops.schedule.provider.JobProvider
 import com.tencent.devops.schedule.provider.LockProvider
 import com.tencent.devops.schedule.provider.WorkerProvider
+import com.tencent.devops.schedule.router.Routes
 import com.tencent.devops.schedule.scheduler.DefaultJobScheduler
 import com.tencent.devops.schedule.scheduler.JobScheduler
 import com.tencent.devops.schedule.scheduler.ScheduleServerMetricsListener
@@ -24,6 +25,7 @@ import org.springframework.context.annotation.Import
 @Import(
     ScheduleServerWebConfiguration::class,
     ScheduleServerMetricsListener::class,
+    Routes::class
 )
 class ScheduleServerAutoConfiguration {
 

@@ -1,0 +1,2 @@
+com.tencent.devops.plugin.PluginAutoConfiguration
+com.tencent.devops.plugin.spring.PluginEndpointAutoConfiguration

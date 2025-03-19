@@ -1,4 +1,2 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.tencent.devops.web.WebAutoConfiguration
 org.springframework.context.ApplicationContextInitializer=\
 com.tencent.devops.web.banner.DevOpsBannerInitializer

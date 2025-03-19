@@ -1,4 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.tencent.devops.schedule.config.ScheduleServerAutoConfiguration,\
-com.tencent.devops.schedule.config.ScheduleServerRpcAutoConfiguration,\
-com.tencent.devops.schedule.config.ScheduleServerDiscoveryAutoConfiguration

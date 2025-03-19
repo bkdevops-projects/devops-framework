@@ -1,4 +1,2 @@
 org.springframework.boot.env.EnvironmentPostProcessor=\
 com.tencent.devops.service.ServiceBootstrapEnvironmentPostProcessor
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.tencent.devops.service.ServiceAutoConfiguration

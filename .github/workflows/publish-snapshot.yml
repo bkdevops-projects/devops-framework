@@ -1,6 +1,7 @@
 # Trigger building on push event, and publishing snapshot package if in base repository
 name: Build and Publish snapshot package
 on:
+  workflow_dispatch:
   push:
     branches:
       - master

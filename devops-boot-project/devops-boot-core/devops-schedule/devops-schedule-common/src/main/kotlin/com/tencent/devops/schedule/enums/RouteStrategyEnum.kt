@@ -14,6 +14,7 @@ enum class RouteStrategyEnum(
     RANDOM(1, "随机"),
     ROUND(2, "轮训"),
     CONSISTENT(3, "一致性hash"),
+    LEAST_JOB(4,"最少任务数"),
     SHARDING_BROADCAST(10, "分片广播");
 
     override fun code() = code

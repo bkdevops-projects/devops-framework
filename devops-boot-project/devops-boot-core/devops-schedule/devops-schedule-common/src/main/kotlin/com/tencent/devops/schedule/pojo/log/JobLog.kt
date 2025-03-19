@@ -2,6 +2,7 @@ package com.tencent.devops.schedule.pojo.log
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.tencent.devops.schedule.constants.DATE_TIME_PATTERN
+import com.tencent.devops.schedule.enums.AlarmStatusEnum
 import com.tencent.devops.schedule.enums.ExecutionCodeEnum
 import java.time.LocalDateTime
 
@@ -36,9 +37,10 @@ data class JobLog(
      */
     @JsonFormat(pattern = DATE_TIME_PATTERN)
     var triggerTime: LocalDateTime,
-    var triggerCode : Int = ExecutionCodeEnum.INITIALED.code(),
+    var triggerCode: Int = ExecutionCodeEnum.INITIALED.code(),
     var triggerMsg: String? = null,
     var triggerType: Int,
+    var scheduledFireTime: LocalDateTime,
 
     /**
      * handle信息
@@ -51,5 +53,5 @@ data class JobLog(
     /**
      * alarm信息
      */
-    var alarmStatus: Int? = null
+    var alarmStatus: Int = AlarmStatusEnum.TODO.code(),
 )

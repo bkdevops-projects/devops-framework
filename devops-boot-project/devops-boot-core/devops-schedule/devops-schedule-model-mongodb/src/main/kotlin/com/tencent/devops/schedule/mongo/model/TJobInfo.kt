@@ -1,5 +1,8 @@
 package com.tencent.devops.schedule.mongo.model
 
+import com.tencent.devops.schedule.mongo.model.TJobInfo.Companion.NEXT_TRIGGER_TIME_IDX
+import com.tencent.devops.schedule.mongo.model.TJobInfo.Companion.NEXT_TRIGGER_TIME_IDX_DEF
+import org.springframework.data.mongodb.core.index.CompoundIndex
 import org.springframework.data.mongodb.core.mapping.Document
 import java.time.LocalDateTime
 
@@ -7,6 +10,7 @@ import java.time.LocalDateTime
  * 任务信息模型类
  */
 @Document("job_info")
+@CompoundIndex(name = NEXT_TRIGGER_TIME_IDX, def = NEXT_TRIGGER_TIME_IDX_DEF, background = true)
 data class TJobInfo(
 
     var id: String? = null,
@@ -108,4 +112,9 @@ data class TJobInfo(
      * 镜像地址
      * */
     var image: String? = null,
-)
+) {
+    companion object {
+        const val NEXT_TRIGGER_TIME_IDX = "nextTriggerTime_idx"
+        const val NEXT_TRIGGER_TIME_IDX_DEF = "{'nextTriggerTime': 1}"
+    }
+}

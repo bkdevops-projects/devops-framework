@@ -49,8 +49,8 @@ open class DefaultJobManager(
         return jobProvider.listJobPage(param)
     }
 
-    override fun findTodoJobs(time: Long): List<JobInfo> {
-        return jobProvider.findTodoJobs(time)
+    override fun findTodoJobs(time: Long, limit: Int): List<JobInfo> {
+        return jobProvider.findTodoJobs(time, limit)
     }
 
     override fun listLogPage(param: LogQueryParam): Page<JobLog> {
@@ -144,6 +144,14 @@ open class DefaultJobManager(
         requireNotNull(jobInfo)
 
         with(request) {
+            // 验证调度参数
+            scheduleType?.let {
+                val scheduleTypeEnum = ScheduleTypeEnum.ofCode(it)
+                requireNotNull(scheduleTypeEnum)
+                validateScheduleParameter(scheduleConf.orEmpty(), scheduleTypeEnum)
+                jobInfo.scheduleType = it
+                jobInfo.scheduleConf = scheduleConf.orEmpty()
+            }
             description?.let {
                 jobInfo.description = description
             }
@@ -180,6 +188,9 @@ open class DefaultJobManager(
             }
             source?.let {
                 jobInfo.source = it
+            }
+            maxRetryCount?.let {
+                jobInfo.maxRetryCount = it
             }
             jobInfo.updateTime = LocalDateTime.now()
             jobProvider.updateJob(jobInfo).also {
@@ -276,6 +287,10 @@ open class DefaultJobManager(
 
     override fun findFailJobLogIds(limit: Int): List<String> {
         return jobProvider.findFailJobLogIds(limit)
+    }
+
+    override fun countByWorkerAddress(executionCode: Int, workerAddress: String): Int {
+        return jobProvider.countByWorkerAddress(executionCode, workerAddress)
     }
 
     /**

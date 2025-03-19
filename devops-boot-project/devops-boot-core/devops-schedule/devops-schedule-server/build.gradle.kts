@@ -10,6 +10,7 @@ dependencies {
     api(project(":devops-boot-project:devops-boot-core:devops-schedule:devops-schedule-common"))
     api(project(":devops-boot-project:devops-boot-core:devops-schedule:devops-schedule-model"))
     api("io.jsonwebtoken:jjwt-api")
+    api("com.google.guava:guava")
     runtimeOnly("io.jsonwebtoken:jjwt-impl")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson")
     compileOnly("org.springframework.cloud:spring-cloud-starter")

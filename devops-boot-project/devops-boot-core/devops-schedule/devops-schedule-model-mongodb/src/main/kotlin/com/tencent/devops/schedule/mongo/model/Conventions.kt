@@ -95,6 +95,7 @@ fun TJobLog.convert(): JobLog {
         executionCode = executionCode,
         executionMsg = executionMsg,
         alarmStatus = alarmStatus,
+        scheduledFireTime = scheduledFireTime,
     )
 }
 
@@ -116,6 +117,7 @@ fun JobLog.convert(): TJobLog {
         executionCode = executionCode,
         executionMsg = executionMsg,
         alarmStatus = alarmStatus,
+        scheduledFireTime = scheduledFireTime,
     )
 }
 

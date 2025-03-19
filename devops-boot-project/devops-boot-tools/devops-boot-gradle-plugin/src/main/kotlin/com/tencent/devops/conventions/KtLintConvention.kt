@@ -32,6 +32,6 @@ class KtLintConvention {
 
     companion object {
         private const val KT_LINT = "ktlint"
-        private const val KT_LINT_DEPENDENCY = "com.pinterest:ktlint:0.41.0"
+        private const val KT_LINT_DEPENDENCY = "com.pinterest:ktlint:0.50.0"
     }
 }

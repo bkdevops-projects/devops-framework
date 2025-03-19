@@ -10,12 +10,12 @@ pluginManagement {
         id("com.tencent.devops.boot") version projectVersion
     }
     repositories {
+        mavenLocal()
         mavenCentral()
         gradlePluginPortal()
         maven {
             setUrl("https://oss.sonatype.org/content/repositories/snapshots/")
         }
-        mavenLocal()
     }
 }
 

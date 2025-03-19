@@ -9,6 +9,7 @@ spring:
         tags: env=xxx, a=b
         metadata:
           env: aaa
+      enabled: false
 server:
   port: 8080
 

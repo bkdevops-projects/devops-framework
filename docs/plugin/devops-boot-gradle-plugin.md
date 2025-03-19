@@ -4,7 +4,7 @@
 
 `devops-boot-gradle-plugin`是一个用于快速构建`Spring Boot`应用程序的gradle插件，引入该插件后，会为开发者自动完成：
 
-- 配置jdk插件及编译选项，默认版本为1.8
+- 配置jdk插件及编译选项，默认版本为17
 - 配置maven仓库列表，除中央仓库之外还添加了腾讯源
 - 添加`spring boot`相关插件
 - 添加依赖管理插件，并引入`devops-boot-dependencies`基础依赖`bom`
@@ -42,12 +42,12 @@ plugins {
 
 支持在`gradle.properties`中进行如下配置:
 
-| 属性               | 类型    | 默认值 | 说明               |
-| ------------------ | ------- | ------ | ------------------ |
-| devops.kotlin      | boolean | true   | 是否添加kotlin支持 |
-| devops.javaVersion | string  | 1.8    | jdk版本            |
-| devops.copyWithVersion | boolean  | false    | 拷贝jar到release目录时是否带版本号           |
-| devops.assemblyMode     | string  | null   | 支持consul/k8s/kubernetes,默认使用consul  |
+| 属性               | 类型    | 默认值   | 说明               |
+| ------------------ | ------- |-------| ------------------ |
+| devops.kotlin      | boolean | true  | 是否添加kotlin支持 |
+| devops.javaVersion | string  | 17    | jdk版本            |
+| devops.copyWithVersion | boolean  | false | 拷贝jar到release目录时是否带版本号           |
+| devops.assemblyMode     | string  | null  | 支持consul/k8s/kubernetes,默认使用consul  |
 
 ## 功能介绍
 

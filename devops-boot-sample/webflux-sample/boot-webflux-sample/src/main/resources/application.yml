@@ -15,3 +15,8 @@ devops:
 context:
   initializer:
     classes: com.tencent.devops.sample.config.BeansInitializer
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

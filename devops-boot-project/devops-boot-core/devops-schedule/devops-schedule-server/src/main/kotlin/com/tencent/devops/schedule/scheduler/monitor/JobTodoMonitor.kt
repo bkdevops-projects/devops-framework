@@ -168,6 +168,10 @@ open class JobTodoMonitor(
                 logger.warn("${job.id} is misfire, ignore")
                 // do nothing
             }
+
+            else -> {
+                throw RuntimeException("misfire strategy is illegal")
+            }
         }
         publisher.publishEvent(JobMisfireEvent(job.id.orEmpty()))
     }

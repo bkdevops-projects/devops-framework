@@ -50,14 +50,14 @@ class K8sShellHandler(
             val api = CoreV1Api(client)
             try {
                 val configMapName = "schedule-shell-$jobId-${updateTime.toEpochMilli()}"
-                if (api.exec { api.readNamespacedConfigMap(configMapName, namespace, null, null, null) } == null) {
+                if (api.exec { api.readNamespacedConfigMap(configMapName, namespace, null) } == null) {
                     val configMapBody = V1ConfigMap {
                         metadata {
                             name = configMapName
                         }
                         data = mapOf(CMD to source)
                     }
-                    api.createNamespacedConfigMap(namespace, configMapBody, null, null, null)
+                    api.createNamespacedConfigMap(namespace, configMapBody, null, null, null, null)
                     logger.info("Created configmap $configMapName")
                 }
                 val podBody = V1Pod {
@@ -105,15 +105,15 @@ class K8sShellHandler(
                         restartPolicy = "Never"
                     }
                 }
-                api.createNamespacedPod(namespace, podBody, null, null, null)
+                api.createNamespacedPod(namespace, podBody, null, null, null, null)
                 logger.info("Created pod $podName")
                 createdPod = true
-                var pod = api.exec { api.readNamespacedPod(podName, namespace, null, null, null) }
+                var pod = api.exec { api.readNamespacedPod(podName, namespace, null) }
                 var status = pod?.status?.phase.orEmpty()
                 logger.info("Pod status: $status")
                 while (pod != null && (status == "Running" || status == "Pending")) {
                     Thread.sleep(1000)
-                    pod = api.exec { api.readNamespacedPod(podName, namespace, null, null, null) }
+                    pod = api.exec { api.readNamespacedPod(podName, namespace, null) }
                     status = pod?.status?.phase.orEmpty()
                 }
                 logger.info("Pod status: $status")

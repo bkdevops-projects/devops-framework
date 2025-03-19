@@ -4,9 +4,8 @@ import com.tencent.devops.plugin.api.EXTENSION_LOCATION
 import com.tencent.devops.plugin.api.ExtensionType
 import com.tencent.devops.plugin.api.PluginInfo
 import com.tencent.devops.plugin.api.PluginMetadata
-import org.springframework.boot.loader.LaunchedURLClassLoader
-import org.springframework.boot.loader.archive.Archive
-import org.springframework.boot.loader.archive.JarFileArchive
+import org.springframework.boot.loader.launch.LaunchedClassLoader
+import org.springframework.boot.loader.launch.Archive
 import java.io.IOException
 import java.net.URL
 import java.nio.file.Files
@@ -14,6 +13,7 @@ import java.nio.file.Path
 import java.security.MessageDigest
 import java.util.LinkedList
 import java.util.Properties
+import java.util.function.Predicate
 import java.util.jar.JarFile
 
 /**
@@ -115,13 +115,13 @@ class PluginLoader(
     }
 
     private fun createClassloader(pluginPath: Path): ClassLoader {
-        val jarArchive = JarFileArchive(pluginPath.toFile())
-        val archives = jarArchive.getNestedArchives(searchFilter, nestedFilter)
-        val urls = mutableListOf<URL>(jarArchive.url)
+        val jarArchive = Archive.create(pluginPath.toFile())
+        val archives = jarArchive.getClassPathUrls(includeFilter, directorySearchFilter)
+        val urls = mutableListOf<URL>()
         archives.forEach {
-            urls.add(it.url)
+            urls.add(it)
         }
-        return LaunchedURLClassLoader(false, jarArchive, urls.toTypedArray(), javaClass.classLoader)
+        return LaunchedClassLoader(false, jarArchive, urls.toTypedArray(), javaClass.classLoader)
     }
 
     companion object {
@@ -131,9 +131,11 @@ class PluginLoader(
         private const val PLUGIN_SCOPE = "Plugin-Scope"
         private const val PLUGIN_AUTHOR = "Plugin-Author"
         private const val PLUGIN_DESCRIPTION = "Plugin-Description"
-        val searchFilter = Archive.EntryFilter { entry -> entry.name.startsWith("lib/") }
-        val nestedFilter = Archive.EntryFilter { entry ->
-            !entry.isDirectory && entry.name.startsWith("lib/")
+        val directorySearchFilter = Predicate<Archive.Entry>() { entry ->
+            entry.name().startsWith("lib/")
+        }
+        val includeFilter = Predicate<Archive.Entry>() { entry ->
+            !entry.isDirectory && entry.name().startsWith("lib/")
         }
     }
 }

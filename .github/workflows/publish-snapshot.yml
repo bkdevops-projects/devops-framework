@@ -1,6 +1,7 @@
 # Trigger building on push event, and publishing snapshot package if in base repository
 name: Build and Publish snapshot package
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
@@ -13,10 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Set up JDK 8
+      - name: Set up JDK 17
         uses: actions/setup-java@v1
         with:
-          java-version: 8
+          java-version: 17
       - name: Set up Node JS
         uses: actions/setup-node@v2
         with:

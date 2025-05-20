@@ -1,5 +1,7 @@
 package com.tencent.devops.enums
 
+import java.util.Locale
+
 enum class AssemblyMode {
     NONE,
     CONSUL,
@@ -9,8 +11,8 @@ enum class AssemblyMode {
 
     companion object {
         fun ofValueOrDefault(value: String): AssemblyMode {
-            val upperCase = value.toUpperCase()
-            return values().find { it.name == upperCase } ?: CONSUL
+            val upperCase = value.uppercase(Locale.getDefault())
+            return entries.find { it.name == upperCase } ?: CONSUL
         }
     }
 }

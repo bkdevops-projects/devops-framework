@@ -69,7 +69,7 @@ object PulsarMessageConverterSupport {
         messageBuilder: MessageBuilder<*>
     ) {
         if (!CollectionUtils.isEmpty(properties)) {
-            properties.forEach { (key: String?, value: String?) ->
+            properties.forEach { (key: String, value: String) ->
                 if (MessageHeaders.ID != key &&
                     MessageHeaders.TIMESTAMP != key
                 ) {

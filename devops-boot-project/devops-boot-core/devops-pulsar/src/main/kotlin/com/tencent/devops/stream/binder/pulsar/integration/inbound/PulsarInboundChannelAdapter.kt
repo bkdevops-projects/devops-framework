@@ -88,7 +88,7 @@ class PulsarInboundChannelAdapter(
                 concurrency = extendedConsumerProperties.concurrency
             )
         } catch (e: Exception) {
-            logger.error("DefaultPulsarConsumer init failed, Caused by " + e.message)
+            log.error("DefaultPulsarConsumer init failed, Caused by " + e.message)
             throw MessagingException(
                 MessageBuilder.withPayload(
                     "DefaultPulsarConsumer init failed, Caused by " + e.message
@@ -132,16 +132,16 @@ class PulsarInboundChannelAdapter(
     private fun createListener(): (Consumer<*>, Message<*>) -> Unit {
         return { it: Consumer<*>, msg: Message<*> ->
             try {
-                if (logger.isDebugEnabled) {
-                    logger.debug("Message received $msg ${msg.messageId}")
+                if (log.isDebugEnabled) {
+                    log.debug("Message received $msg ${msg.messageId}")
                 }
                 val message = PulsarMessageConverterSupport.convertMessage2Spring(msg)
                 if (retryTemplate != null) {
                     retryTemplate!!.execute(
                         RetryCallback<Any, RuntimeException> { _: RetryContext? ->
                             sendMessage(message)
-                            if (logger.isDebugEnabled) {
-                                logger.debug("will send acknowledge: ${msg.messageId}")
+                            if (log.isDebugEnabled) {
+                                log.debug("will send acknowledge: ${msg.messageId}")
                             }
                             it.acknowledge(msg)
                             message
@@ -150,16 +150,16 @@ class PulsarInboundChannelAdapter(
                     )
                 } else {
                     sendMessage(message)
-                    if (logger.isDebugEnabled) {
-                        logger.debug("will send acknowledge: ${msg.messageId}")
+                    if (log.isDebugEnabled) {
+                        log.debug("will send acknowledge: ${msg.messageId}")
                     }
                     it.acknowledge(msg)
                 }
-                if (logger.isDebugEnabled) {
-                    logger.debug("Message ${msg.messageId} has been consumed")
+                if (log.isDebugEnabled) {
+                    log.debug("Message ${msg.messageId} has been consumed")
                 }
             } catch (e: Exception) {
-                logger.warn("Error occurred while consuming message ${msg.messageId}: $e")
+                log.warn("Error occurred while consuming message ${msg.messageId}: $e")
                 it.negativeAcknowledge(msg)
             }
         }
@@ -187,7 +187,7 @@ class PulsarInboundChannelAdapter(
                 consumers.add(consumer)
             }
         } catch (e: Exception) {
-            logger.error("Error occurred while creating consumer $e")
+            log.error("Error occurred while creating consumer $e")
         }
 
 //        val instrumentation = Instrumentation(topic, this)
@@ -195,7 +195,7 @@ class PulsarInboundChannelAdapter(
 //            instrumentation.markStartedSuccessfully()
 //        } catch (e: java.lang.Exception) {
 //            instrumentation.markStartFailed(e)
-//            logger.error("PulsarConsumer init failed, Caused by " + e.message)
+//            log.error("PulsarConsumer init failed, Caused by " + e.message)
 //            throw MessagingException(
 //                MessageBuilder.withPayload(
 //                    "PulsarConsumer init failed, Caused by " + e.message
@@ -228,6 +228,8 @@ class PulsarInboundChannelAdapter(
     }
 
     companion object {
-        private val logger = LoggerFactory.getLogger(PulsarInboundChannelAdapter::class.java)
+        // 命名为logger会和IntegrationObjectSupport中的logger冲突
+        // https://youtrack.jetbrains.com/issue/KT-56386
+        private val log = LoggerFactory.getLogger(PulsarInboundChannelAdapter::class.java)
     }
 }

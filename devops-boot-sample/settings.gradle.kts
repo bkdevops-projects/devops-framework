@@ -5,7 +5,7 @@ rootProject.name = "devops-boot-sample"
 // for debug devops-boot locally
 @Suppress("UnstableApiUsage")
 pluginManagement {
-    val projectVersion = File(rootDir.parent,"version.txt").readText()
+    val projectVersion = File(rootDir.parent,"version.txt").readText().trim()
     plugins {
         id("com.tencent.devops.boot") version projectVersion
     }

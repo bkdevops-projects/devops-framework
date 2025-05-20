@@ -30,6 +30,7 @@ class SwaggerConfiguration {
         return GroupedOpenApi.builder()
             .pathsToMatch(ALL_PATTERN)
             .packagesToScan("com.tencent")
+            .group("tencent")
             .build()
     }
 

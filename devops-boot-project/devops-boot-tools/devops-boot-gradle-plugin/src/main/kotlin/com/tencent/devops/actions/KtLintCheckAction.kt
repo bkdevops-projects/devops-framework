@@ -13,14 +13,14 @@ class KtLintCheckAction(
 
     override fun execute(javaExec: JavaExec) {
         with(javaExec) {
-            val outputDir = "${project.buildDir}/reports/ktlint/"
+            val outputDir = "${project.layout.buildDirectory}/reports/ktlint/"
             val inputFiles = project.fileTree(mapOf("dir" to "src", "include" to "**/*.kt"))
             group = "verification"
             inputs.files(inputFiles)
             outputs.dir(outputDir)
             description = "Check Kotlin code style."
             classpath = ktLint
-            main = "com.pinterest.ktlint.Main"
+            mainClass.set("com.pinterest.ktlint.Main")
             args = listOf("src/**/*.kt")
         }
     }

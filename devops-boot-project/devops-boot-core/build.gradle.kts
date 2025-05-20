@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     kotlin("jvm")
     kotlin("kapt")
@@ -36,17 +38,24 @@ subprojects {
             targetCompatibility = Versions.Java
         }
         compileKotlin {
-            kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict", "-java-parameters")
-            kotlinOptions.jvmTarget = Versions.Java
+            compilerOptions {
+                freeCompilerArgs.add("-Xjsr305=strict")
+                freeCompilerArgs.add("-java-parameters")
+                jvmTarget.set(JvmTarget.fromTarget(Versions.Java))
+            }
         }
         compileTestKotlin {
-            kotlinOptions.jvmTarget = Versions.Java
+            compilerOptions {
+                jvmTarget.set(JvmTarget.fromTarget(Versions.Java))
+            }
         }
         test {
             useJUnitPlatform()
         }
         withType(org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask::class.java).configureEach {
-            kotlinOptions.jvmTarget = Versions.Java
+            compilerOptions {
+                jvmTarget.set(JvmTarget.fromTarget(Versions.Java))
+            }
         }
     }
 }

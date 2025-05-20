@@ -50,10 +50,10 @@
 | 依赖          | 版本       |
 | ------------ |----------|
 | JDK          | 17       |
-| Kotlin       | 1.8.22   |
-| Gradle       | 7.6.3    |
-| Spring Boot  | 3.0.11   |
-| Spring Cloud | 2022.0.4 |
+| Kotlin       | 2.0.21   |
+| Gradle       | 8.10.2   |
+| Spring Boot  | 3.4.0    |
+| Spring Cloud | 2024.0.0 |
 
 ## 示例
 

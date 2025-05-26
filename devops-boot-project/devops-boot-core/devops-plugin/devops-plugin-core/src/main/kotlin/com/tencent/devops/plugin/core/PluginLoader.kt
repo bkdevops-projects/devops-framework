@@ -4,8 +4,8 @@ import com.tencent.devops.plugin.api.EXTENSION_LOCATION
 import com.tencent.devops.plugin.api.ExtensionType
 import com.tencent.devops.plugin.api.PluginInfo
 import com.tencent.devops.plugin.api.PluginMetadata
-import org.springframework.boot.loader.launch.LaunchedClassLoader
 import org.springframework.boot.loader.launch.Archive
+import org.springframework.boot.loader.launch.LaunchedClassLoader
 import java.io.IOException
 import java.net.URL
 import java.nio.file.Files
@@ -115,9 +115,10 @@ class PluginLoader(
     }
 
     private fun createClassloader(pluginPath: Path): ClassLoader {
-        val jarArchive = Archive.create(pluginPath.toFile())
+        val pluginFile = pluginPath.toFile()
+        val jarArchive = Archive.create(pluginFile)
         val archives = jarArchive.getClassPathUrls(includeFilter, directorySearchFilter)
-        val urls = mutableListOf<URL>()
+        val urls = mutableListOf<URL>(pluginFile.toURI().toURL())
         archives.forEach {
             urls.add(it)
         }

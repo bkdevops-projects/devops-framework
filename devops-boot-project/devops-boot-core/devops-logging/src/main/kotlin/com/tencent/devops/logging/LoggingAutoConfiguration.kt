@@ -10,7 +10,4 @@ import org.springframework.context.annotation.Configuration
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication
 @EnableConfigurationProperties(DevopsLoggingProperties::class)
-class LoggingAutoConfiguration {
-    @Bean
-    fun devopsLoggingApplicationListener() = DevopsLoggingApplicationListener()
-}
+class LoggingAutoConfiguration

@@ -30,7 +30,7 @@ devops-framework/
 ./gradlew publishToMavenLocal
 ```
 
-- 发布jar包到sonatype中央仓库，同时会发布插件jar包
+- 发布jar包到central.sonatype.com中央仓库，同时会发布插件jar包
 ```shell script
 ./gradlew publish
 ```
@@ -43,8 +43,8 @@ devops-framework/
 ### 环境变量准备
 当需要发布到中央仓库时，会读取以下环境变量：
 
-- `ORG_GRADLE_PROJECT_repoUsername`  sonatype用户名
-- `ORG_GRADLE_PROJECT_repoPassword`  sonatype密码
+- `ORG_GRADLE_PROJECT_repoUsername`  central.sonatype.com用户名
+- `ORG_GRADLE_PROJECT_repoPassword`  central.sonatype.com密码
 - `ORG_GRADLE_PROJECT_signingKey`  gpg签名key
 - `ORG_GRADLE_PROJECT_signingKeyId`  gpg签名key id
 - `ORG_GRADLE_PROJECT_signingPassword`  gpg签名密码

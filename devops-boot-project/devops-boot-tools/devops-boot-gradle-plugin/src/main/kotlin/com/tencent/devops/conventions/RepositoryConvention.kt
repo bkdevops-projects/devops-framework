@@ -39,7 +39,7 @@ class RepositoryConvention {
             // snapshot
             maven {
                 it.name = "MavenSnapshot"
-                it.url = URI("https://oss.sonatype.org/content/repositories/snapshots/")
+                it.url = URI("https://central.sonatype.com/content/repositories/snapshots/")
                 it.mavenContent { descriptor ->
                     descriptor.snapshotsOnly()
                 }

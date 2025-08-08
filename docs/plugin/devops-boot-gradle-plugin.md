@@ -56,7 +56,7 @@ plugins {
 1. [Tencent Mirrors](https://mirrors.tencent.com/nexus/repository/maven-public/)
 2. mavenCentral
 3. jcenter
-4. [MavenSnapshotRepo](https://oss.sonatype.org/content/repositories/snapshots/)
+4. [MavenSnapshotRepo](https://central.sonatype.com/content/repositories/snapshots/)
 
 ### 2. 配置依赖管理
 - 添加`dependency-management`插件

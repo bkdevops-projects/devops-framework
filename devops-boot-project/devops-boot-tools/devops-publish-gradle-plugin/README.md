@@ -65,7 +65,7 @@ key=value
 
 | 属性            | 类型     | 默认值 | 说明        |
 | --------------- | ------- | ------ | ---------- |
-| releaseRepoUrl  | string  | [https://central.sonatype.com/service/local/](https://central.sonatype.com/service/local/) | release仓库地址，默然为SONATYPE中央仓库地址 |
+| releaseRepoUrl  | string  | [https://ossrh-staging-api.central.sonatype.com/service/local/](https://ossrh-staging-api.central.sonatype.com/service/local/) | release仓库地址，默然为SONATYPE中央仓库地址 |
 | snapshotRepoUrl | string  | [https://central.sonatype.com/repository/maven-snapshots/](https://central.sonatype.com/repository/maven-snapshots/) | snapshot仓库地址，默然为SONATYPE中央仓库地址            |
 | repoUsername    | string  | null | 仓库认证用户名 |
 | repoPassword    | string  | null | 仓库认证密码   |

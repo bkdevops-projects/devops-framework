@@ -24,5 +24,5 @@ https://mirrors.tencent.com/nexus/repository/gradle-plugins/
 ```
 #### 三. snapshot库
 ```
-https://central.sonatype.com/content/repositories/snapshots/
+https://central.sonatype.com/repository/maven-snapshots/
 ```

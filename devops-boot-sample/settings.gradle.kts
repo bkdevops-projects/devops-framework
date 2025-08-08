@@ -14,7 +14,7 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
         maven {
-            setUrl("https://central.sonatype.com/content/repositories/snapshots/")
+            setUrl("https://central.sonatype.com/repository/maven-snapshots/")
         }
     }
 }

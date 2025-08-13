@@ -73,4 +73,12 @@ data class JobCreateRequest(
      * 镜像地址，容器任务需要
      * */
     val image: String? = null,
+    /**
+     * k8s任务容器command
+     */
+    var command: List<String>? = null,
+    /**
+     * k8s任务容器cmd
+     */
+    var cmdFileName: String? = null,
 )

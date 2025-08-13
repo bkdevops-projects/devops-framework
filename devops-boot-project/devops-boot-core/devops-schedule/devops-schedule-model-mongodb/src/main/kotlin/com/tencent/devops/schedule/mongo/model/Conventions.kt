@@ -28,6 +28,8 @@ fun TJobInfo.convert(): JobInfo {
         nextTriggerTime = nextTriggerTime,
         source = source,
         image = image,
+        command = command,
+        cmdFileName = cmdFileName,
     )
 }
 

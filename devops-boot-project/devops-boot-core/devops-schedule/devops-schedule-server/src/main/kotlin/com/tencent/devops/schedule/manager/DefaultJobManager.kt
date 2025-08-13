@@ -120,6 +120,8 @@ open class DefaultJobManager(
                 updateTime = LocalDateTime.now(),
                 source = source,
                 image = finalImage,
+                command = command,
+                cmdFileName = cmdFileName,
             )
 
             // 一次性任务，不主动触发
@@ -191,6 +193,12 @@ open class DefaultJobManager(
             }
             maxRetryCount?.let {
                 jobInfo.maxRetryCount = it
+            }
+            command?.let {
+                jobInfo.command = it
+            }
+            cmdFileName?.let {
+                jobInfo.cmdFileName = it
             }
             jobInfo.updateTime = LocalDateTime.now()
             jobProvider.updateJob(jobInfo).also {

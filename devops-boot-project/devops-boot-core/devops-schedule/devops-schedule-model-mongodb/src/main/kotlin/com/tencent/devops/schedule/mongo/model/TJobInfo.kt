@@ -112,6 +112,14 @@ data class TJobInfo(
      * 镜像地址
      * */
     var image: String? = null,
+    /**
+     * k8s任务容器command
+     */
+    var command: List<String>? = null,
+    /**
+     * k8s任务容器cmd
+     */
+    var cmdFileName: String? = null,
 ) {
     companion object {
         const val NEXT_TRIGGER_TIME_IDX = "nextTriggerTime_idx"

@@ -73,4 +73,12 @@ data class JobUpdateRequest(
      * 调度类型
      */
     val scheduleType: Int? = null,
+    /**
+     * k8s任务容器command
+     */
+    var command: List<String>? = null,
+    /**
+     * k8s任务容器cmd
+     */
+    var cmdFileName: String? = null,
 )

@@ -123,6 +123,8 @@ class JobThread(private val serverRpcClient: ServerRpcClient) : Thread() {
                 source = if (source != null) String(base64Decoder.decode(param.source)) else null,
                 image = if (param.image != null) param.image else null,
                 updateTime = param.updateTime,
+                command = command,
+                cmdFileName = cmdFileName,
             )
         }
     }

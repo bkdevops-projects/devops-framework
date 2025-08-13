@@ -22,4 +22,6 @@ data class TriggerParam(
     var broadcastTotal: Int = 0,
     var workerAddress: String? = null,
     var updateTime: LocalDateTime,
+    var command: List<String>? = null,
+    var cmdFileName: String? = null,
 )

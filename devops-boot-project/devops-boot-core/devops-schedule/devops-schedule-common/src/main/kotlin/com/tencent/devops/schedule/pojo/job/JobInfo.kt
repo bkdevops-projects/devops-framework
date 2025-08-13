@@ -106,4 +106,12 @@ data class JobInfo(
      * 镜像地址
      * */
     var image: String? = null,
+    /**
+     * k8s任务容器command
+     */
+    var command: List<String>? = null,
+    /**
+     * k8s任务容器cmd
+     */
+    var cmdFileName: String? = null,
 )

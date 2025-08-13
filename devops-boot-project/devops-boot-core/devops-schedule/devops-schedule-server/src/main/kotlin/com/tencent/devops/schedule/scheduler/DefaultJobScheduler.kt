@@ -207,6 +207,8 @@ class DefaultJobScheduler(
             source = job.source,
             image = job.image,
             jobMode = job.jobMode,
+            command = job.command,
+            cmdFileName = job.cmdFileName,
         )
         // 3. 选择worker地址
         require(group.registryList.isNotEmpty()) { "没有可用的worker地址" }

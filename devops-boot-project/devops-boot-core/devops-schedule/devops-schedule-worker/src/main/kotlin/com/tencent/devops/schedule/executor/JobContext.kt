@@ -44,4 +44,12 @@ data class JobContext(
      * k8s任务使用的镜像
      * */
     var image: String?,
+    /**
+     * k8s任务容器command
+     */
+    var command: List<String>? = null,
+    /**
+     * k8s任务容器cmd
+     */
+    var cmdFileName: String? = null,
 )

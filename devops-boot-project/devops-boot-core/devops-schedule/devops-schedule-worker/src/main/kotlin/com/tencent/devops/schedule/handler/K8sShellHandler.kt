@@ -45,6 +45,7 @@ class K8sShellHandler(
 ) : JobHandler {
     override fun execute(context: JobContext): JobExecutionResult {
         with(context) {
+            val cmd = cmdFileName ?: CMD
             val podName = "schedule-shell-$logId"
             var createdPod = false
             val api = CoreV1Api(client)
@@ -55,7 +56,7 @@ class K8sShellHandler(
                         metadata {
                             name = configMapName
                         }
-                        data = mapOf(CMD to source)
+                        data = mapOf(cmd to source)
                     }
                     api.createNamespacedConfigMap(namespace, configMapBody, null, null, null, null)
                     logger.info("Created configmap $configMapName")
@@ -68,13 +69,13 @@ class K8sShellHandler(
                         containers {
                             name = logId
                             image = context.image
-                            command = listOf(BASH_CMD, CMD)
+                            command = context.command ?: listOf(BASH_CMD, cmd)
                             workingDir = WORK_SPACE
                             setEnv(context)
                             volumeMounts {
                                 name = "shell-$logId"
                                 mountPath = "$WORK_SPACE/$CMD"
-                                subPath = CMD
+                                subPath = cmd
                                 readOnly = true
                             }
                             resources {
@@ -96,8 +97,8 @@ class K8sShellHandler(
                                 name = configMapName
                                 items = listOf(
                                     newKeyToPath {
-                                        key = CMD
-                                        path = CMD
+                                        key = cmd
+                                        path = cmd
                                     },
                                 )
                             }

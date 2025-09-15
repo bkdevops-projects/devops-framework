@@ -26,6 +26,14 @@ class RepositoryConvention {
             project.findPropertyOrNull("mavenRepoUrl")?.let { url ->
                 maven { it.url = URI(url) }
             }
+            // snapshot
+            maven {
+                it.name = "MavenSnapshot"
+                it.url = URI("https://central.sonatype.com/repository/maven-snapshots/")
+                it.mavenContent { descriptor ->
+                    descriptor.snapshotsOnly()
+                }
+            }
             // release
             if (System.getenv("GITHUB_WORKFLOW") == null) {
                 maven { it.url = URI("https://mirrors.tencent.com/nexus/repository/maven-public") }
@@ -36,14 +44,6 @@ class RepositoryConvention {
             }
             // spring
             maven { it.url = URI("https://repo.spring.io/milestone") }
-            // snapshot
-            maven {
-                it.name = "MavenSnapshot"
-                it.url = URI("https://central.sonatype.com/repository/maven-snapshots/")
-                it.mavenContent { descriptor ->
-                    descriptor.snapshotsOnly()
-                }
-            }
             mavenLocal()
         }
     }

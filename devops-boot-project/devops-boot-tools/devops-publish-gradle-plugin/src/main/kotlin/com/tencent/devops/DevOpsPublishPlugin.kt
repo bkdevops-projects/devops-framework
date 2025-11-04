@@ -17,6 +17,7 @@ import org.gradle.plugins.signing.Sign
 import org.gradle.plugins.signing.SigningExtension
 import org.gradle.plugins.signing.SigningPlugin
 import java.io.File
+import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
 
 /**
  * DevOps Publish Gradle插件，提供公共配置
@@ -100,6 +101,12 @@ class DevOpsPublishPlugin : Plugin<Project> {
 
             tasks.withType(Sign::class.java) {
                 it.onlyIf { isReleaseVersion }
+            }
+
+            tasks.withType(PublishToMavenRepository::class.java).configureEach { publishTask ->
+                val publicationSegment = publishTask.name.removePrefix("publish").substringBefore("PublicationTo")
+                val signTaskName = "sign${publicationSegment}Publication"
+                tasks.findByName(signTaskName)?.let { publishTask.dependsOn(it) }
             }
         }
     }

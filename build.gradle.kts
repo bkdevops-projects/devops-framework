@@ -1,4 +1,8 @@
 
+import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
+import org.gradle.plugins.signing.Sign
+
 
 description = "Tencent BlueKing DevOps Framework Build"
 
@@ -22,6 +26,10 @@ allprojects {
     repositories {
         mavenCentral()
         gradlePluginPortal()
+    }
+
+    tasks.withType<PublishToMavenRepository>().configureEach {
+        dependsOn(tasks.withType(Sign::class.java))
     }
 
     publishing {

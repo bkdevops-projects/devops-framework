@@ -104,9 +104,7 @@ class DevOpsPublishPlugin : Plugin<Project> {
             }
 
             tasks.withType(PublishToMavenRepository::class.java).configureEach { publishTask ->
-                val publicationSegment = publishTask.name.removePrefix("publish").substringBefore("PublicationTo")
-                val signTaskName = "sign${publicationSegment}Publication"
-                tasks.findByName(signTaskName)?.let { publishTask.dependsOn(it) }
+                publishTask.dependsOn(tasks.withType(Sign::class.java))
             }
         }
     }

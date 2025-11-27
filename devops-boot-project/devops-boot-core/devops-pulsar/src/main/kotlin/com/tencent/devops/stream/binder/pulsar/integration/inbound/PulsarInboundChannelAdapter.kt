@@ -27,6 +27,7 @@
 
 package com.tencent.devops.stream.binder.pulsar.integration.inbound
 
+import com.tencent.devops.stream.binder.pulsar.properties.AckMode
 import com.tencent.devops.stream.binder.pulsar.properties.PulsarConsumerProperties
 import com.tencent.devops.stream.binder.pulsar.properties.PulsarProperties
 import com.tencent.devops.stream.binder.pulsar.support.PulsarMessageConverterSupport
@@ -130,37 +131,73 @@ class PulsarInboundChannelAdapter(
     }
 
     private fun createListener(): (Consumer<*>, Message<*>) -> Unit {
-        return { it: Consumer<*>, msg: Message<*> ->
+        return { consumer: Consumer<*>, msg: Message<*> ->
             try {
                 if (log.isDebugEnabled) {
-                    log.debug("Message received $msg ${msg.messageId}")
+                    log.debug("Message received ${msg.messageId}")
                 }
-                val message = PulsarMessageConverterSupport.convertMessage2Spring(msg)
+
+                // 根据 ACK 模式决定是否创建 ACK 回调
+                val ackCallback = if (extendedConsumerProperties.extension.ackMode == AckMode.MANUAL.name) {
+                    PulsarAcknowledgmentCallback(consumer, msg)
+                } else {
+                    null
+                }
+
+                val message = PulsarMessageConverterSupport.convertMessage2Spring(msg, ackCallback)
+
                 if (retryTemplate != null) {
                     retryTemplate!!.execute(
                         RetryCallback<Any, RuntimeException> { _: RetryContext? ->
                             sendMessage(message)
-                            if (log.isDebugEnabled) {
-                                log.debug("will send acknowledge: ${msg.messageId}")
+
+                            // 自动 ACK 模式下，消息处理完成后自动确认
+                            if (extendedConsumerProperties.extension.ackMode == AckMode.AUTO.name) {
+                                if (log.isDebugEnabled) {
+                                    log.debug("will send acknowledge: ${msg.messageId}")
+                                }
+                                consumer.acknowledge(msg)
+                            } else {
+                                // 手动 ACK 模式下，记录日志提示业务层需要手动确认
+                                if (log.isDebugEnabled) {
+                                    log.debug("Manual ACK mode, waiting for business layer to acknowledge: ${msg.messageId}")
+                                }
                             }
-                            it.acknowledge(msg)
                             message
                         },
                         recoveryCallback
                     )
                 } else {
                     sendMessage(message)
-                    if (log.isDebugEnabled) {
-                        log.debug("will send acknowledge: ${msg.messageId}")
+
+                    // 自动 ACK 模式下，消息处理完成后自动确认
+                    if (extendedConsumerProperties.extension.ackMode == AckMode.AUTO.name) {
+                        if (log.isDebugEnabled) {
+                            log.debug("will send acknowledge: ${msg.messageId}")
+                        }
+                        consumer.acknowledge(msg)
+                    } else {
+                        // 手动 ACK 模式下，记录日志提示业务层需要手动确认
+                        if (log.isDebugEnabled) {
+                            log.debug("Manual ACK mode, waiting for business layer to acknowledge: ${msg.messageId}")
+                        }
                     }
-                    it.acknowledge(msg)
                 }
+
                 if (log.isDebugEnabled) {
-                    log.debug("Message ${msg.messageId} has been consumed")
+                    log.debug("Message ${msg.messageId} has been processed")
                 }
             } catch (e: Exception) {
                 log.warn("Error occurred while consuming message ${msg.messageId}: $e")
-                it.negativeAcknowledge(msg)
+
+                // 如果是自动 ACK 模式或者发生异常，发送 negative ack
+                if (extendedConsumerProperties.extension.ackMode == AckMode.AUTO.name) {
+                    consumer.negativeAcknowledge(msg)
+                } else {
+                    // 手动 ACK 模式下，即使发生异常也不自动 negative ack
+                    // 让业务层通过 AcknowledgmentCallback 处理
+                    log.warn("Manual ACK mode, exception occurred but not sending negative acknowledgement automatically")
+                }
             }
         }
     }

@@ -33,7 +33,10 @@ import com.tencent.devops.stream.binder.pulsar.constant.PUBLISH_TIME
 import com.tencent.devops.stream.binder.pulsar.constant.TOPIC_NAME
 import com.tencent.devops.stream.binder.pulsar.convert.PulsarMessageConverter
 import com.tencent.devops.stream.binder.pulsar.custom.PulsarBeanContainerCache
+import org.apache.pulsar.client.api.Consumer
 import org.apache.pulsar.client.api.TypedMessageBuilder
+import org.springframework.integration.IntegrationMessageHeaderAccessor
+import org.springframework.integration.acks.AcknowledgmentCallback
 import org.springframework.messaging.Message
 import org.springframework.messaging.MessageHeaders
 import org.springframework.messaging.converter.CompositeMessageConverter
@@ -45,7 +48,10 @@ import java.util.Objects
 
 object PulsarMessageConverterSupport {
 
-    fun <T> convertMessage2Spring(message: org.apache.pulsar.client.api.Message<T>): Message<*> {
+    fun <T> convertMessage2Spring(
+        message: org.apache.pulsar.client.api.Message<T>,
+        ackCallback: AcknowledgmentCallback? = null
+    ): Message<*> {
         val messageBuilder = MessageBuilder.withPayload(message.data)
         if (!message.key.isNullOrEmpty()) {
             messageBuilder.setHeader(toPulsarHeaderKey(TypedMessageBuilder.CONF_KEY), message.key)
@@ -56,6 +62,12 @@ object PulsarMessageConverterSupport {
             .setHeader(toPulsarHeaderKey(PUBLISH_TIME), message.publishTime)
             .setHeader(toPulsarHeaderKey(PRODUCER_NAME), message.producerName)
             .setHeader(toPulsarHeaderKey(TOPIC_NAME), message.topicName)
+        
+        // 如果提供了 ACK 回调，则添加到消息头中
+        if (ackCallback != null) {
+            messageBuilder.setHeader(IntegrationMessageHeaderAccessor.ACKNOWLEDGMENT_CALLBACK, ackCallback)
+        }
+        
         addUserProperties(message.properties, messageBuilder)
         return messageBuilder.build()
     }

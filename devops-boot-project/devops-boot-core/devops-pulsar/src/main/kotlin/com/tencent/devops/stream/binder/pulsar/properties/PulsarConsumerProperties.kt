@@ -200,5 +200,25 @@ data class PulsarConsumerProperties(
     /**
      * If replicateSubscriptionState is enabled, a subscription state is replicated to geo-replicated clusters.
      */
-    var replicateSubscriptionState: Boolean = false
+    var replicateSubscriptionState: Boolean = false,
+    /**
+     * 消息确认模式
+     * MANUAL: 手动确认，业务层需要通过 AcknowledgmentCallback 手动确认消息
+     * AUTO: 自动确认，消息处理完成后自动确认
+     */
+    var ackMode: String = AckMode.AUTO.name
 ) : PulsarCommonProperties()
+
+/**
+ * 消息确认模式枚举
+ */
+enum class AckMode {
+    /**
+     * 自动确认模式：消息处理完成后自动确认
+     */
+    AUTO,
+    /**
+     * 手动确认模式：业务层通过 AcknowledgmentCallback 手动确认
+     */
+    MANUAL
+}
